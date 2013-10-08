@@ -1,0 +1,189 @@
+import copy
+import word
+import whiteheadgraph.build.wgraph as wg
+import whiteheadgraph.build.orderedmultigraph as omg
+import networkx as nx
+import partition as part
+
+def splitsFreely(G):
+    if not G.isConnected():
+        return True
+    else:
+        assert(G.findCutVertex()==None)
+        return False
+
+def givesCut(W,w,returnnumbercomponents=False):
+    """
+    Check if endpoints of word w give cut point/pair in decomposition space for Whitehead graph W
+    """
+    w=word.cyclicReduce(w)
+    if len(w)==0:
+        return False
+    else:
+        prefixw=word.word(w.letters[0:len(w)-1])
+        G=wg.wgrowWord(W,prefixw)
+        v1=tuple(w.letters)
+        v2=(-w.letters[-1],)
+        components=G.connectedComponentsMinusTwoVertices(v2,v1)
+        edgelist1=[[e for e in range(0, G.valence(v1)) if G.oppositeEnd(G.edgeOrder(v1)[e],v1) in components[i]] for i in range(0,len(components))] # edgelist1[k] is list of loose edges at v1 that connected to vertices in component k
+        edgelist2=[[e for e in range(0, G.valence(v2)) if G.oppositeEnd(G.edgeOrder(v2)[e],v2) in components[i]] for i in range(0,len(components))]      # edgelist2[k] is list of loose edges at v2 that connected to vertices in component k             
+        missededges=set(G.incidentEdges(v1))-set.union(*[{G.edgeOrder(v1)[e] for e in p} for p in edgelist1]) # edges that go directly between v1 and v2
+        while missededges!=set([]):
+            nextedge=missededges.pop()
+            edgelist1+=[[G.edgeOrder(v1).index(nextedge)]]
+            edgelist2+=[[G.edgeOrder(v2).index(nextedge)]]
+        P1=part.Partition(edgelist1)
+        P2=part.Partition(edgelist2)
+        partitionmap=range(0,len(P1.parts))
+        splicemap=W.splicemaps[w.letters[-1]]
+        (newP1,newP2)=part.compatibleCoarsenings(P1,P2,partitionmap,splicemap)
+        numberofcomponents=len(newP1.parts)-word.conjugateInto(w,W.getWordlist()) # If w is conjugate into the wordlist then one part of the partition does not correspond to a component, just a segregated edge.
+        if returnnumbercomponents:
+            return numberofcomponents
+        else:
+            return bool(numberofcomponents -1)
+
+        
+
+def numberComplementaryComponents(W,w):
+    """
+    Find numberof complementary components of <w> in W
+    """
+    return givesCut(W,w,True)
+
+def findCutPoints(W):
+    cutpoints=[]
+    for word in W.wordlist:
+        if givesCut(W,word):
+            cutpoints+=[word]
+    return cutpoints
+
+def crossingCutPairs(W,w1,w2):
+    """
+    Decide if w1 and w1 give crossing cut pairs for W.
+    """
+    w1=word.cyclicReduce(w1)
+    w2=word.cyclicReduce(w2)
+    if not numberComplementaryComponents(W,w1)==2 and numberComplementaryComponents(W,w2)==2:
+        return False
+    else:
+        return not givesCut(wg.WGraph(W.getWordlist()+[w1]),w2)
+
+
+    
+def pushForwardPartition(W,v0,P0,v1):
+    """
+    Find partitions newP0 of of v0 edges and P1 of v1 edges compatible with P0 and connectivity in W-{v0,v1}
+    """
+    assert(v0!=v1)
+    components=W.connectedComponentsMinusTwoVertices(v0,v1)
+    newgraph=nx.Graph()
+    for c in components:
+        newgraph.add_star([(n,'vert') for n in c])
+    for p in P0.parts:
+        newgraph.add_star([(e,'edge0') for e in p])
+    for i in range(W.valence(v1)):
+        if W.oppositeEnd(W.incidentEdges(v1)[i],v1)==v0:
+            newgraph.add_edge((i,'edge1'),(W.incidentEdges(v0).index(W.incidentEdges(v1)[i]),'edge0'))
+        else:
+            newgraph.add_edge((i,'edge1'),(W.oppositeEnd(W.incidentEdges(v1)[i],v1),'vert'))
+    for i in range(W.valence(v0)):
+        if W.oppositeEnd(W.incidentEdges(v0)[i],v0)!=v1:
+            newgraph.add_edge((i,'edge0'),(W.oppositeEnd(W.incidentEdges(v0)[i],v0),'vert'))
+    newcomponents=nx.connected_components(newgraph)
+    edgelist0=[]
+    edgelist1=[]
+    for i in range(len(newcomponents)):
+        part0=[]
+        part1=[]
+        for n in newcomponents[i]:
+            if n[1]=='edge0':
+                part0+=[n[0]]
+            if n[1]=='edge1':
+                part1+=[n[0]]
+        edgelist0+=[part0]
+        edgelist1+=[part1]
+    newP0=part.Partition(edgelist0)
+    part0coarseningmap=[]
+    for i in range(len(P0.parts)):
+        e=P0.parts[i].pop()
+        P0.parts[i].add(e)
+        part0coarseningmap+=[newP0.whichPart(e)]
+    return (part0coarseningmap, newP0 , part.Partition(edgelist1))
+            
+        
+def cutPairCrawl(W,cutsfound,prefix,directions,urvert,urpart,urpartsmap,invert,inpart,maxlength,imlazy):
+    """
+    Recursively crawl through the tree looking for cut pairs.
+    """
+    assert(len(inpart.parts))>1 # should not have crawled here if we're already down to one component
+    # First see if we can close up the word and get a cut pair.
+    if invert!=-urvert:
+        theword=word.word(list(prefix+(-urvert,)))
+        numcomponents=givesCut(W,theword,returnnumbercomponents=True)
+        if numcomponents>1 and not word.conjugateInto(theword,cutsfound['certain']['uncrossed']+cutsfound['certain']['2componentofundeterminedcrossing']+cutsfound['certain']['crossed']+cutsfound['certain']['cutpoints']):
+            if numcomponents==2:
+                cutsfound['certain']['2componentofundeterminedcrossing']+=[theword]
+            if numcomponents>2:
+                cutsfound['certain']['uncrossed']+=[theword]
+    for outvert in directions:
+        if outvert!=invert:
+            (inpartcoarseningmap,coarsenedinpart,outpart)=pushForwardPartition(W,invert,inpart,outvert)
+            if len(outpart.parts)>1:
+                newurpart=part.partcd(urpart,urpartsmap,inpart,inpartcoarseningmap) # inpart coarsened, so find corresponding coarsening of urpart
+                newurpartsmap=range(len(newurpart.parts)) # part.partcd gives newurpart w/ identity partsmap to image of inpartcoarseningmap
+                newprefix=prefix+(outvert,)
+                newinvert=-outvert
+                newinpartslist=[[] for i in range(len(outpart.parts))]
+                for i in range(W.valence(newinvert)):
+                    newinpartslist[outpart.whichPart(W.splicemaps[newinvert][i])]+=[i]
+                newinpart=part.Partition(newinpartslist)
+                thisisstupid2=len(outpart.parts)==2 and all([len(outpart.parts[i])>1 for i in range(len(outpart.parts))])
+                thisisstupid3=len(outpart.parts)==3 and newinvert==urvert and word.conjugateInto(word.word(list(newprefix)),W.getWordlist())
+                thisisstupid1=newinvert==urvert and part.isPartBijection(outpart,newurpart,W.splicemaps[outvert])
+                thisisstupid=any([thisisstupid1,thisisstupid2,thisisstupid3])
+                if thisisstupid1:
+                    pass # if thisisstupid1 that means we won't see any new behaviors past this point
+                elif imlazy and thisisstupid:
+                    cutsfound['potential']['max2components']+=[(newprefix,directions,urvert,newurpart, newurpartsmap, newinvert, newinpart)]
+                elif len(prefix)<maxlength-1:
+                    cutPairCrawl(W,cutsfound,newprefix,directions,urvert,newurpart, newurpartsmap, newinvert, newinpart,maxlength,imlazy)
+                else:
+                    cutsfound['reachedmaxlength']=True
+                    if thisisstupid:
+                        cutsfound['potential']['max2components']+=[(newprefix,directions,urvert,newurpart, newurpartsmap, newinvert, newinpart)]
+                    else:
+                        cutsfound['potential']['maybemorethan2']+=[(newprefix,directions,urvert,newurpart, newurpartsmap, newinvert, newinpart)]
+   
+                    
+        
+    
+
+def findCutPairs(W,rank=None,maxlength=10,imlazy=True):
+    """
+    Find cut pairs for a whitehead graph.
+    """
+    wordlist=W.getWordlist()
+    if rank==None:
+        rank=word.guessRank(wordlist)
+    cutsfound={'certain':{'cutpoints'=[],'uncrossedpairs':[],'crossedpairs'=[],'2componentofundeterminedcrossing'=[]},'potential':{'max2components':[],'maybemorethan2':[]},'reachedmaxlength':False}
+    cutsfound['certain']['cutpoints']=findCutPoints(W)
+    for urvert in range(-rank,0):
+        directions=range(urvert,1-urvert) # up to conjugation and inversion, we may assume that any element begins with the highest generator that it contains
+        directions.remove(0)
+        urpart=part.Partition([[i] for i in range(W.valence(urvert))]) # initial urpartition is 1 part per edge
+        prefix=()
+        inpart=urpart
+        invert=urvert
+        urpartsmap=range(len(urpart.parts))
+        cutPairCrawl(W,cutsfound,prefix,directions,urvert,urpart,urpartsmap,invert,inpart,maxlength,imlazy)
+    return cutsfound
+        
+        
+        
+        
+
+
+    
+    
+

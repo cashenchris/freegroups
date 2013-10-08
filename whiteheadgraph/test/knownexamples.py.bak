@@ -1,0 +1,45 @@
+import word
+import whiteheadgraph.build.wgraph as wg
+# a few words
+com=word.word([1,2,-1,-2])
+a=word.word([1])
+b=word.word('b')
+bs12=word.word([1,2,-1,-1,-2])
+bs13=word.word('abAAAB')
+tk=[word.word('abAB'),word.word('abaB')]
+bs12a=[bs12,a]
+k6=[word.word('b'),word.word('ca'),word.word('cAB'),word.word('abC')]
+baumslag=word.word('AABAbaBab')
+k33=word.word('bbaaccabc')
+
+
+# their corresponding Whitehead graphs
+Com=wg.WGraph([com])
+#A=wg.WGraph(a)
+#B=wg.WGraph(b)
+BS12=wg.WGraph([bs12])
+BS13=wg.WGraph([bs13])
+TK=wg.WGraph(tk)
+K4=wg.WGraph([a,b,com]) # rigid
+K4HNN=wg.WGraph([a,word.word('aBabABAb')])
+BS12A=wg.WGraph([bs12,a])
+K6=wg.WGraph(k6) # rigid
+AS=wg.WGraph([a,b,word.word('abaBAbAB')]) # rigid 'almost splits'
+NonTree=wg.WGraph([word.word('Abc'),word.word('Acb'),word.word('Abbb'),word.word('Accc')]) # rigid but rigid cube complex is not a tree
+K33=wg.WGraph([k33])
+Baumslag=wg.WGraph([baumslag])
+
+knownexamples={
+    #'Name':{whiteheadgraph,wordlist,splitsfreely,iscircle,isrigid,cutpoints,uncrossed}
+    'Com':{'whiteheadgraph':Com,'wordlist':[com],'splitsfreely':False,'iscircle':True,'isrigid':False,'cutpoints':[],'uncrossed':[]},
+    'TK':{'whiteheadgraph':TK,'wordlist':tk,'splitsfreely':False,'iscircle':False,'isrigid':False,'cutpoints':[],'uncrossed':[a]},
+    'K4':{'whiteheadgraph':K4,'wordlist':[a,b,com],'splitsfreely':False,'iscircle':False,'isrigid':True,'cutpoints':[],'uncrossed':[]},
+    'K4HNN':{'whiteheadgraph':K4HNN,'wordlist':[a,word.word('aBabABAb')],'splitsfreely':False,'iscircle':False,'isrigid':False,'cutpoints':[a],'uncrossed':[]},
+    'BS12':{'whiteheadgraph':BS12,'wordlist':[bs12],'splitsfreely':False,'iscircle':False,'isrigid':False,'cutpoints':[],'uncrossed':[a]},
+    'BS12A':{'whiteheadgraph':BS12A,'wordlist':bs12a,'splitsfreely':False,'iscircle':False,'isrigid':False,'cutpoints':[a],'uncrossed':[]},
+    'K6':{'whiteheadgraph':K6,'wordlist':k6,'splitsfreely':False,'iscircle':False,'isrigid':True,'cutpoints':[],'uncrossed':[]},
+    'AS':{'whiteheadgraph':AS,'wordlist':[a,b,word.word('abaBAbAB')],'splitsfreely':False,'iscircle':False,'isrigid':True,'cutpoints':[],'uncrossed':[]},
+    'NonTree':{'whiteheadgraph':NonTree,'wordlist':[word.word('Abc'),word.word('Acb'),word.word('Abbb'),word.word('Accc')],'splitsfreely':False,'iscircle':False,'isrigid':True,'cutpoints':[],'uncrossed':[]},
+    'K33':{'whiteheadgraph':K33,'wordlist':[k33],'splitsfreely':False,'iscircle':False,'isrigid':True,'cutpoints':[],'uncrossed':[]},
+    'Baumslag':{'whiteheadgraph':Baumslag,'wordlist':[baumslag],'splitsfreely':False,'iscircle':False,'isrigid':False,'cutpoints':[],'uncrossed':[a]},
+    }

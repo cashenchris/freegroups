@@ -1,0 +1,2661 @@
+
+
+The initial presentation was: 
+
+ R  1:   bbaaccabc
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: CAB
+
+The rewritten initial presentation is:
+
+ R  1:   AABACBBCC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABACBBCC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   eeddadeaccbbabc
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: bedac
+
+The rewritten initial presentation is:
+
+ R  1:   AABACBDDEEBEDCC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABACBDDEEBEDCC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   ccdaadbebbdeeca
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: BEADC
+
+The rewritten initial presentation is:
+
+ R  1:   AABACCDEECEDBBD
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABACCDEECEDBBD
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   ddeacebc
+ R  2:   bbecada
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: cedab
+
+The rewritten initial presentation is:
+
+ R  1:   AABCDBED
+ R  2:   ACEEBDC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABCDBED
+ R  2:   ACEEBDC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   cddbbdcecaaeeab
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: ebcad
+
+The rewritten initial presentation is:
+
+ R  1:   AABBACDCEEDDEBC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABBACDCEEDDEBC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   deeacedc
+ R  2:   dbbcaba
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: becda
+
+The rewritten initial presentation is:
+
+ R  1:   AABCADCD
+ R  2:   BDEECBE
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABCADCD
+ R  2:   BDEECBE
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   bdaccdc
+ R  2:   badeeabe
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: bceda
+
+The rewritten initial presentation is:
+
+ R  1:   AABCACBD
+ R  2:   BEEDECD
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABCACBD
+ R  2:   BEEDECD
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   edbacdaebdcabec
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: DCBEA
+
+The rewritten initial presentation is:
+
+ R  1:   ABACDBECADEBDCE
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABACDBECADEBDCE
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+
+
+This presentation has length 0 and is freely reduced.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   a
+ R  3:   c
+ R  4:   caCB
+ R  5:   bA
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: aCB
+
+The rewritten initial presentation is:
+
+ R  1:   ABCb
+ R  2:   AC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   b
+ R  3:   a
+ R  4:   bcAC
+ R  5:   aB
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: Cab
+
+The rewritten initial presentation is:
+
+ R  1:   ABCb
+ R  2:   AC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   ca
+ R  3:   cAB
+ R  4:   abC
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: BCa
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACB
+ R  3:   Ab
+ R  4:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   a
+ R  2:   b
+ R  3:   c
+ R  4:   ab
+ R  5:   ac
+ R  6:   bc
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: abc
+
+The rewritten initial presentation is:
+
+ R  1:   AB
+ R  2:   AC
+ R  3:   BC
+ R  4:   A
+ R  5:   B
+ R  6:   C
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AB
+ R  2:   AC
+ R  3:   BC
+ R  4:   A
+ R  5:   B
+ R  6:   C
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   e
+ R  2:   c
+ R  3:   a
+ R  4:   d
+ R  5:   b
+ R  6:   eac
+ R  7:   ed
+ R  8:   cb
+ R  9:   abd
+ R 10:   ecA
+ R 11:   eD
+ R 12:   cB
+ R 13:   aBD
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: bdcea
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   b
+ R  3:   a
+ R  4:   e
+ R  5:   d
+ R  6:   ca
+ R  7:   be
+ R  8:   cdb
+ R  9:   ade
+ R 10:   cA
+ R 11:   bE
+ R 12:   cbD
+ R 13:   aeD
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: ecabd
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   d
+ R  2:   b
+ R  3:   ac
+ R  4:   e
+ R  5:   dabc
+ R  6:   deb
+ R  7:   a
+ R  8:   ce
+ R  9:   dCbA
+ R 10:   dbE
+ R 11:   aE
+ R 12:   c
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: aBcDe
+
+The rewritten initial presentation is:
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   b
+ R  3:   e
+ R  4:   d
+ R  5:   a
+ R  6:   ceb
+ R  7:   cad
+ R  8:   bd
+ R  9:   ea
+ R 10:   cEB
+ R 11:   cAD
+ R 12:   bD
+ R 13:   eA
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: cebad
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   d
+ R  2:   ac
+ R  3:   e
+ R  4:   b
+ R  5:   dc
+ R  6:   a
+ R  7:   dbe
+ R  8:   abce
+ R  9:   dA
+ R 10:   C
+ R 11:   dBE
+ R 12:   aBcE
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: abced
+
+The rewritten initial presentation is:
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   c
+ R  3:   e
+ R  4:   da
+ R  5:   bec
+ R  6:   ba
+ R  7:   d
+ R  8:   cdea
+ R  9:   bEC
+ R 10:   bD
+ R 11:   A
+ R 12:   cAeD
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: ceDaB
+
+The rewritten initial presentation is:
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   e
+ R  2:   ac
+ R  3:   db
+ R  4:   ec
+ R  5:   a
+ R  6:   eb
+ R  7:   d
+ R  8:   ab
+ R  9:   cd
+ R 10:   eA
+ R 11:   C
+ R 12:   eD
+ R 13:   B
+ R 14:   aD
+ R 15:   cB
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: acbED
+
+The rewritten initial presentation is:
+
+ R  1:   AB
+ R  2:   AC
+ R  3:   AD
+ R  4:   AE
+ R  5:   Bc
+ R  6:   Bd
+ R  7:   Be
+ R  8:   Cd
+ R  9:   Ce
+ R 10:   De
+ R 11:   A
+ R 12:   B
+ R 13:   C
+ R 14:   D
+ R 15:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AB
+ R  2:   AC
+ R  3:   AD
+ R  4:   AE
+ R  5:   Bc
+ R  6:   Bd
+ R  7:   Be
+ R  8:   Cd
+ R  9:   Ce
+ R 10:   De
+ R 11:   A
+ R 12:   B
+ R 13:   C
+ R 14:   D
+ R 15:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   a
+ R  2:   b
+
+
+This presentation has length 2 and is freely reduced.
+
+Rewrote the presentation using the substitution: ab
+
+The rewritten initial presentation is:
+
+ R  1:   A
+ R  2:   B
+
+
+                    The Whitehead graph is not connected.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   a
+ R  3:   c
+ R  4:   bcAC
+ R  5:   aB
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: Cab
+
+The rewritten initial presentation is:
+
+ R  1:   ABCb
+ R  2:   AC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   b
+ R  3:   a
+ R  4:   caCB
+ R  5:   bA
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: aCB
+
+The rewritten initial presentation is:
+
+ R  1:   ABCb
+ R  2:   AC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   ca
+ R  3:   baC
+ R  4:   cBA
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: ACb
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACB
+ R  3:   Ab
+ R  4:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+
+
+This presentation has length 0 and is freely reduced.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   a
+ R  3:   c
+ R  4:   BBa
+ R  5:   AACbc
+
+
+This presentation has length 11 and is freely reduced.
+
+Rewrote the presentation using the substitution: AcB
+
+The rewritten initial presentation is:
+
+ R  1:   AABCb
+ R  2:   ACC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABCb
+ R  2:   ACC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   b
+ R  3:   a
+ R  4:   CBcaCAb
+
+
+This presentation has length 10 and is freely reduced.
+
+Rewrote the presentation using the substitution: BcA
+
+The rewritten initial presentation is:
+
+ R  1:   ABCAcab
+ R  2:   A
+ R  3:   B
+ R  4:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   ca
+ R  3:   BAcBCba
+
+
+This presentation has length 10 and is freely reduced.
+
+Rewrote the presentation using the substitution: BAc
+
+The rewritten initial presentation is:
+
+ R  1:   ABCAcab
+ R  2:   Bc
+ R  3:   A
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABCAcab
+ R  2:   Bc
+ R  3:   A
+
+
+The initial presentation was: 
+
+ R  1:   bbaaccabc
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: CAB
+
+The rewritten initial presentation is:
+
+ R  1:   AABACBBCC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABACBBCC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   ddeeaedabbccacb
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: bdeca
+
+The rewritten initial presentation is:
+
+ R  1:   AABACBDDEEBEDCC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABACBDDEEBEDCC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   dccaacdedbbeeba
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: beacd
+
+The rewritten initial presentation is:
+
+ R  1:   AABBACDCEEDDEBC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABBACDCEEDDEBC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   eddacdec
+ R  2:   ebbcaba
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: becad
+
+The rewritten initial presentation is:
+
+ R  1:   AABCADCD
+ R  2:   BDEECBE
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABCADCD
+ R  2:   BDEECBE
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   ddcbbcaeaaceedb
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: EBDAC
+
+The rewritten initial presentation is:
+
+ R  1:   AABACCDEECEDBBD
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABACCDEECEDBBD
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   eedacdbc
+ R  2:   bbdcaea
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: cedba
+
+The rewritten initial presentation is:
+
+ R  1:   AABCDBED
+ R  2:   ACEEBDC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABCDBED
+ R  2:   ACEEBDC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   dabccbac
+ R  2:   adbeede
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: cbade
+
+The rewritten initial presentation is:
+
+ R  1:   AABCADCB
+ R  2:   BEEDECD
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABCADCB
+ R  2:   BEEDECD
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   dbeacebabdecadc
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: CEBAD
+
+The rewritten initial presentation is:
+
+ R  1:   ABACBDAECEDBCDE
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABACBDAECEDBCDE
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+
+
+This presentation has length 0 and is freely reduced.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   a
+ R  3:   c
+ R  4:   caCB
+ R  5:   bA
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: aCB
+
+The rewritten initial presentation is:
+
+ R  1:   ABCb
+ R  2:   AC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   b
+ R  3:   a
+ R  4:   bcAC
+ R  5:   aB
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: Cab
+
+The rewritten initial presentation is:
+
+ R  1:   ABCb
+ R  2:   AC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   ca
+ R  3:   cAB
+ R  4:   abC
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: BCa
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACB
+ R  3:   Ab
+ R  4:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   a
+ R  2:   b
+ R  3:   c
+ R  4:   ab
+ R  5:   ac
+ R  6:   bc
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: abc
+
+The rewritten initial presentation is:
+
+ R  1:   AB
+ R  2:   AC
+ R  3:   BC
+ R  4:   A
+ R  5:   B
+ R  6:   C
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AB
+ R  2:   AC
+ R  3:   BC
+ R  4:   A
+ R  5:   B
+ R  6:   C
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   d
+ R  2:   b
+ R  3:   e
+ R  4:   c
+ R  5:   a
+ R  6:   de
+ R  7:   bc
+ R  8:   dab
+ R  9:   eac
+ R 10:   dE
+ R 11:   bC
+ R 12:   dbA
+ R 13:   ecA
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: bcdae
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   d
+ R  2:   c
+ R  3:   b
+ R  4:   a
+ R  5:   e
+ R  6:   dbc
+ R  7:   dea
+ R  8:   ca
+ R  9:   be
+ R 10:   dBC
+ R 11:   dEA
+ R 12:   cA
+ R 13:   bE
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: adebc
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   e
+ R  2:   d
+ R  3:   b
+ R  4:   ac
+ R  5:   ebd
+ R  6:   ec
+ R  7:   a
+ R  8:   dabc
+ R  9:   eBD
+ R 10:   eA
+ R 11:   C
+ R 12:   dCbA
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: aBcDe
+
+The rewritten initial presentation is:
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   d
+ R  2:   a
+ R  3:   c
+ R  4:   b
+ R  5:   e
+ R  6:   dca
+ R  7:   db
+ R  8:   ae
+ R  9:   ceb
+ R 10:   daC
+ R 11:   dB
+ R 12:   aE
+ R 13:   cEB
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: cebad
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   e
+ R  2:   b
+ R  3:   d
+ R  4:   ac
+ R  5:   edb
+ R  6:   eabc
+ R  7:   dc
+ R  8:   a
+ R  9:   ebD
+ R 10:   eCbA
+ R 11:   dA
+ R 12:   C
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: aBceD
+
+The rewritten initial presentation is:
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   da
+ R  2:   b
+ R  3:   c
+ R  4:   e
+ R  5:   d
+ R  6:   ab
+ R  7:   deac
+ R  8:   bec
+ R  9:   dB
+ R 10:   a
+ R 11:   dEaC
+ R 12:   bEC
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: cedab
+
+The rewritten initial presentation is:
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   db
+ R  2:   e
+ R  3:   ac
+ R  4:   d
+ R  5:   be
+ R  6:   dc
+ R  7:   ba
+ R  8:   ec
+ R  9:   a
+ R 10:   dE
+ R 11:   b
+ R 12:   dA
+ R 13:   bC
+ R 14:   eA
+ R 15:   C
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: EbcaD
+
+The rewritten initial presentation is:
+
+ R  1:   AB
+ R  2:   AC
+ R  3:   AD
+ R  4:   AE
+ R  5:   Bc
+ R  6:   Bd
+ R  7:   Be
+ R  8:   Cd
+ R  9:   Ce
+ R 10:   De
+ R 11:   A
+ R 12:   B
+ R 13:   C
+ R 14:   D
+ R 15:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AB
+ R  2:   AC
+ R  3:   AD
+ R  4:   AE
+ R  5:   Bc
+ R  6:   Bd
+ R  7:   Be
+ R  8:   Cd
+ R  9:   Ce
+ R 10:   De
+ R 11:   A
+ R 12:   B
+ R 13:   C
+ R 14:   D
+ R 15:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   a
+ R  2:   b
+
+
+This presentation has length 2 and is freely reduced.
+
+Rewrote the presentation using the substitution: ab
+
+The rewritten initial presentation is:
+
+ R  1:   A
+ R  2:   B
+
+
+                    The Whitehead graph is not connected.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   a
+ R  3:   c
+ R  4:   bcAC
+ R  5:   aB
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: Cab
+
+The rewritten initial presentation is:
+
+ R  1:   ABCb
+ R  2:   AC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   b
+ R  3:   a
+ R  4:   caCB
+ R  5:   bA
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: aCB
+
+The rewritten initial presentation is:
+
+ R  1:   ABCb
+ R  2:   AC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   ca
+ R  3:   baC
+ R  4:   cBA
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: ACb
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACB
+ R  3:   Ab
+ R  4:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+
+
+This presentation has length 0 and is freely reduced.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   a
+ R  3:   c
+ R  4:   BBa
+ R  5:   AACbc
+
+
+This presentation has length 11 and is freely reduced.
+
+Rewrote the presentation using the substitution: AcB
+
+The rewritten initial presentation is:
+
+ R  1:   AABCb
+ R  2:   ACC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABCb
+ R  2:   ACC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   b
+ R  3:   a
+ R  4:   CBcaCAb
+
+
+This presentation has length 10 and is freely reduced.
+
+Rewrote the presentation using the substitution: BcA
+
+The rewritten initial presentation is:
+
+ R  1:   ABCAcab
+ R  2:   A
+ R  3:   B
+ R  4:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   ca
+ R  3:   BAcBCba
+
+
+This presentation has length 10 and is freely reduced.
+
+Rewrote the presentation using the substitution: BAc
+
+The rewritten initial presentation is:
+
+ R  1:   ABCAcab
+ R  2:   Bc
+ R  3:   A
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABCAcab
+ R  2:   Bc
+ R  3:   A
+
+
+The initial presentation was: 
+
+ R  1:   bbaaccabc
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: CAB
+
+The rewritten initial presentation is:
+
+ R  1:   AABACBBCC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABACBBCC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   aeeddeabaccbbcd
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: cdeba
+
+The rewritten initial presentation is:
+
+ R  1:   AABBACDCEEDDEBC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABBACDCEEDDEBC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   aaccdcadeebbdbe
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: ceabd
+
+The rewritten initial presentation is:
+
+ R  1:   AABACBDDEEBEDCC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABACBDDEEBEDCC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   acddeda
+ R  2:   cabbebce
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: daceb
+
+The rewritten initial presentation is:
+
+ R  1:   AABACBCD
+ R  2:   BEDDCEE
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABACBCD
+ R  2:   BEDDCEE
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   bbcddceaeecaabd
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: CADBE
+
+The rewritten initial presentation is:
+
+ R  1:   AABACCDEECEDBBD
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABACCDEECEDBBD
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   acdeedce
+ R  2:   cadbbab
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: decba
+
+The rewritten initial presentation is:
+
+ R  1:   AABCADCB
+ R  2:   BEEDECD
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABCADCB
+ R  2:   BEEDECD
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   ccbdabea
+ R  2:   eebadcd
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: dbace
+
+The rewritten initial presentation is:
+
+ R  1:   AABCDBED
+ R  2:   ACEEBDC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABCDBED
+ R  2:   ACEEBDC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   acedbecdcaebdab
+
+
+This presentation has length 15 and is freely reduced.
+
+Rewrote the presentation using the substitution: ABECD
+
+The rewritten initial presentation is:
+
+ R  1:   ABACBDAECEDBCDE
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABACBDAECEDBCDE
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+
+
+This presentation has length 0 and is freely reduced.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   a
+ R  3:   c
+ R  4:   caCB
+ R  5:   bA
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: aCB
+
+The rewritten initial presentation is:
+
+ R  1:   ABCb
+ R  2:   AC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   b
+ R  3:   a
+ R  4:   bcAC
+ R  5:   aB
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: Cab
+
+The rewritten initial presentation is:
+
+ R  1:   ABCb
+ R  2:   AC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   ca
+ R  3:   cAB
+ R  4:   abC
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: BCa
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACB
+ R  3:   Ab
+ R  4:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   a
+ R  2:   b
+ R  3:   c
+ R  4:   ab
+ R  5:   ac
+ R  6:   bc
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: abc
+
+The rewritten initial presentation is:
+
+ R  1:   AB
+ R  2:   AC
+ R  3:   BC
+ R  4:   A
+ R  5:   B
+ R  6:   C
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AB
+ R  2:   AC
+ R  3:   BC
+ R  4:   A
+ R  5:   B
+ R  6:   C
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   e
+ R  2:   c
+ R  3:   d
+ R  4:   b
+ R  5:   a
+ R  6:   ed
+ R  7:   cb
+ R  8:   eac
+ R  9:   dab
+ R 10:   eD
+ R 11:   cB
+ R 12:   ecA
+ R 13:   dbA
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: bdcea
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   b
+ R  3:   d
+ R  4:   a
+ R  5:   e
+ R  6:   cdb
+ R  7:   ca
+ R  8:   be
+ R  9:   dea
+ R 10:   cbD
+ R 11:   cA
+ R 12:   bE
+ R 13:   dEA
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: ecabd
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   d
+ R  2:   b
+ R  3:   e
+ R  4:   ac
+ R  5:   deb
+ R  6:   dabc
+ R  7:   ec
+ R  8:   a
+ R  9:   dbE
+ R 10:   dCbA
+ R 11:   eA
+ R 12:   C
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: aBcDe
+
+The rewritten initial presentation is:
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   d
+ R  3:   a
+ R  4:   b
+ R  5:   e
+ R  6:   cad
+ R  7:   ceb
+ R  8:   db
+ R  9:   ae
+ R 10:   cAD
+ R 11:   cEB
+ R 12:   dB
+ R 13:   aE
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: dabec
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABC
+ R  2:   ACb
+ R  3:   BDE
+ R  4:   Bde
+ R  5:   AE
+ R  6:   Ae
+ R  7:   CD
+ R  8:   Cd
+ R  9:   A
+ R 10:   B
+ R 11:   C
+ R 12:   D
+ R 13:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   d
+ R  2:   e
+ R  3:   b
+ R  4:   ac
+ R  5:   dbe
+ R  6:   dc
+ R  7:   a
+ R  8:   eabc
+ R  9:   dBE
+ R 10:   dA
+ R 11:   C
+ R 12:   eCbA
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: aBceD
+
+The rewritten initial presentation is:
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   da
+ R  3:   c
+ R  4:   e
+ R  5:   ba
+ R  6:   d
+ R  7:   bec
+ R  8:   deac
+ R  9:   bD
+ R 10:   A
+ R 11:   bEC
+ R 12:   dEaC
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: cedab
+
+The rewritten initial presentation is:
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABCD
+ R  2:   AbCd
+ R  3:   BDE
+ R  4:   BeD
+ R  5:   AC
+ R  6:   Ae
+ R  7:   CE
+ R  8:   A
+ R  9:   B
+ R 10:   C
+ R 11:   D
+ R 12:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   e
+ R  2:   db
+ R  3:   ac
+ R  4:   eb
+ R  5:   d
+ R  6:   ec
+ R  7:   a
+ R  8:   dc
+ R  9:   ba
+ R 10:   eD
+ R 11:   B
+ R 12:   eA
+ R 13:   C
+ R 14:   dA
+ R 15:   bC
+
+
+This presentation has length 25 and is freely reduced.
+
+Rewrote the presentation using the substitution: EbcaD
+
+The rewritten initial presentation is:
+
+ R  1:   AB
+ R  2:   AC
+ R  3:   AD
+ R  4:   AE
+ R  5:   Bc
+ R  6:   Bd
+ R  7:   Be
+ R  8:   Cd
+ R  9:   Ce
+ R 10:   De
+ R 11:   A
+ R 12:   B
+ R 13:   C
+ R 14:   D
+ R 15:   E
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AB
+ R  2:   AC
+ R  3:   AD
+ R  4:   AE
+ R  5:   Bc
+ R  6:   Bd
+ R  7:   Be
+ R  8:   Cd
+ R  9:   Ce
+ R 10:   De
+ R 11:   A
+ R 12:   B
+ R 13:   C
+ R 14:   D
+ R 15:   E
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   a
+ R  2:   b
+
+
+This presentation has length 2 and is freely reduced.
+
+Rewrote the presentation using the substitution: ab
+
+The rewritten initial presentation is:
+
+ R  1:   A
+ R  2:   B
+
+
+                    The Whitehead graph is not connected.
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   b
+ R  3:   a
+ R  4:   caCB
+ R  5:   bA
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: aCB
+
+The rewritten initial presentation is:
+
+ R  1:   ABCb
+ R  2:   AC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   a
+ R  3:   c
+ R  4:   bcAC
+ R  5:   aB
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: Cab
+
+The rewritten initial presentation is:
+
+ R  1:   ABCb
+ R  2:   AC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   ca
+ R  2:   b
+ R  3:   cAB
+ R  4:   abC
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: BCa
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ACB
+ R  3:   Ab
+ R  4:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+
+
+This presentation has length 0 and is freely reduced.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   a
+ R  3:   c
+ R  4:   BBa
+ R  5:   AACbc
+
+
+This presentation has length 11 and is freely reduced.
+
+Rewrote the presentation using the substitution: AcB
+
+The rewritten initial presentation is:
+
+ R  1:   AABCb
+ R  2:   ACC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABCb
+ R  2:   ACC
+ R  3:   A
+ R  4:   B
+ R  5:   C
+
+
+The initial presentation was: 
+
+ R  1:   c
+ R  2:   b
+ R  3:   a
+ R  4:   CBcaCAb
+
+
+This presentation has length 10 and is freely reduced.
+
+Rewrote the presentation using the substitution: BcA
+
+The rewritten initial presentation is:
+
+ R  1:   ABCAcab
+ R  2:   A
+ R  3:   B
+ R  4:   C
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   b
+ R  2:   ca
+ R  3:   BAcBCba
+
+
+This presentation has length 10 and is freely reduced.
+
+Rewrote the presentation using the substitution: BAc
+
+The rewritten initial presentation is:
+
+ R  1:   ABCAcab
+ R  2:   Bc
+ R  3:   A
+
+
+Presentation 1 is not realizable.
+
+ R  1:   ABCAcab
+ R  2:   Bc
+ R  3:   A
