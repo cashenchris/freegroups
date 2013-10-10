@@ -449,10 +449,11 @@ def smash(prefix,oldname):
             except TypeError:
                 return (prefix,)+(oldname,)
 
-def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='', simplified=False, minimized=False, verbose=False, impatient=False):
+def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='', extrawordlist=None, simplified=False, minimized=False, verbose=False, impatient=False):
     """
     Return graph of groups splitting of F relative to a multiword over the cyclic subgroup < splittingword >, and 
     a list whose ith element is (imagevertex,imageword in imagevertex group) of the ith element of the original wordlist.
+    Extrawordlist is a list of words in F whose images we also want to track. These words must be known to be elliptic in the splitting. If extrawordlist is present then a second wordlist similar to above is also returned.
     """
     # names of vertices prefixed by nameprefix
     # splitting word should already be a nontrivial cyclically reduced and not a proper power, wordlist should be simplified and Whitehead minimized. Should be no free splittings.
@@ -835,6 +836,17 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
                 break
         else:
             raise KeyError(thisword()+" is not elliptic")
+    if extrawordlist:
+        extrawordmap=[]
+        for thisword in extrawordlist:
+            for vert in qgog:
+                conjugateword=qgog.localgroup(vert).findConjugateInSubgroup(thisword)
+                if conjugateword is not None:
+                    extrawordmap.append((vert,conjugateword,1))
+                    break
+            else:
+                raise KeyError(thisword()+" is not elliptic")
+        return qgog, wordmap, extrawordmap
     return qgog, wordmap
 
 freegroup.FGFreeGroup.getRelativeCyclicSplittingOver=getRelativeCyclicSplittingOver 
@@ -1000,32 +1012,25 @@ def getRJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, namepre
          print "Searching for cut pairs."
     cuts,surethatsall=findCutPairs(F, W, wordlist, simplified=True,minimized=True,verbose=verbose, impatient=impatient)
     assert(surethatsall) #### what to do whith this?
-    splittingelements=cuts['cutpoints']|cuts['uncrossed'] 
+    splittingelements=cuts['cutpoints']|cuts['uncrossed']
     rjsj=gog.FPGraphOfGroups()
     rjsj.addVertex(smash(nameprefix,0),F)
     wheredidmywordsgo=[]
+    splittingelementsbyvertex=dict([(smash(nameprefix,0),splittingelements)])
     for i in range(len(wordmap)):
         wheredidmywordsgo.append((smash(nameprefix,0),wordlist[wordmap[i][0]],wordmap[i][1]))
-    while splittingelements:
+    while splittingelementsbyvertex:
         if verbose:
             print "Performing next splitting."
-        # get something to split over
-        thiscut=splittingelements.pop()
-        # figure out which vertex it (or a conjugate of it) is in
-        for thisvert in rjsj:
-            thiscutconjugateword=None
-            if rjsj.localgroup(thisvert)==F:
-                 thiscutconjugateword=thiscut
-            else:
-                thiscutconjugateword=rjsj.localgroup(thisvert).findConjugateInSubgroup(thiscut)
-            if thiscutconjugateword is not None:
-                thiscutconjugateword=rjsj.localgroup(thisvert).cyclicReduce(thiscutconjugateword)
-                break
-        else:
-            raise KeyError(thiscut()+" is not elliptic")
-        # split thisvert over conjugateword relative to multiword and incident edges
+        thisvert=splittingelementsbyvertex.keys()[0]
+        thiscut=splittingelementsbyvertex[thisvert].pop()
+        if not splittingelementsbyvertex[thisvert]:
+            del splittingelementsbyvertex[thisvert]
+
+
+        # split thisvert over thiscut relative to multiword and incident edges
         thisgroup=rjsj.localgroup(thisvert)
-        assert(thisgroup is thiscutconjugateword.group)
+        assert(thisgroup is thiscut.group)
         if thisgroup.rank<2: #### Is this supposed to ever happen? Doesn't this mean we have distinct splitting elements with conjugate powers?
              continue 
         outedges=set(rjsj.out_edges(thisvert,keys=True))
@@ -1034,7 +1039,14 @@ def getRJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, namepre
         outedges=outedges-loops
         inedges=inedges-loops
 
-        inducedmultiword,images =getInducedMultiword(rjsj,thisvert,wheredidmywordsgo, blind=blind, simplifyandminimize=True,withedgemap=True)
+        inducedmultiword,images,inducedmultiwordminimizingautomorphism =getInducedMultiword(rjsj,thisvert,wheredidmywordsgo, blind=False, simplifyandminimize=True,withedgemap=True)
+        # we want the inducedmultiword to be simplified and minimized, which means we may need to apply an automorphism to the vertex group at thisvertex. We should then change the incident edge maps and the splitting elements at this vertex.
+        rjsj.changeVertexGroupbyAutomorphism(thisvert,inducedmultiwordminimizingautomorphism)
+        thiscutconjugateword=rjsj.localgroup(thisvert).cyclicReduce(inducedmultiwordminimizingautomorphism(thiscut))       
+        if thisvert in splittingelementsbyvertex:
+            newcutsinthisvert=set([inducedmultiwordminimizingautomorphism(w) for w in splittingelementsbyvertex[thisvert]])
+            splittingelementsbyvertex[thisvert]=newcutsinthisvert
+            
         inducedW=wg.WGraph(inducedmultiword, simplified=True)
         # images is a dict whose keys are  of the form (edge,0) or (edge,1) or i and whose values are interpreted:
         # images[(edge,0)]=(i,p) means the omap for edge e maps the generator of the edge group to the word inducedmultiword[i]**p
@@ -1043,7 +1055,17 @@ def getRJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, namepre
         # find the splitting of the vertex group relative to the inducedmultiword
         # refinedvert is a graph of groups decomposition of the thisvert
         # emap is a list so that emap[i]=(v,w,p) means that word i of the inducedmultiword is conjugate to the word w**p in the group of vertex v in refinedvert
-        refinedvert, emap=thisgroup.getRelativeCyclicSplittingOver(inducedW,inducedmultiword, thiscutconjugateword, thisvert, verbose=verbose, impatient=impatient, simplified=True, minimized=True)
+        if thisvert in splittingelementsbyvertex:
+            exwordlist=list(splittingelementsbyvertex[thisvert])
+            refinedvert, emap, extrawordmap=thisgroup.getRelativeCyclicSplittingOver(inducedW,inducedmultiword, thiscutconjugateword, thisvert, extrawordlist=exwordlist,verbose=verbose, impatient=impatient, simplified=True, minimized=True)
+            for (newvert,newsplittingelement,newpower) in extrawordmap:
+                try:
+                    splittingelementsbyvertex[newvert].add(newsplittingelement)
+                except KeyError:
+                    splittingelementsbyvertex[newvert]=set([newsplittingelement])
+            del splittingelementsbyvertex[thisvert] # any splitting elements that were in thisvert are now contained in one of the refinement vertices
+        else:
+            refinedvert, emap=thisgroup.getRelativeCyclicSplittingOver(inducedW,inducedmultiword, thiscutconjugateword, thisvert, verbose=verbose, impatient=impatient, simplified=True, minimized=True)
         
         for i in range(len(wheredidmywordsgo)):
             if wheredidmywordsgo[i][0]==thisvert: # words conjugate to thisvert are now conjugate into one of the verts of refinedvert

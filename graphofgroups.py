@@ -58,7 +58,10 @@ class FPGraphOfGroups(nx.MultiDiGraph):
             return edge[2]
 
     def incidentEdges(self, vert,**kwargs):
-        return [edge[2] for edge in self.in_edges(vert,**kwargs)+self.out_edges(vert,**kwargs)]
+        return [edge for edge in self.in_edges(vert,**kwargs)+self.out_edges(vert,**kwargs)]
+
+    def incidentEdgeKeys(self, vert):
+        return [edge[2] for edge in self.in_edges(vert,keys=True)+self.out_edges(vert,keys=True)]
         
     def addVertex(self, vert, vertgroup=FPGroup()):
         self.add_node(vert,{'group':vertgroup})
@@ -146,13 +149,14 @@ class FPGraphOfGroups(nx.MultiDiGraph):
         """
         Change all the incident edgemaps by composing with aut.
         """
-        for edge in self.incidentEdges(vert):
-            origin=self.origin(edge)
-            terminus=self.terminus(edge)
+        for edge in self.incidentEdges(vert, keys=True):
+	    ekey=edge[2]
+            origin=self.origin(ekey)
+            terminus=self.terminus(ekey)
             if vert==terminus:
-                self[origin][terminus][edge]['tmap']=compose(aut,self.gettmap(edge))
+                self[origin][terminus][ekey]['tmap']=compose(aut,self.gettmap(ekey))
             if vert==origin:
-                self[origin][terminus][edge]['omap']=compose(aut,self.getomap(edge))
+                self[origin][terminus][ekey]['omap']=compose(aut,self.getomap(ekey))
 
     def changeEdgeMap(self,edge,end,vertexconjugator):
         """

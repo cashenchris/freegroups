@@ -278,7 +278,7 @@ def wgparse(F, wgraphorwordlist, extrawordlist=None, simplifyandminimize=False, 
 
     extrawordlist is a list of words in F. If simplifyandminimize=True the reducing automorphisms will also be applied to them.
     """
-    results=dict([('wordlist',None),('minimizingautomorphism',None),('inverseminimizer',None),('wordmap',None),('extrawordlist',None)])
+    results=dict([('wordlist',None),('minimizingautomorphism',None),('inverseminimizer',None),('wordmap',None),('extrawordlist',extrawordlist)])
     try:
         results['originalwordlist']=wgraphorwordlist.wordlist
         results['wordlist']=results['originalwordlist']
