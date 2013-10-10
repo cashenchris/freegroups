@@ -1016,7 +1016,9 @@ def getRJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, namepre
     rjsj=gog.FPGraphOfGroups()
     rjsj.addVertex(smash(nameprefix,0),F)
     wheredidmywordsgo=[]
-    splittingelementsbyvertex=dict([(smash(nameprefix,0),splittingelements)])
+    splittingelementsbyvertex=dict()
+    if splittingelements:
+        splittingelementsbyvertex[smash(nameprefix,0)]=splittingelements
     for i in range(len(wordmap)):
         wheredidmywordsgo.append((smash(nameprefix,0),wordlist[wordmap[i][0]],wordmap[i][1]))
     while splittingelementsbyvertex:
