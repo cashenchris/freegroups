@@ -11,13 +11,14 @@ import old_python.heegaard as heegaard
 # isVirtuallyGeometric(F,wordlist2)=True
 
 
-def isVirtuallyGeometric(F,wordlist):
+def isVirtuallyGeometric(F,wordlist, Heegaardwaittime=10):
     """
     Decides if a multiword is virtually geometric.
     F is a free group. wordlist is a list of words in F.
     """
     maybevirtuallygeometric=True
-    splitting, wordmap=F.getMaxFreeAndCyclicSplittingRel(wordlist, withmap=True)
+    #splitting, wordmap=F.getMaxFreeAndCyclicSplittingRel(wordlist, withmap=True)
+    splitting, wordmap=F.getRJSJ(wordlist, withmap=True)
     unchecked=[v for v in splitting.nodes() if splitting.localgroup(v).rank>1]
     while unchecked and maybevirtuallygeometric:
         thisvert=unchecked.pop()
@@ -27,12 +28,12 @@ def isVirtuallyGeometric(F,wordlist):
                                                  # We check geometricity via the program Heegaard. The catch is that Heegaard only checks for geometricity in orientable handlebodies
                                                  # To check non-orienatable geometricity we need to check double covers as well.
             try:
-                thisvertgeometric=heegaard.is_realizable([w() for w in thiswordlist])
+                thisvertgeometric=heegaard.is_realizable([w() for w in thiswordlist], maxtime=Heegaardwaittime)
             except RuntimeError:
                 print "The program Heegaard failed to determine if input was realizable", thiswordlist
                 raise RuntimeError
             if not thisvertgeometric:
-                foundsomethinggood=ls2.look_for_good_cover(thiswordlist,thisgroup.rank,2,verbose=False)
+                foundsomethinggood=ls2.look_for_good_cover(thiswordlist,thisgroup.rank,2,verbose=False, Heegaardwaittime=Heegaardwaittime)
                 if not foundsomethinggood:
                     maybevirtuallygeometric=False
     return maybevirtuallygeometric

@@ -659,10 +659,10 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
         nearbyaxesincomplementsofw[thiscomp][1].extend(newguys)
         
         # now for each complement i in nearbyaxesincomplementsofw[i][1] a list of group elements g such that the axis of gwG passes within distance 1 of the axis of w and is in component i
-        # reduce to subset of these that is minimal with respect to separation from w, ie, axes that are not separated from the axes of w by anything else in the collection.
+        # reduce to subset of these that is minimal with respect to separation from w, ie, axes that are not separated from the axis of w by anything else in the collection.
         # These will be globablly minimal since no other axis could possibly separate if it didn't come at least as close to axis of w.
         #####   This seems to be a major bottleneck.
-        # Is there a faster way to pick out the minimal elements of a partially oredered set?
+        ##### Is there a faster way to pick out the minimal elements of a partially ordered set?
 
     def wlessthan(inputx,inputy):
         """
@@ -763,7 +763,7 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
         minimalaxesincomplementsofw[i][1]=[(nearbyaxesincomplementsofw[i][1][k],whichComplement([-x for x in reversed(nearbyaxesincomplementsofw[i][1][k].letters)])) for k in range(len(nearbyaxesincomplementsofw[i][1])) if indexgiveswminmialelement[i][k]] 
 
     # minimalaxesincomplementsofw[i][0] is the minimal power of w stabilizing component i
-    # and minimalaxesincomplementsofw[i][1] is a list of pairs (g,c) where  g is a group element in component i so that the axes of gwG are w minimal and pass within distance 1 of the axis of w and c is the component containing g^-1
+    # and minimalaxesincomplementsofw[i][1] is a list of pairs (g,c) where  g is a group element in component i so that the axis of gwG is w minimal and passes within distance 1 of the axis of w and c is the component containing g^{-1}.
     # In Otal's construction of Bass-Serre tree for the splitting of F over <w> we have a bipartite tree where one class of vertex is stabilized by conjugates of <w> and the other class corresponds to collections of unseperable axes
     # minimalaxesincomplementsofw records these collections of unseperable axes. The axes of gwG for g in minimalaxesincomplementsofw[i][1] are representatives of the w orbits of the unseparable axes of component i. The c tells how to transport the numbering of the complements of w to the complements of gwG. Thus, we have encoded the Bass-Serre tree of the splitting.
     # Now we have to figure out the quotient graph.
