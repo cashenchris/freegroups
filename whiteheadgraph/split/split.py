@@ -625,14 +625,15 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
     elementsincomplementiwhoseaxisprojectstowj=dict()
     for thiscomp in complementsofw:
         nearbyaxesincomplementsofw[thiscomp]=complementsofw[thiscomp]
-        elementsincomplementiwhoseaxisprojectstowj[thiscomp]=dict([(j,set([])) for j in range(complementsofw[thiscomp][0]*len(w))])
+        elementsincomplementiwhoseaxisprojectstowj[thiscomp]=dict([(j,set([])) for j in range((complementsofw[thiscomp][0])*len(w))])
         newguys=[]
         for thisindex in range(len(complementsofw[thiscomp][1])):
             g=nearbyaxesincomplementsofw[thiscomp][1][thisindex]
+            # find all the axes of conjugates of w that go through g
             for l in range(0,len(w)):
                 newguy=F.word(g.letters+[-x for x in reversed(w.letters[:l])])
                 neww=w.cycle(l) # The w axis through newguy is the same as the neww axis through g.
-                if l: # newguy is a new vertex
+                if l: # newguy != g
                     newindex=len(nearbyaxesincomplementsofw[thiscomp][1])+len(newguys)
                     newguys.append(newguy)
                 else:
@@ -651,18 +652,19 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
                     forwardoverlap=0
                     while len(g)+forwardoverlap < nearbyaxesincomplementsofw[thiscomp][0]*len(neww) and neww.letters[(-2-forwardoverlap)%len(neww)]==-w.letters[(len(g)-1+forwardoverlap)%len(neww)]:
                         forwardoverlap+=1
-                        elementsincomplementiwhoseaxisprojectstowj[thiscomp][len(g)-1+forwardoverlap].add(thisindex)
+                        elementsincomplementiwhoseaxisprojectstowj[thiscomp][len(g)-1+forwardoverlap].add(newindex)
                     backwardoverlap=0
                     while len(g)-2-backwardoverlap >=0 and neww.letters[(-2-backwardoverlap)%len(neww)]==w.letters[(len(g)-2-backwardoverlap)%len(neww)]:
                         backwardoverlap+=1
-                        elementsincomplementiwhoseaxisprojectstowj[thiscomp][len(g)-1-backwardoverlap].add(thisindex)
+                        elementsincomplementiwhoseaxisprojectstowj[thiscomp][len(g)-1-backwardoverlap].add(newindex)
         nearbyaxesincomplementsofw[thiscomp][1].extend(newguys)
         
-        # now for each complement i in nearbyaxesincomplementsofw[i][1] a list of group elements g such that the axis of gwG passes within distance 1 of the axis of w and is in component i
-        # reduce to subset of these that is minimal with respect to separation from w, ie, axes that are not separated from the axis of w by anything else in the collection.
-        # These will be globablly minimal since no other axis could possibly separate if it didn't come at least as close to axis of w.
-        #####   This seems to be a major bottleneck.
-        ##### Is there a faster way to pick out the minimal elements of a partially ordered set?
+        
+    # now for each complement i in nearbyaxesincomplementsofw[i][1] a list of group elements g such that the axis of gwG passes within distance 1 of the axis of w and is in component i
+    # reduce to subset of these that is minimal with respect to separation from w, ie, axes that are not separated from the axis of w by anything else in the collection.
+    # These will be globablly minimal since no other axis could possibly separate if it didn't come at least as close to axis of w.
+    #####   This seems to be a major bottleneck.
+    ##### Is there a faster way to pick out the minimal elements of a partially ordered set?
 
     def wlessthan(inputx,inputy):
         """

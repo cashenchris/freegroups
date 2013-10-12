@@ -17,8 +17,8 @@ def isVirtuallyGeometric(F,wordlist, Heegaardwaittime=10):
     F is a free group. wordlist is a list of words in F.
     """
     maybevirtuallygeometric=True
-    #splitting, wordmap=F.getMaxFreeAndCyclicSplittingRel(wordlist, withmap=True)
-    splitting, wordmap=F.getRJSJ(wordlist, withmap=True)
+    splitting, wordmap=F.getMaxFreeAndCyclicSplittingRel(wordlist, withmap=True)
+    #splitting, wordmap=F.getRJSJ(wordlist, withmap=True)
     unchecked=[v for v in splitting.nodes() if splitting.localgroup(v).rank>1]
     while unchecked and maybevirtuallygeometric:
         thisvert=unchecked.pop()
