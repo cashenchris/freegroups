@@ -6,9 +6,9 @@ class Partition(object):
     """
 
     def __init__(self,listofsetsorlists=[set([])],disjoint=False):
-        listofsets=[set(x) for x in listofsetsorlists if set(x)!=set([])]   
-        assert(len(set.union(*listofsets))==sum(len(x) for x in listofsets)) # Assert the parts are disjoint
-        self.parts=listofsets           
+        tupleoffrozensets=tuple([set(x) for x in listofsetsorlists if set(x)!=set([])])
+        assert(len(set.union(*tupleoffrozensets))==sum(len(x) for x in tupleoffrozensets)) # Assert the parts are disjoint
+        self.parts=tupleoffrozensets          
             
     def __repr__(self):
         return str(self.parts)

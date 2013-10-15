@@ -350,21 +350,18 @@ def findCutPairs(F, W, wordlist ,maxlength=None, impatient=False, simplified=Fal
                 extendSM(W,SM,buds,directions,maxlength-1)
   
     extendSM(W,SM,buds,directions,maxlength)
-    gencycles=nx.simple_cycles(SM) # get the simple cycles in the state machine.
-    cycles=[cycle for cycle in gencycles] # networkx 1.8 changed simple_cycles output from list to generator
-    totalcycles=len(cycles)
-    if verbose:
-        print "Found "+str(totalcycles)+" potential cut pairs. Analyzing."
+    cycles=nx.simple_cycles(SM) # get the simple cycles in the state machine.
     cutpoints=set([])
     uncrossed=set([])
     othercuts=set([])
-    if verbose and totalcycles>1000:
-        fish1=ProgressFish(total=totalcycles)
-    for c in range(totalcycles):
-        cycle=cycles[c]
+    for cycle in cycles: 
         thewordletters=[]
-        for i in range(1,len(cycle)): # read off the word of the free group from the cycle in the state machine
-            thewordletters+=[-cycle[i][0]]
+        if cycle[0]==cycle[-1]: # networkx <=1.7 cycle is a list of vertices with first and last nodes equal, but >=1.8 this duplication is omitted
+            for i in range(1,len(cycle)): # read off the word of the free group from the cycle in the state machine
+                thewordletters+=[-cycle[i][0]]
+        else:
+            for i in range(len(cycle)): # read off the word of the free group from the cycle in the state machine
+                thewordletters+=[-cycle[i][0]]
         theword=F.conjugateRoot(F.word(thewordletters))
         wordinlist=bool(F.isConjugateInto(theword,*wordlist)) # see if theword is in the generating wordlist
         if wordinlist:
@@ -377,9 +374,7 @@ def findCutPairs(F, W, wordlist ,maxlength=None, impatient=False, simplified=Fal
             uncrossed.add(tuple(theword.letters))
         elif complementarycomponents>1:
             othercuts.add(tuple(theword.letters))
-        if verbose and totalcycles>1000:
-            fish1.animate(amount=c+1)
-            
+                        
     potentiallyuncrossed=list(othercuts-uncrossed)
     if verbose:
         print "Found "+str(len(cutpoints))+" cut points, "+str(len(uncrossed))+" uncrossed cut pairs, and "+str(len(potentiallyuncrossed))+" other potential cuts."
