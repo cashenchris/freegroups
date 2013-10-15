@@ -281,8 +281,7 @@ def pushForwardPartition(W,v0,P0,v1):
     newP0=part.Partition(edgelist0)
     part0coarseningmap=[]
     for i in range(len(P0.parts)):
-        e=P0.parts[i].pop()
-        P0.parts[i].add(e)
+        for e in P0.parts[i]: break
         part0coarseningmap+=[newP0.whichPart(e)]
     return (part0coarseningmap, newP0 , part.Partition(edgelist1))
             
@@ -356,11 +355,11 @@ def findCutPairs(F, W, wordlist ,maxlength=None, impatient=False, simplified=Fal
     othercuts=set([])
     for cycle in cycles: 
         thewordletters=[]
-        if cycle[0]==cycle[-1]: # networkx <=1.7 cycle is a list of vertices with first and last nodes equal, but >=1.8 this duplication is omitted
-            for i in range(1,len(cycle)): # read off the word of the free group from the cycle in the state machine
-                thewordletters+=[-cycle[i][0]]
-        else:
+        if len(cycle)==1 or cycle[0]!=cycle[-1]: # in networkx >=1.8 cycle is a list of nodes with no repetition
             for i in range(len(cycle)): # read off the word of the free group from the cycle in the state machine
+                thewordletters+=[-cycle[i][0]]
+        else: # networkx <=1.7 cycle is a list of vertices with first and last nodes equal
+            for i in range(1,len(cycle)): # read off the word of the free group from the cycle in the state machine
                 thewordletters+=[-cycle[i][0]]
         theword=F.conjugateRoot(F.word(thewordletters))
         wordinlist=bool(F.isConjugateInto(theword,*wordlist)) # see if theword is in the generating wordlist
@@ -488,8 +487,7 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
         
     partsplicemap=[None]*len(newP1.parts)
     for i in range(len(partsplicemap)):
-        j=newP1.parts[i].pop() # take a sample from newP1parts[i]
-        newP1.parts[i].add(j)
+        for j in newP1.parts[i]: break # take a sample from newP1parts[i]
         partsplicemap[i]=newP2.whichPart(splicemap[j]) # see which part of newP2 it splices to
 
     # components are components just over the fundamental domain for the w action on its axis, not over the infinite w axis, so components may be strictly finer than the partition

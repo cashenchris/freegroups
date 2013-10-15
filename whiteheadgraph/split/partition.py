@@ -6,12 +6,15 @@ class Partition(object):
     """
 
     def __init__(self,listofsetsorlists=[set([])],disjoint=False):
-        tupleoffrozensets=tuple([set(x) for x in listofsetsorlists if set(x)!=set([])])
-        assert(len(set.union(*tupleoffrozensets))==sum(len(x) for x in tupleoffrozensets)) # Assert the parts are disjoint
+        tupleoffrozensets=tuple([frozenset(x) for x in listofsetsorlists if set(x)!=set([])])
+        assert(len(frozenset.union(*tupleoffrozensets))==sum(len(x) for x in tupleoffrozensets)) # Assert the parts are disjoint
         self.parts=tupleoffrozensets          
             
     def __repr__(self):
         return str(self.parts)
+
+    def __hash__(self):
+        return hash(self.parts)
     
     def __eq__(self,other):
         if len(self.parts)!=len(other.parts):
@@ -20,7 +23,7 @@ class Partition(object):
             return all([self.parts[i]==other.parts[i] for i in range(len(self.parts))])
         
     def elements(self):
-        return set.union(*self.parts)
+        return set.union(*[set(x) for x in self.parts])
 
     def whichPart(self, element):
         return filter(lambda x: element in self.parts[x], range(0,len(self.parts)))[0]
@@ -91,8 +94,8 @@ def compatibleCoarsenings(P1,P2,partmap,splicemap):
         connectiongraph=nx.Graph()
         connectiongraph.add_edges_from([((1,newP1.whichPart(i)),(2,newP2.whichPart(splicemap[i]))) for i in range(0,len(splicemap))])
         components=nx.connected_components(connectiongraph)
-        newP2=Partition([set.union(*[newP2.parts[comp[i][1]] for i in filter(lambda x: comp[x][0]==2, range(0,len(comp)))]) for comp in components])
-        newP1=Partition([set.union(*[newP1.parts[partmap[comp[i][1]]] for i in filter(lambda x: comp[x][0]==2, range(0,len(comp)))]) for comp in components])
+        newP2=Partition([frozenset.union(*[newP2.parts[comp[i][1]] for i in filter(lambda x: comp[x][0]==2, range(0,len(comp)))]) for comp in components])
+        newP1=Partition([frozenset.union(*[newP1.parts[partmap[comp[i][1]]] for i in filter(lambda x: comp[x][0]==2, range(0,len(comp)))]) for comp in components])
     return (newP1,newP2)
 
 def partcd(P1,partsmap,P2,coarsemap2):
