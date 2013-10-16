@@ -307,11 +307,11 @@ def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoCo
         urpart=part.Partition([[i] for i in range(W.valence(urvert))])
         SM.add_node((urvert, urpart))
         buds.add((urvert, urpart))
-    def extendSM(W,SM,buds,directions, maxlength=None, minnumbercomponents=2):
+    def extendSM(W,SM,buds,directions, maxlength=None, MinNumComponents=2):
         """
         Recursively extend finite state machine holding edge partitions.
         """
-        # buds are the nexly added states that we still need to compute outgoing edges
+        # buds are the newly added states that we still need to compute outgoing edges
         # newbuds will be the buds in the next iteration
         # maxlength is bound on number of steps to extend the state machine from the original states
         newbuds=set({})
@@ -322,7 +322,7 @@ def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoCo
             for outdirec in directions:
                 if outdirec!=indirec: # don't backtrack
                     (coarseningmap,coarsenedinpart,outpart)=pushForwardPartition(W,indirec,inpart,outdirec)
-                    if len(outpart.parts)>=minnumbercomponents: # only keep going if we potentially have at least  minnumbercomponents components in this direction
+                    if len(outpart.parts)>=MinNumComponents: # only keep going if we potentially have at least  minnumbercomponents components in this direction
                         newindirec=-outdirec
                         newinpartslist=[[] for i in range(len(outpart.parts))]
                         for i in range(W.valence(newindirec)):
@@ -343,9 +343,9 @@ def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoCo
         buds.update(newbuds)
         if buds:
             if maxlength==None:
-                extendSM(W,SM,buds,directions,maxlength)
+                extendSM(W,SM,buds,directions,maxlength, MinNumComponents)
             elif maxlength>0:
-                extendSM(W,SM,buds,directions,maxlength-1)
+                extendSM(W,SM,buds,directions,maxlength-1, MinNumComponents)
   
     extendSM(W,SM,buds,directions,maxlength, MinNumComponents)
     if buds:
