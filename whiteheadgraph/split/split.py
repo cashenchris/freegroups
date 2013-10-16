@@ -1283,7 +1283,7 @@ def getMaxFreeAndCyclicSplittingRel(F, whiteheadgraphorwordlist, withmap=False, 
     higherrankvertices=[v for v in freesplitting.nodes() if freesplitting.localgroup(v).rank>1]
     if verbose:
         print "Found a free splitting with "+str(len(higherrankvertices))+" higher rank vertices."
-    for thisvert in higherrankvertices:
+    for thisvert in higherrankvertices: # find cyclic splittings of the vertex groups
         if verbose:
             print "Finding cyclic splittings of vertex "+str(1+higherrankvertices.index(thisvert))+"."
         thisgroup=freesplitting.localgroup(thisvert)
