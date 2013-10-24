@@ -12,18 +12,21 @@ import whiteheadgraph.build.wgraph as wg
 # isVirtuallyGeometric(F,wordlist2)=True
 
 
-def isVirtuallyGeometric(F,wordlist, Heegaardwaittime=10):
+def isVirtuallyGeometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=False):
     """
     Decides if a multiword is virtually geometric.
     F is a free group. wordlist is a list of words in F.
     """
     maybevirtuallygeometric=True
+    rigid=True
 
     wgp=wg.wgparse(F,wordlist,simplifyandminimize=True)
     W=wgp['WhiteheadGraph']
     wordlist=wgp['wordlist']
     wordmap=wgp['wordmap']
     freesplitting,wmap=F.getFreeSplittingRel(wordlist, withwordmap=True, minimized=True, simplified=True)
+    if freesplitting.edges():
+        rigid=False
     wheredidmywordsgo=[(wmap[wordmap[i][0]][0], wmap[wordmap[i][0]][1],wmap[wordmap[i][0]][2]*wordmap[i][1]) for i in range(len(wordmap))]
     higherrankverticestobechecked=set([v for v in freesplitting.nodes() if freesplitting.localgroup(v).rank>1])
     higherrankverticesthatarevg=set([])
@@ -43,6 +46,8 @@ def isVirtuallyGeometric(F,wordlist, Heegaardwaittime=10):
         thisgroup=freesplitting.localgroup(thisvert)
         thiswordlist=[w[1] for w in wheredidmywordsgo if w[0]==thisvert]
         thissplitting, thiswordmap=thisgroup.getRJSJ(thiswordlist, withmap=True)
+        if thissplitting.edges():
+            rigid=False
         unchecked=[v for v in thissplitting.nodes() if thissplitting.localgroup(v).rank>1]
         while unchecked and maybevirtuallygeometric:
             newvert=unchecked.pop()
@@ -60,7 +65,10 @@ def isVirtuallyGeometric(F,wordlist, Heegaardwaittime=10):
                     foundsomethinggood=ls2.look_for_good_cover(newwordlist,newgroup.rank,2,verbose=False, Heegaardwaittime=Heegaardwaittime)
                     if not foundsomethinggood:
                         maybevirtuallygeometric=False
-        
-    return maybevirtuallygeometric
+
+    if tellmeifitsrigid:
+        return maybevirtuallygeometric, rigid
+    else:
+        return maybevirtuallygeometric
                     
                                                                       

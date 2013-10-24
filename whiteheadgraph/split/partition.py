@@ -2,7 +2,7 @@ import networkx as nx
 
 class Partition(object):
     """ 
-    A (ordered!) list of disjoint nonempty sets.
+    A tuple of disjoint nonempty frozensets.
     """
 
     def __init__(self,listofsetsorlists=[set([])],disjoint=False):

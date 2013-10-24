@@ -9,6 +9,8 @@ import whiteheadgraph.build.whiteheadreduce as wreduce
 import AutF
 import graphofgroups as gog
 from fish import ProgressFish
+import enumeratewords
+
 
 
 
@@ -293,7 +295,15 @@ def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoCo
     """
     Find cut pairs for a whitehead graph.
     """
+    
+    if not missing3LetterSubwords(wordlist): # if the multiword contains all 3 letter subwords of F then it is rigid.
+        return ({'cutpoints':set([]),'uncrossed':set([]),'othercuts':set([])},True)
     rank=F.rank
+    whiteheadgraphiscomplete=False
+    simplegraph=nx.Graph(W)
+    if len(simplegraph.edges())==rank*(2*rank-1):
+        whiteheadgraphiscomplete=True
+    del simplegraph
     directions=range(-rank,rank+1)
     directions.remove(0)
     buds=set({})
@@ -322,7 +332,13 @@ def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoCo
             for outdirec in directions:
                 if outdirec!=indirec: # don't backtrack
                     (coarseningmap,coarsenedinpart,outpart)=pushForwardPartition(W,indirec,inpart,outdirec)
-                    if len(outpart.parts)>=MinNumComponents: # only keep going if we potentially have at least  minnumbercomponents components in this direction
+                    keepgoing=True
+                    if whiteheadgraphiscomplete and len(outpart.parts)==2:
+                            if len(outpart.parts[0])==1 or len(outpart.parts[1])==1:
+                                keepgoing=False
+                    if len(outpart.parts)<MinNumComponents:
+                        keepgoing=False
+                    if keepgoing: # only keep going if we potentially have at least  minnumbercomponents components in this direction
                         newindirec=-outdirec
                         newinpartslist=[[] for i in range(len(outpart.parts))]
                         for i in range(W.valence(newindirec)):
@@ -545,15 +561,25 @@ def isRigidRel(F, whiteheadgraphorwordlist, maxlength=None, simplified=False, mi
     """
     Decide if W is rigid.
     """
+    inputwaswhiteheadgraph=False
+    try: # if input is a wordlist see if it contains all length 3 subwords. If so, rigid.
+        F is whiteheadgraphorwordlist[0].group
+        if not missing3LetterSubwords(*whiteheadgraphorwordlist):
+            return True
+    except AttributeError:
+        inputwaswhiteheadgraph=True
     wgp=wg.wgparse(F,whiteheadgraphorwordlist, blind=True, simplified=simplified, minimized=minimized,verbose=verbose, simplifyandminimize=True)
     W=wgp['WhiteheadGraph']
     wordlist=wgp['wordlist']
+    if inputwaswhiteheadgraph: # now we have the wordlist, see if it contains all length 3 subwords. If so, rigid.
+        if not missing3LetterSubwords(whiteheadgraphorwordlist):
+            return True
     if not wgp['connected']:
         return False
     elif W.isCircle():
         return False
-    elif findCutPoints(F,W, simplified=True, minimized=True, verbose=verbose):
-        return False
+    #elif findCutPoints(F,W, simplified=True, minimized=True, verbose=verbose): # this is slow, and findUniversalSplittingWords will do it anyway
+    #    return False
     else:
         cuts,areyousurethatsall=findUniversalSplittingWords(F,W,wordlist,maxlength, DoNotVerifyTwoComponentWords=True, StopAtFirstCut=True, simplified=True, minimized=True, verbose=verbose)
         if set.union(cuts['cutpoints'],cuts['uncrossed'], cuts['othercuts']): # found some cuts
@@ -1094,6 +1120,7 @@ def isRJSJ(F,wlmap,thisgog, verbose=False):
 freegroup.FGFreeGroup.isRJSJ=isRJSJ
 
 def simplifyGOG(thisgog, thisvert, multiwordmap):
+    # What is this function doing here? This stuff was done directly in getRJSJ. Factor it out?
     """
     thisgog is a graph of free groups with cyclic edge groups. multiwordmap is a list [(v,w),...] where v is a vertex of thisgog and w is a word in thisgog.localgroup(v). Change the graph of groups structure at vert so that the induced multiword is simplified and Whitehead minimized.
     That
@@ -1327,6 +1354,17 @@ freegroup.FGFreeGroup.getMaxFreeAndCyclicSplittingRel=getMaxFreeAndCyclicSplitti
     
         
 
-
+def missing3LetterSubwords(*wordlist):
+    """
+    Return the set of 3 letter words in F that do not occur as subwords in w or w**(-1) as cyclic words.
+    """
+    thegroup=wordlist[0].group
+    wordgenerator=enumeratewords.generatewords(thegroup,3,3)
+    missingWords=set([x for x in wordgenerator])
+    for theword in wordlist:
+        for i in range(len(theword)):
+            thisword=thegroup.word([theword.letters[i],theword.letters[(i+1)%len(theword)],theword.letters[(i+2)%len(theword)]])
+            missingWords-=set([thisword,thisword**(-1)])
+    return missingWords
     
 
