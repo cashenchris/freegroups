@@ -296,7 +296,7 @@ def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoCo
     Find cut pairs for a whitehead graph.
     """
     
-    if not missing3LetterSubwords(wordlist): # if the multiword contains all 3 letter subwords of F then it is rigid.
+    if not missing3LetterSubwords(*wordlist): # if the multiword contains all 3 letter subwords of F then it is rigid.
         return ({'cutpoints':set([]),'uncrossed':set([]),'othercuts':set([])},True)
     rank=F.rank
     whiteheadgraphiscomplete=False
@@ -572,7 +572,7 @@ def isRigidRel(F, whiteheadgraphorwordlist, maxlength=None, simplified=False, mi
     W=wgp['WhiteheadGraph']
     wordlist=wgp['wordlist']
     if inputwaswhiteheadgraph: # now we have the wordlist, see if it contains all length 3 subwords. If so, rigid.
-        if not missing3LetterSubwords(whiteheadgraphorwordlist):
+        if not missing3LetterSubwords(*whiteheadgraphorwordlist):
             return True
     if not wgp['connected']:
         return False

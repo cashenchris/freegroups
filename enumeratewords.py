@@ -1,5 +1,4 @@
 import freegroup
-import word
 import group
 import itertools
 import whiteheadgraph.build.whiteheadreduce as wr
@@ -50,7 +49,7 @@ def generatewordsincommutatorsubgroup(F,maxcommutatorlength,maxsinglewordlength)
     wordgen=generatewords(F,maxsinglewordlength)
     while True:
         w=wordgen.next()
-        if word.ishomologicallytrivial(w):
+        if freegroup.ishomologicallytrivial(w):
             yield w
     #wordgen=generatewords(F,maxsinglewordlength)
     #multiwordgen=itertools.product(wordgen,repeat=2*maxcommutatorlength)
