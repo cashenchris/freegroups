@@ -248,12 +248,20 @@ def givesSplitting(F, whiteheadgraphorwordlist,w,simplified=False, minimized=Fal
 
 
     
-def pushForwardPartition(W,v0,P0,v1):
+def pushForwardPartition(W,v0,P0,v1,precomputedcomponents=None):
     """
     Find partitions newP0 of of v0 edges and P1 of v1 edges compatible with P0 and connectivity in W-{v0,v1}
     """
     assert(v0!=v1)
-    components=W.connectedComponentsMinusTwoVertices(v0,v1)
+    # This function gets called a lot. Let's allow it to remember the components computed in the next step.
+    if precomputedcomponents:
+        if (v0,v1) in precomputedcomponents:
+            components=precomputedcomponents[(v0,v1)]
+        else:
+            components=W.connectedComponentsMinusTwoVertices(v0,v1)
+            precomputedcomponents[(v0,v1)]=components
+    else:
+        components=W.connectedComponentsMinusTwoVertices(v0,v1)
     newgraph=nx.Graph()
     for c in components:
         newgraph.add_star([(n,'vert') for n in c])
@@ -297,8 +305,9 @@ def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoCo
     """
     
     if not missing3LetterSubwords(*wordlist): # if the multiword contains all 3 letter subwords of F then it is rigid.
-        return ({'cutpoints':set([]),'uncrossed':set([]),'othercuts':set([])},True)
+         return ({'cutpoints':set([]),'uncrossed':set([]),'othercuts':set([])},True)
     rank=F.rank
+    precomputedcomponents=dict() # this will be a dict with key (v0,v1) containing the components of W-{v0,v1}, populated as needed
     whiteheadgraphiscomplete=False
     simplegraph=nx.Graph(W)
     if len(simplegraph.edges())==rank*(2*rank-1):
@@ -321,7 +330,7 @@ def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoCo
         """
         Recursively extend finite state machine holding edge partitions.
         """
-        # buds are the newly added states that we still need to compute outgoing edges
+        # buds are the newly added states that we still need to compute outgoing edges for
         # newbuds will be the buds in the next iteration
         # maxlength is bound on number of steps to extend the state machine from the original states
         newbuds=set({})
@@ -331,7 +340,7 @@ def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoCo
             inpart=thisbud[1]
             for outdirec in directions:
                 if outdirec!=indirec: # don't backtrack
-                    (coarseningmap,coarsenedinpart,outpart)=pushForwardPartition(W,indirec,inpart,outdirec)
+                    (coarseningmap,coarsenedinpart,outpart)=pushForwardPartition(W,indirec,inpart,outdirec,precomputedcomponents)
                     keepgoing=True
                     if whiteheadgraphiscomplete and len(outpart.parts)==2:
                             if len(outpart.parts[0])==1 or len(outpart.parts[1])==1:
@@ -439,123 +448,6 @@ def verifyUncrossedSplittingWords(F,wordlist,potentiallyuncrossed, verbose=False
     return uncrossed
 
 
-def findCutPairs(F, W, wordlist ,maxlength=None, impatient=False, simplified=False, minimized=False, verbose=False):
-    # Deprecated. This has been refactored into several different functions. Use findUniversalSplittingWords
-    """
-    Find cut pairs for a whitehead graph.
-    """
-    rank=F.rank
-    directions=range(-rank,rank+1)
-    directions.remove(0)
-    buds=set({})
-    SM=nx.DiGraph()
-    # SM is a finite state machine.
-    # Nodes correspond to free group generator with partition of edges of Whitehead graph crossing that edge in cayley tree.
-    # Edges correspond to a legal turn in the free group, together with a coarsening map of partitions coming from connectivity in the Whitehead graph.
-    # If we find a loop in the state machine so that the partitions have more than one part then we have found a cut word.
-    # Buds are newly added nodes that need to have outgoing edges computed.
-    for urvert in range(-rank,0):
-        urpart=part.Partition([[i] for i in range(W.valence(urvert))])
-        SM.add_node((urvert, urpart))
-        buds.add((urvert, urpart))
-    def extendSM(W,SM,buds,directions,maxlength=None):
-        """
-        Recursively extend finite state machine holding edge partitions.
-        """
-        # buds are the nexly added states that we still need to compute outgoing edges
-        # newbuds will be the buds in the next iteration
-        # maxlength is bound on number of steps to extend the state machine from the original states
-        newbuds=set({})
-        while buds:
-            thisbud=buds.pop()
-            indirec=thisbud[0]
-            inpart=thisbud[1]
-            for outdirec in directions:
-                if outdirec!=indirec: # don't backtrack
-                    (coarseningmap,coarsenedinpart,outpart)=pushForwardPartition(W,indirec,inpart,outdirec)
-                    if len(outpart.parts)>1: # only keep going if we potentially have more than one component in this direction
-                        newindirec=-outdirec
-                        newinpartslist=[[] for i in range(len(outpart.parts))]
-                        for i in range(W.valence(newindirec)):
-                            newinpartslist[outpart.whichPart(W.splicemaps[newindirec][i])]+=[i]
-                        newinpart=part.Partition(newinpartslist)
-                        newbud=(newindirec,newinpart)
-                        # check if newbud is already in SM
-                        for n in SM:
-                            if newbud[0]==n[0]:
-                                if part.isReorderedPartition(newbud[1],n[1]): # newbud is already in SM, so don't add a new vertex
-                                    SM.add_edge(thisbud,n)#,{'label':outdirec,'coarseningmap':newcoarseningmap})
-                                    break
-                        else: # newbud is a new node.
-                            SM.add_node(newbud)
-                            SM.add_edge(thisbud,newbud)#,{'label':outdirec,'coarseningmap':coarseningmap})
-                            newbuds.add(newbud)
-        # we have now extended all the original buds, but if we created new vertices we need to recurse.
-        buds.update(newbuds)
-        if buds:
-            if maxlength==None:
-                extendSM(W,SM,buds,directions,maxlength)
-            elif maxlength>0:
-                extendSM(W,SM,buds,directions,maxlength-1)
-  
-    extendSM(W,SM,buds,directions,maxlength)
-    cycles=nx.simple_cycles(SM) # get the simple cycles in the state machine.
-    cutpoints=set([])
-    uncrossed=set([])
-    othercuts=set([])
-    for cycle in cycles: 
-        thewordletters=[]
-        if len(cycle)==1 or cycle[0]!=cycle[-1]: # in networkx >=1.8 cycle is a list of nodes with no repetition
-            for i in range(len(cycle)): # read off the word of the free group from the cycle in the state machine
-                thewordletters+=[-cycle[i][0]]
-        else: # networkx <=1.7 cycle is a list of vertices with first and last nodes equal
-            for i in range(1,len(cycle)): # read off the word of the free group from the cycle in the state machine
-                thewordletters+=[-cycle[i][0]]
-        theword=F.conjugateRoot(F.word(thewordletters))
-        wordinlist=bool(F.isConjugateInto(theword,*wordlist)) # see if theword is in the generating wordlist
-        if wordinlist:
-            complementarycomponents=len(cycle[0][1].parts)-1 # if theword is in the wordlist then one component is just the word itself and not a complementary component
-        else:
-            complementarycomponents=len(cycle[0][1].parts)
-        if wordinlist and complementarycomponents>1:
-            cutpoints.add(tuple(theword.letters))
-        elif complementarycomponents>2:
-            uncrossed.add(tuple(theword.letters))
-        elif complementarycomponents>1:
-            othercuts.add(tuple(theword.letters))
-                        
-    potentiallyuncrossed=list(othercuts-uncrossed)
-    if verbose:
-        print "Found "+str(len(cutpoints))+" cut points, "+str(len(uncrossed))+" uncrossed cut pairs, and "+str(len(potentiallyuncrossed))+" other potential cuts."
-    if impatient:
-        if len(potentiallyuncrossed)>impatient:
-            raise TooBigError(str(len(othercuts))+" potential cut pairs is beyond patience limit.")
-    # check if any of the othercuts are really 2 component uncrossed cut pairs.
-    if verbose and len(potentiallyuncrossed)>20:
-        fish= ProgressFish(total=len(potentiallyuncrossed))
-    for i in range(len(potentiallyuncrossed)):
-        thisword=potentiallyuncrossed[i]
-        if not crossingCutPairs(F,wordlist, F.word(thisword),F.word(thisword), theyareknowncutpairs=True): # If it crosses itself we can not split over thisword.
-            for otherword in othercuts: # If it doesn't cross itself it does give a splitting, but maybe in a surface component if thisword crosses something else.
-                if crossingCutPairs(F,wordlist,F.word(thisword),F.word(otherword),theyareknowncutpairs=True):
-                    break
-            else:
-                uncrossed.add(thisword)
-        if verbose and len(othercuts)>20:
-            fish.animate(amount=i+1)
-
-    reducedcutpoints=set([F.word(t) for t in cutpoints])
-    reduceduncrossed=set([F.word(t) for t in uncrossed])
-    reducedothercuts=set([F.word(t) for t in othercuts-uncrossed])
-    if verbose:
-        print "Found "+str(len(reducedcutpoints)+len(reduceduncrossed))+" splitting elements."
-    if buds:
-        areyousurethatsall=False # If there are still buds that means we reached maxlength and didn't finish building the state machine. If we found some cuts, great. If not it may be because we didn't look hard enough.
-    else:
-        areyousurethatsall=True
-    return ({'cutpoints':reducedcutpoints,'uncrossed':reduceduncrossed,'othercuts':reducedothercuts},areyousurethatsall)
-
-
 
 def isRigidRel(F, whiteheadgraphorwordlist, maxlength=None, simplified=False, minimized=False, verbose=False):
     """
@@ -565,7 +457,7 @@ def isRigidRel(F, whiteheadgraphorwordlist, maxlength=None, simplified=False, mi
     try: # if input is a wordlist see if it contains all length 3 subwords. If so, rigid.
         F is whiteheadgraphorwordlist[0].group
         if not missing3LetterSubwords(*whiteheadgraphorwordlist):
-            return True
+             return True
     except AttributeError:
         inputwaswhiteheadgraph=True
     wgp=wg.wgparse(F,whiteheadgraphorwordlist, blind=True, simplified=simplified, minimized=minimized,verbose=verbose, simplifyandminimize=True)
@@ -573,7 +465,7 @@ def isRigidRel(F, whiteheadgraphorwordlist, maxlength=None, simplified=False, mi
     wordlist=wgp['wordlist']
     if inputwaswhiteheadgraph: # now we have the wordlist, see if it contains all length 3 subwords. If so, rigid.
         if not missing3LetterSubwords(*whiteheadgraphorwordlist):
-            return True
+             return True
     if not wgp['connected']:
         return False
     elif W.isCircle():
