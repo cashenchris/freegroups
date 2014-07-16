@@ -15,8 +15,9 @@ import enumeratewords
 
 
 class TooBigError(Exception):
-     def __init__(self, value):
+     def __init__(self, value,howbig=None):
          self.value = value
+         self.howbig=howbig
      def __str__(self):
          return repr(self.value)
 
@@ -298,14 +299,14 @@ def pushForwardPartition(W,v0,P0,v1,precomputedcomponents=None):
 
 
     
-def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoComponentWords=False, StopAtFirstCut=False, MinNumComponents=2, impatient=False, simplified=False, minimized=False, verbose=False):
+def findUniversalSplittingWords(F, W, wordlist, DoNotVerifyTwoComponentWords=False, StopAtFirstCut=False, MinNumComponents=2, simplified=False, minimized=False, verbose=False, check3LetterSubwords=True,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
     #repalces findCutPairs
     """
     Find cut pairs for a whitehead graph.
     """
-    
-    if not missing3LetterSubwords(*wordlist): # if the multiword contains all 3 letter subwords of F then it is rigid.
-         return ({'cutpoints':set([]),'uncrossed':set([]),'othercuts':set([])},True)
+    if check3LetterSubwords:
+        if containsAll3LetterSubwords(*wordlist): # if the multiword contains all 3 letter subwords of F then it is rigid.
+            return ({'cutpoints':set([]),'uncrossed':set([]),'othercuts':set([])},True)
     rank=F.rank
     precomputedcomponents=dict() # this will be a dict with key (v0,v1) containing the components of W-{v0,v1}, populated as needed
     whiteheadgraphiscomplete=False
@@ -372,11 +373,11 @@ def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoCo
             elif maxlength>0:
                 extendSM(W,SM,buds,directions,maxlength-1, MinNumComponents)
   
-    extendSM(W,SM,buds,directions,maxlength, MinNumComponents)
+    extendSM(W,SM,buds,directions,cutpairsearchrecursionlimit, MinNumComponents)
     if buds:
-        areyousurethatsall=False # If there are still buds that means we reached maxlength and didn't finish building the state machine. It may contain some cycles, so that we still get cut pairs. If not, it may be because we didn't let the state machine build far enough out.
+        surethatsall=False # If there are still buds that means we reached maxlength and didn't finish building the state machine. It may contain some cycles, so that we still get cut pairs. If not, it may be because we didn't let the state machine build far enough out.
     else:
-        areyousurethatsall=True
+        surethatsall=True
     cycles=nx.simple_cycles(SM) # get the simple cycles in the state machine.
     cutpoints=set([])
     uncrossed=set([])
@@ -406,14 +407,14 @@ def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoCo
             othercuts.add(tuple(theword.letters))
             foundacut=True
         if foundacut and StopAtFirstCut:
-                return ({'cutpoints':set([F.word(w) for w in cutpoints]),'uncrossed':set([F.word(w) for w in uncrossed]),'othercuts':set([F.word(w) for w in othercuts])},areyousurethatsall)
+                return ({'cutpoints':set([F.word(w) for w in cutpoints]),'uncrossed':set([F.word(w) for w in uncrossed]),'othercuts':set([F.word(w) for w in othercuts])},surethatsall)
                         
     potentiallyuncrossed=list(othercuts-uncrossed)
     if verbose:
         print "Found "+str(len(cutpoints))+" cut points, "+str(len(uncrossed))+" uncrossed cut pairs, and "+str(len(othercuts))+" other potential cuts."
-    if impatient:
-        if len(othercuts)>impatient:
-            raise TooBigError(str(len(othercuts))+" potential cut pairs is beyond patience limit.")
+    if maxnumberof2componentcutstoconsider:
+        if len(othercuts)>maxnumberof2componentcutstoconsider:
+            raise TooBigError(str(len(othercuts))+" potential cut pairs is beyond limit set by 'maxnumberof2componentcutstoconsider'",len(othercuts))
 
     reducedcutpoints=set([F.word(t) for t in cutpoints])
     if DoNotVerifyTwoComponentWords:
@@ -425,7 +426,7 @@ def findUniversalSplittingWords(F, W, wordlist, maxlength=None, DoNotVerifyTwoCo
         reducedothercuts=set([F.word(t) for t in othercuts-uncrossed])
     if verbose:
         print "Found "+str(len(reducedcutpoints)+len(reduceduncrossed))+" splitting elements."
-    return ({'cutpoints':reducedcutpoints,'uncrossed':reduceduncrossed,'othercuts':reducedothercuts},areyousurethatsall)
+    return ({'cutpoints':reducedcutpoints,'uncrossed':reduceduncrossed,'othercuts':reducedothercuts},surethatsall)
 
 def verifyUncrossedSplittingWords(F,wordlist,potentiallyuncrossed, verbose=False):
     """
@@ -449,38 +450,29 @@ def verifyUncrossedSplittingWords(F,wordlist,potentiallyuncrossed, verbose=False
 
 
 
-def isRigidRel(F, whiteheadgraphorwordlist, maxlength=None, simplified=False, minimized=False, verbose=False):
+def isRigidRel(F, whiteheadgraphorwordlist, simplified=False, minimized=False, verbose=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
     """
     Decide if W is rigid.
     """
-    inputwaswhiteheadgraph=False
-    try: # if input is a wordlist see if it contains all length 3 subwords. If so, rigid.
-        F is whiteheadgraphorwordlist[0].group
-        if not missing3LetterSubwords(*whiteheadgraphorwordlist):
-             return True
-    except AttributeError:
-        inputwaswhiteheadgraph=True
     wgp=wg.wgparse(F,whiteheadgraphorwordlist, blind=True, simplified=simplified, minimized=minimized,verbose=verbose, simplifyandminimize=True)
     W=wgp['WhiteheadGraph']
     wordlist=wgp['wordlist']
-    if inputwaswhiteheadgraph: # now we have the wordlist, see if it contains all length 3 subwords. If so, rigid.
-        if not missing3LetterSubwords(*whiteheadgraphorwordlist):
-             return True
     if not wgp['connected']:
         return False
     elif W.isCircle():
         return False
-    #elif findCutPoints(F,W, simplified=True, minimized=True, verbose=verbose): # this is slow, and findUniversalSplittingWords will do it anyway
-    #    return False
     else:
-        cuts,areyousurethatsall=findUniversalSplittingWords(F,W,wordlist,maxlength, DoNotVerifyTwoComponentWords=True, StopAtFirstCut=True, simplified=True, minimized=True, verbose=verbose)
+        try:
+            cuts,surethatsall=findUniversalSplittingWords(F,W,wordlist, DoNotVerifyTwoComponentWords=True, StopAtFirstCut=True, simplified=True, minimized=True, verbose=verbose,cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
+        except TooBigError:
+            raise TooBigError("Could not determine with 'cutpairsearchrecursionlimit'="+str(cutpairsearchrecursionlimit))
         if set.union(cuts['cutpoints'],cuts['uncrossed'], cuts['othercuts']): # found some cuts
             return False
         else: # we didn't find any cuts
-            if areyousurethatsall: #  the state machine was complete, so we're sure there really are no cuts
+            if surethatsall: #  the state machine was complete, so we're sure there really are no cuts
                 return True
             else: # otherwise we quit looking because the state machine got too big, so we can't be sure that there are really no cuts
-                raise TooBigError
+                raise TooBigError("Could not determine with given value of 'maxnumberof2componentcutstoconsider'="+str(maxnumberof2componentcutstoconsider))
 freegroup.FGFreeGroup.isRigidRel=isRigidRel
     
 def smash(prefix,oldname):
@@ -495,7 +487,7 @@ def smash(prefix,oldname):
             except TypeError:
                 return (prefix,)+(oldname,)
 
-def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='', extrawordlist=None, simplified=False, minimized=False, verbose=False, impatient=False):
+def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='', extrawordlist=None, simplified=False, minimized=False, verbose=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
     """
     Return graph of groups splitting of F relative to a multiword over the cyclic subgroup < splittingword >, and 
     a list whose ith element is (imagevertex,imageword in imagevertex group) of the ith element of the original wordlist.
@@ -783,13 +775,13 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
             return champions1+champions3
             
     indexgiveswminmialelement=dict()
-    if verbose or impatient:
+    if verbose or maxnumberof2componentcutstoconsider:
         numberofaxes=0
         for i in range(len(nearbyaxesincomplementsofw)):
             numberofaxes+=len(nearbyaxesincomplementsofw[i][1])
-    if impatient:
-        if numberofaxes>impatient:
-            raise TooBigError(str(numberofaxes)+" axes is beyond patience limit.")
+    if maxnumberof2componentcutstoconsider:
+        if numberofaxes>maxnumberof2componentcutstoconsider:
+            raise TooBigError(str(numberofaxes)+" potential cut pairs is beyond limit set by 'maxnumberof2componentcutstoconsider'",numberofaxes)
     if verbose:
         print "Splitting has "+str(len(nearbyaxesincomplementsofw))+" components and "+str(numberofaxes)+" axes. Finding minimal axes in each component."
     minimalaxesincomplementsofw=dict()
@@ -1037,7 +1029,7 @@ def simplifyGOG(thisgog, thisvert, multiwordmap):
         thisgog.changeEdgeMap(edge[0],edge[1], conjugator)
     
 
-def getRJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, nameprefix='', blind=True, simplified=False, minimized=False, verbose=False, impatient=False):
+def getRJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, nameprefix='', blind=True, simplified=False, minimized=False, verbose=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
     """
     Find the JSJ splitting for F relative to the worldlist represented as whiteheadgraphorwordlist.
     """
@@ -1063,11 +1055,11 @@ def getRJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, namepre
     wheredidmywordsgo=[]
     for i in range(len(wordmap)):
         wheredidmywordsgo.append((thisvert,wordlist[wordmap[i][0]],wordmap[i][1]))
-    universalSplitVertex(rjsj,thisvert,wheredidmywordsgo,MinNumComponents=3,verbose=verbose, impatient=impatient) # performs all splittings corresponding to cut points or uncrossed cut pairs with at least 3 components
+    universalSplitVertex(rjsj,thisvert,wheredidmywordsgo,MinNumComponents=3,verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider) # performs all splittings corresponding to cut points or uncrossed cut pairs with at least 3 components
     firstroundverts=[n for n in rjsj.nodes()]
     for thisvert in firstroundverts: # now for each higher rank vertex try to split it over uncrossed cut pairs with 2 components
         if rjsj.localgroup(thisvert).rank>1:
-            universalSplitVertex(rjsj,thisvert,wheredidmywordsgo,MinNumComponents=2,verbose=verbose, impatient=impatient)
+            universalSplitVertex(rjsj,thisvert,wheredidmywordsgo,MinNumComponents=2,verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
     if printresult:
         print rjsj
         if withmap and type(whiteheadgraphorwordlist)==list:
@@ -1079,7 +1071,7 @@ def getRJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, namepre
         return rjsj
 freegroup.FGFreeGroup.getRJSJ=getRJSJ
 
-def universalSplitVertex(thisgog,thisvert,wheredidmywordsgo, MinNumComponents=2,verbose=False, impatient=False):
+def universalSplitVertex(thisgog,thisvert,wheredidmywordsgo, MinNumComponents=2,verbose=False, cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
     """
     Refine thisgog by performing universal splittings of thisvert.
     """
@@ -1098,8 +1090,9 @@ def universalSplitVertex(thisgog,thisvert,wheredidmywordsgo, MinNumComponents=2,
             DoNotVerifyTwoComponentWords=True
         else:
             DoNotVerifyTwoComponentWords=False
-        cuts,surethatsall=findUniversalSplittingWords(thisgog.localgroup(thisvert), W, inducedmultiword, DoNotVerifyTwoComponentWords=DoNotVerifyTwoComponentWords, MinNumComponents=MinNumComponents, simplified=True,minimized=True,verbose=verbose, impatient=impatient)
-        assert(surethatsall) # this should always be true because we did not set a maxtime in findUniversalSplittingWords
+        cuts,surethatsall=findUniversalSplittingWords(thisgog.localgroup(thisvert), W, inducedmultiword, DoNotVerifyTwoComponentWords=DoNotVerifyTwoComponentWords, MinNumComponents=MinNumComponents, simplified=True,minimized=True,verbose=verbose,cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
+        if not surethatsall:
+            raise TooBigError("Could not determine with 'cutpairsearchrecursionlimit'="+str(cutpairsearchrecursionlimit))
         splittingelements=cuts['cutpoints']|cuts['uncrossed']
         splittingelementsbyvertex=dict() # At first all of the splitting words are in thisvert, but each time we split the splitting words will be in one of the new vertex stabilizers, so we use a dict to keep track of where the splitting elements are at each step
         if splittingelements:
@@ -1111,10 +1104,10 @@ def universalSplitVertex(thisgog,thisvert,wheredidmywordsgo, MinNumComponents=2,
             thiscut=splittingelementsbyvertex[newvert].pop()
             if not splittingelementsbyvertex[newvert]:
                 del splittingelementsbyvertex[newvert]
-            splitAndRefine(thisgog,newvert,thiscut,wheredidmywordsgo, splittingelementsbyvertex, verbose=verbose, impatient=impatient)
+            splitAndRefine(thisgog,newvert,thiscut,wheredidmywordsgo, splittingelementsbyvertex, verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
             # function refines thisgog, no return
 
-def splitAndRefine(thisgog, thisvert, thiscut, wheredidmywordsgo, splittingelementsbyvertex, verbose=False, impatient=False):
+def splitAndRefine(thisgog, thisvert, thiscut, wheredidmywordsgo, splittingelementsbyvertex, verbose=False, cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
     """
     Refine thisgog by splitting the local group of thisvert over the word thiscut relative to incident edges.
     """
@@ -1147,7 +1140,7 @@ def splitAndRefine(thisgog, thisvert, thiscut, wheredidmywordsgo, splittingeleme
 
     if thisvert in splittingelementsbyvertex: # there are more splitting words in thisgroup so make sure to track where they go when we refine thisgog
         exwordlist=list(splittingelementsbyvertex[thisvert])
-        refinedvert, emap, extrawordmap=thisgroup.getRelativeCyclicSplittingOver(inducedW,inducedmultiword, thiscutconjugateword, thisvert, extrawordlist=exwordlist,verbose=verbose, impatient=impatient, simplified=True, minimized=True)
+        refinedvert, emap, extrawordmap=thisgroup.getRelativeCyclicSplittingOver(inducedW,inducedmultiword, thiscutconjugateword, thisvert, extrawordlist=exwordlist,verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider, simplified=True, minimized=True)
         for (newvert,newsplittingelement,newpower) in extrawordmap:
             try:
                 splittingelementsbyvertex[newvert].add(newsplittingelement)
@@ -1155,7 +1148,7 @@ def splitAndRefine(thisgog, thisvert, thiscut, wheredidmywordsgo, splittingeleme
                 splittingelementsbyvertex[newvert]=set([newsplittingelement])
         del splittingelementsbyvertex[thisvert] # any splitting elements that were in thisvert are now contained in one of the refinement vertices
     else: #there are no further splitting words in thisgroup so this is the only refinement of thisvert
-        refinedvert, emap=thisgroup.getRelativeCyclicSplittingOver(inducedW,inducedmultiword, thiscutconjugateword, thisvert, verbose=verbose, impatient=impatient, simplified=True, minimized=True)
+        refinedvert, emap=thisgroup.getRelativeCyclicSplittingOver(inducedW,inducedmultiword, thiscutconjugateword, thisvert, verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider, simplified=True, minimized=True)
 
     for i in range(len(wheredidmywordsgo)):
         if wheredidmywordsgo[i][0]==thisvert: # words conjugate to thisvert are now conjugate into one of the verts of refinedvert
@@ -1189,7 +1182,7 @@ def splitAndRefine(thisgog, thisvert, thiscut, wheredidmywordsgo, splittingeleme
     # does not return anything
 
 
-def getMaxFreeAndCyclicSplittingRel(F, whiteheadgraphorwordlist, withmap=False, printresult=False, verbose=False, impatient=False, simplified=False, minimized=False, blind=True):
+def getMaxFreeAndCyclicSplittingRel(F, whiteheadgraphorwordlist, withmap=False, printresult=False, verbose=False, cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None, simplified=False, minimized=False, blind=True):
     assert(blind) # blind=False not implemented yet
     wgp=wg.wgparse(F,whiteheadgraphorwordlist, blind=blind,simplified=simplified, minimized=minimized,simplifyandminimize=True, verbose=verbose)
     W=wgp['WhiteheadGraph']
@@ -1212,7 +1205,7 @@ def getMaxFreeAndCyclicSplittingRel(F, whiteheadgraphorwordlist, withmap=False, 
             if wheredidmywordsgo[i][0]==thisvert:
                 indexofthiswordlistintomainwordlist.append(i)
                 thiswordlist.append(wheredidmywordsgo[i][1])
-        thisrjsj,thiswmap=thisgroup.getRJSJ(thiswordlist,withmap=True, nameprefix=thisvert, verbose=verbose, simplified=True, minimized=True, blind=blind, impatient=impatient)
+        thisrjsj,thiswmap=thisgroup.getRJSJ(thiswordlist,withmap=True, nameprefix=thisvert, verbose=verbose, simplified=True, minimized=True, blind=blind, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
         for j in range(len(thiswordlist)):
             wheredidmywordsgo[indexofthiswordlistintomainwordlist[j]]=thiswmap[j]
         # To refine the freesplitting we need to know how to attach edges from freesplitting incident to thisvert to thisrjsj.
@@ -1252,11 +1245,23 @@ def missing3LetterSubwords(*wordlist):
     """
     thegroup=wordlist[0].group
     wordgenerator=enumeratewords.generatewords(thegroup,3,3)
-    missingWords=set([x for x in wordgenerator])
+    missingWords=set([tuple(x.letters) for x in wordgenerator])
     for theword in wordlist:
-        for i in range(len(theword)):
-            thisword=thegroup.word([theword.letters[i],theword.letters[(i+1)%len(theword)],theword.letters[(i+2)%len(theword)]])
-            missingWords-=set([thisword,thisword**(-1)])
-    return missingWords
+        reducedword=thegroup.cyclicReduce(theword)
+        for i in range(len(reducedword)):
+            missingWords.discard((reducedword.letters[i],reducedword.letters[(i+1)%len(reducedword)],reducedword.letters[(i+2)%len(reducedword)]))
+            missingWords.discard((-reducedword.letters[(i+2)%len(reducedword)],-reducedword.letters[(i+1)%len(reducedword)],-reducedword.letters[i]))
+    return [thegroup.word(lets) for lets in missingWords]
     
-
+def containsAll3LetterSubwords(*wordlist):
+    thegroup=wordlist[0].group
+    total3LetterSubwords=2*thegroup.rank*(2*thegroup.rank-1)**2
+    the3LetterSubwords=set()
+    for theword in wordlist:
+        reducedword=thegroup.cyclicReduce(theword)
+        for i in range(len(reducedword)):
+            the3LetterSubwords.add((reducedword.letters[i],reducedword.letters[(i+1)%len(reducedword)],reducedword.letters[(i+2)%len(reducedword)]))
+            the3LetterSubwords.add((-reducedword.letters[(i+2)%len(reducedword)],-reducedword.letters[(i+1)%len(reducedword)],-reducedword.letters[i]))
+    assert(len(the3LetterSubwords)<=total3LetterSubwords)
+    return len(the3LetterSubwords)==total3LetterSubwords
+        
