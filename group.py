@@ -152,7 +152,7 @@ class FGGroup(object):
 
     def randomword(self,length):
         """
-        Word that is the result of a random walk without backtracking of length n in the generators and inverses.
+        Word that is the result of a random walk without backtracking of given length in the generators and inverses.
         """
         numgens=len(self.gens)
         letterlist = range(1,numgens+1)+range(-1,-(numgens+1),-1)
@@ -170,6 +170,31 @@ class FGGroup(object):
         same as randomword
         """
         return self.randomword(length)
+
+    def randomCyclicallyReducedWord(self,length):
+        """
+        Word that is the result of a random walk without backtracking of given length in the generators and inverses, and such that last letter is not inverse of first letter.
+        """
+        numgens=len(self.gens)
+        letterlist = range(1,numgens+1)+range(-1,-(numgens+1),-1)
+        letters = []
+        if length==0:
+            pass
+        elif length==1:
+            nextletter=random.choice(letterlist)
+            letters.append(nextletter)
+        else:
+            for n in range(length-1):
+                nextletter=random.choice(letterlist)
+                if len(letters):
+                    while nextletter==-letters[-1]:
+                        nextletter=random.choice(letterlist)
+                letters.append(nextletter)
+            nextletter=random.choice(letterlist)
+            while nextletter==-letters[-1] or nextletter==-letters[0]:
+                nextletter=random.choice(letterlist)
+            letters.append(nextletter)
+        return self.word(letters)
 
     def randomWalk(self,length):
         """
