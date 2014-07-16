@@ -1,0 +1,251 @@
+#!/usr/bin/env python
+
+## usage:  ./extract_and_plot2.py rank
+# looks for input files "rk'rank'data.txt" and "fullwordsrank'rank'.p"
+# outputs graphs in files "rank'rank'gvgfull.pdf" and "rank'rank'loggvg.pdf" 
+
+
+import cPickle as pickle
+from scipy.stats import linregress
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import linalg, log, exp, sqrt
+import sys
+
+
+
+def extractgvgdata(filename):
+    f=open(filename)
+    lines = list(f)
+    f.close()
+    data = []
+    for line in lines:
+        sline=line.split()
+        if len(sline)==4:
+            intline=[int(entry) for entry in sline]
+            data.append(intline)
+
+    lengths = [line[0] for line in data]
+    g_file = [line[1] for line in data]
+    vg_file = [line[2] for line in data]
+    nvg_file = [line[3] for line in data]
+
+    gs=[]
+    gvgs=[]
+    trials=[]
+    for i in range(len(lengths)):
+        trials.append(g_file[i]+vg_file[i]+nvg_file[i])
+        gs.append(float(g_file[i])/trials[i])
+        gvgs.append(float(g_file[i]+vg_file[i])/trials[i])
+    return lengths,gs,gvgs,trials
+
+def extractfullworddata(filename):
+    with open(filename,"rb") as f:
+        xsys=pickle.load(f)
+    lengths=[]
+    percents=[]
+    trials=[]
+    for i in range(len(xsys)):
+        lengths.append(xsys[i][0])
+        percents.append(1-xsys[i][1])
+        trials.append(xsys[i][2])
+    return lengths,percents,trials
+
+
+def expapproximation(xs,ys,outputdomain=None):
+    """
+    Returns best approxiation of ys as y=exp(mx+b)
+    """      
+    expedxs=[]
+    expedys=[]
+    for i in range(len(xs)):
+        if ys[i]<1:
+            if ys[i]>0:
+                expedxs.append(xs[i])
+                expedys.append(log(ys[i]))
+    lreg=linregress(expedxs,expedys)
+    slope=lreg[0]
+    intercept=lreg[1]
+    if outputdomain:
+        zs=[min(1,max(0,exp(slope*x+intercept))) for x in outputdomain]
+    else:
+        zs=[min(1,max(0,exp(slope*x+intercept))) for x in xs]
+    return zs, slope, intercept
+
+def approximatebottomhalf(xs,ys,outputdomain=None):
+    for halfindex in range(len(ys)):
+        if ys[halfindex]<.5:
+            break
+    else:
+        raise RuntimeError("data does not go below .5")
+    if outputdomain:
+        return expapproximation(xs[halfindex:],ys[halfindex:],outputdomain)
+    else:
+        return expapproximation(xs[halfindex:],ys[halfindex:],xs)
+
+
+def weightedexpapproximation(xs,ys,trials,outputdomain=None):
+    """
+    Returns best approxiation of ys as y=exp(mx+b)
+    """
+    W=np.diag(np.array([log(ys[i]/(ys[i]-sqrt(ys[i]*(1-ys[i])/float(trials[i])))) for i in range(len(xs))]))
+    X=np.array([[1,x] for x in xs])
+    Y=np.array([[log(y)] for y in ys])
+    theapprox=linalg.solve(X.T.dot(linalg.inv(W).dot(X)),X.T.dot(linalg.inv(W).dot(Y)))
+    intercept=theapprox[0,0]
+    slope=theapprox[1,0]
+    if outputdomain is not None:
+        zs=[min(1,max(0,exp(slope*x+intercept))) for x in outputdomain]
+    else:
+        zs=[min(1,max(0,exp(slope*x+intercept))) for x in xs]
+    return zs, slope, intercept
+
+def weightedapproximatebottomhalf(xs,ys,trials,outputdomain=None):
+    for halfindex in range(len(ys)):
+        if ys[halfindex]<.5:
+            break
+    else:
+        raise RuntimeError("data does not go below .5")
+    if outputdomain is not None:
+        return weightedexpapproximation(xs[halfindex:],ys[halfindex:],trials[halfindex:],outputdomain)
+    else:
+        return weightedexpapproximation(xs[halfindex:],ys[halfindex:],trials[halfindex:],xs)
+    
+def getDataPlot(rank,gvgfile,fullfile=None):
+    """
+    Returns fig with plot of data.
+    gvgfile in Jason's format, ie 'rk2data.txt'
+    optional fullfile is pickled list with entries (wordlength, percentage of fullwords), ie 'fullwordsexperimentrank2.p'
+    Also plots exponential approximation to the portion of each data series that comes after the perentage had dipped below 50% for the first time.
+    """
+    gvglengths,gs,gvgs,gvgtrials=extractgvgdata(gvgfile)
+    if fullfile:
+        fulllengths,fw,fulltrials=extractfullworddata(fullfile)
+    else:
+        fulllengths=[0]
+        fw=[0]
+    lengths=[x for x in range(1+max(fulllengths+gvglengths))]
+    approxg,gslope,gintercept=approximatebottomhalf(gvglengths,gs,lengths)
+    approxgvg,gvgslope,gvgintercept=approximatebottomhalf(gvglengths,gvgs,lengths)
+    if fullfile:
+        approxfull,fullslope,fullintercept=approximatebottomhalf(fulllengths,fw,lengths)
+    fig,ax = plt.subplots()
+    plt.xlabel('Word length')
+    plt.ylabel('Proportion')
+    plt.title('Random rank '+str(rank)+' words')
+    plt.axis([0,lengths[-1],0,1])
+    if fullfile:
+        plt.scatter(fulllengths,fw,c='g')
+        plt.plot(lengths,approxfull,color='green',linestyle="--",label="not full          $\sim \exp("+"%.3f"%(fullslope)+"x+"+"%.3f"%(fullintercept)+")$")
+    plt.scatter(gvglengths,gvgs,c='r')
+    plt.plot(lengths,approxgvg,color='r',linestyle="dotted",label="v. geometric $\sim \exp("+"%.3f"%(gvgslope)+"x+"+"%.3f"%(gvgintercept)+")$")
+    plt.scatter(gvglengths,gs,c='b')
+    plt.plot(lengths,approxg,c='b',label="geometic      $\sim \exp("+"%.3f"%(gslope)+"x+"+"%.3f"%(gintercept)+")$")
+    ax.legend()
+    return fig
+
+
+def getWeightedDataPlot(rank,gvgfile,fullfile=None):
+    """
+    Returns fig with plot of data.
+    gvgfile in Jason's format, ie 'rk2data.txt'
+    optional fullfile is pickled list with entries (wordlength, percentage of fullwords), ie 'fullwordsexperimentrank2.p'
+    Also plots exponential approximation to the portion of each data series that comes after the perentage had dipped below 50% for the first time.
+    """
+    gvglengths,gs,gvgs,gvgtrials=extractgvgdata(gvgfile)
+    if fullfile:
+        fulllengths,fw,fulltrials=extractfullworddata(fullfile)
+    else:
+        fulllengths=[0]
+        fw=[0]
+    lengths=[x for x in range(1+max(fulllengths+gvglengths))]
+    approxg,gslope,gintercept=weightedapproximatebottomhalf(gvglengths,gs,gvgtrials,lengths)
+    approxgvg,gvgslope,gvgintercept=weightedapproximatebottomhalf(gvglengths,gvgs,gvgtrials,lengths)
+    if fullfile:
+        approxfull,fullslope,fullintercept=weightedapproximatebottomhalf(fulllengths,fw,fulltrials,lengths)
+    fig,ax = plt.subplots()
+    plt.xlabel('Word length')
+    plt.ylabel('Proportion')
+    plt.title('Random rank '+str(rank)+' words')
+    plt.axis([0,lengths[-1],0,1])
+    if fullfile:
+        plt.scatter(fulllengths,fw,c='g')
+        plt.plot(lengths,approxfull,color='green',linestyle="--",label="not full          $\sim \exp("+"%.3f"%(fullslope)+"x+"+"%.3f"%(fullintercept)+")$")
+    plt.scatter(gvglengths,gvgs,c='r')
+    plt.plot(lengths,approxgvg,color='r',linestyle="dotted",label="v. geometric $\sim \exp("+"%.3f"%(gvgslope)+"x+"+"%.3f"%(gvgintercept)+")$")
+    plt.scatter(gvglengths,gs,c='b')
+    plt.plot(lengths,approxg,c='b',label="geometic      $\sim \exp("+"%.3f"%(gslope)+"x+"+"%.3f"%(gintercept)+")$")
+    ax.legend()
+    return fig
+
+def weightedlogapproximation(xs,ys,trials,outputdomain=None):
+    """
+    Returns best approxiation of ys as y=exp(mx+b)
+    """
+    W=np.diag(np.array([log(ys[i]/(ys[i]-sqrt(ys[i]*(1-ys[i])/float(trials[i])))) for i in range(len(xs))]))
+    X=np.array([[1,x] for x in xs])
+    Y=np.array([[log(y)] for y in ys])
+    theapprox=linalg.solve(X.T.dot(linalg.inv(W).dot(X)),X.T.dot(linalg.inv(W).dot(Y)))
+    intercept=theapprox[0,0]
+    slope=theapprox[1,0]
+    if outputdomain is not None:
+        zs=[slope*x+intercept for x in outputdomain]
+    else:
+        zs=[slope*x+intercept for x in xs]
+    return zs, slope, intercept
+
+def getWeightedLogDataPlot(rank,gvgfile):
+    """
+    Returns fig with plot of data.
+    gvgfile in Jason's format, ie 'rk2data.txt'
+    optional fullfile is pickled list with entries (wordlength, percentage of fullwords), ie 'fullwordsexperimentrank2.p'
+    Also plots exponential approximation to the portion of each data series that comes after the perentage had dipped below 50% for the first time.
+    """
+    gvglengths,gs,gvgs,gvgtrials=extractgvgdata(gvgfile)
+    lengths=np.array([i for i in range(1+max(gvglengths))])
+    gserrors=np.array([sqrt(gs[i]*(1-gs[i])/float(gvgtrials[i])) for i in range(len(gvgtrials))])
+    gvgserrors=np.array([sqrt(gvgs[i]*(1-gvgs[i])/float(gvgtrials[i])) for i in range(len(gvgtrials))])
+    approxg,gslope,gintercept=weightedlogapproximatebottomhalf(gvglengths,gs,gvgtrials,lengths)
+    approxgvg,gvgslope,gvgintercept=weightedlogapproximatebottomhalf(gvglengths,gvgs,gvgtrials,lengths)
+    loggs=log(np.array(gs))
+    loggvgs=log(np.array(gvgs))
+    glogerrors=[loggs-log(np.array(gs)-gserrors),log(np.array(gs)+gserrors)-loggs]
+    gvglogerrors=[loggvgs-log(np.array(gvgs)-gvgserrors),log(np.array(gvgs)+gvgserrors)-loggvgs]
+    y0=min(loggs-glogerrors[0])-.1
+    y1=0
+    fig,ax = plt.subplots()
+    plt.xlabel('Word length')
+    plt.ylabel('$\log($Proportion$)$')
+    plt.title('Random rank '+str(rank)+' words')
+    plt.axis([0,.3+lengths[-1],y0,y1])
+    ax.errorbar(gvglengths,loggvgs,yerr=gvglogerrors,fmt='o',c='r')
+    plt.plot(lengths,approxgvg,color='r',linestyle="dotted",label="$\log($v. geometric $) \sim "+"%.3f"%(gvgslope)+"x+"+"%.3f"%(gvgintercept)+"$")
+    ax.errorbar(gvglengths,loggs,yerr=glogerrors,fmt='o',c='b')
+    plt.plot(lengths,approxg,c='b',label="$\log($geometic$)$      $\sim "+"%.3f"%(gslope)+"x+"+"%.3f"%(gintercept)+"$")
+    ax.legend()
+    return fig
+
+def weightedlogapproximatebottomhalf(xs,ys,trials,outputdomain=None):
+    for halfindex in range(len(ys)):
+        if ys[halfindex]<.5:
+            break
+    else:
+        raise RuntimeError("data does not go below .5")
+    if outputdomain is not None:
+        return weightedlogapproximation(xs[halfindex:],ys[halfindex:],trials[halfindex:],outputdomain)
+    else:
+        return weightedlogapproximation(xs[halfindex:],ys[halfindex:],trials[halfindex:],xs)
+
+
+# Do this to save the plot as a pdf:
+# fig=getDataPlot(2,"rk2data.txt","fullwordsexperimentrank2adaptive.p")
+# fig.set_size_inches(14,4)
+# fig.savefig("rank2gvgfull.pdf",bbox_inches='tight')
+
+rank = int(sys.argv[1])
+fig=getWeightedDataPlot(rank,"rk"+str(rank)+"data.txt","fullwordsrank"+str(rank)+".p")
+fig.set_size_inches(14,4)
+fig.savefig("rank"+str(rank)+"gvgfull.pdf",bbox_inches='tight')
+fig=getWeightedLogDataPlot(rank,"rk"+str(rank)+"data.txt")
+fig.set_size_inches(14,4)
+fig.savefig("rank"+str(rank)+"loggvg.pdf",bbox_inches='tight')
