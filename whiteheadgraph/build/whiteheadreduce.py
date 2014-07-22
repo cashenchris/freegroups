@@ -4,12 +4,16 @@ import AutF as aut
 import networkx as nx
 from fish import ProgressFish
 from itertools import product
+from networkx.algorithms.flow import ford_fulkerson
 
 def findMincutPart(G,origin,terminus):
     """
     Find the vertices on the origin side of a mincut of G separating origin from terminus.
     """
-    flow_rate, flow_dict=nx.ford_fulkerson(G,origin,terminus)
+    try: # old version of networkx
+        flow_rate, flow_dict=nx.ford_fulkerson(G,origin,terminus)
+    except AttributeError: # new version of networkx
+        flow_value, flow_dict = nx.maximum_flow(G, origin, terminus,flow_func=ford_fulkerson)
     newverts=set([origin])
     verts=set([])
     while newverts:
@@ -47,7 +51,7 @@ def findCutVertReduction(F, simplifiedwordlist, stopatdisconnected=False, verbos
             except KeyError:
                 edgemultiplicities[turn]=1
     # first source of a reduction would be a vertex and its inverse in different components
-    connectedcomponents=nx.connected_components(undirectedsimplewg)
+    connectedcomponents=[concom for concom in nx.connected_components(undirectedsimplewg)] # update to networkx has connected_components return a generator instead of list
     if len(connectedcomponents)==1 and 2*F.rank==len(undirectedsimplewg.nodes()):
         graphisconnected=True
     else:

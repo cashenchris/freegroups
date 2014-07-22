@@ -43,7 +43,7 @@ def partitionUnion(*args):
         for p in P2.parts:
             connectiongraph.add_star([(2,e) for e in p])
         connectiongraph.add_edges_from([((1,e),(2,e)) for e in P1.elements()])
-        components=nx.connected_components(connectiongraph)
+        components=[comp for comp in nx.connected_components(connectiongraph)]
         return Partition([set([comp[i][1] for i in range(len(comp))]) for comp in components])
     return reduce(partitionUnion2,args)
     
@@ -93,7 +93,7 @@ def compatibleCoarsenings(P1,P2,partmap,splicemap):
     while not compatible(newP1,newP2,splicemap):
         connectiongraph=nx.Graph()
         connectiongraph.add_edges_from([((1,newP1.whichPart(i)),(2,newP2.whichPart(splicemap[i]))) for i in range(0,len(splicemap))])
-        components=nx.connected_components(connectiongraph)
+        components=[comp for comp in nx.connected_components(connectiongraph)]
         newP2=Partition([frozenset.union(*[newP2.parts[comp[i][1]] for i in filter(lambda x: comp[x][0]==2, range(0,len(comp)))]) for comp in components])
         newP1=Partition([frozenset.union(*[newP1.parts[partmap[comp[i][1]]] for i in filter(lambda x: comp[x][0]==2, range(0,len(comp)))]) for comp in components])
     return (newP1,newP2)

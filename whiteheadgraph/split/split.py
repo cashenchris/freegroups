@@ -279,16 +279,26 @@ def pushForwardPartition(W,v0,P0,v1,precomputedcomponents=None):
     newcomponents=nx.connected_components(newgraph)
     edgelist0=[]
     edgelist1=[]
-    for i in range(len(newcomponents)):
+    for newcomp in newcomponents:
         part0=[]
         part1=[]
-        for n in newcomponents[i]:
+        for n in newcomp:
             if n[1]=='edge0':
                 part0+=[n[0]]
             if n[1]=='edge1':
                 part1+=[n[0]]
         edgelist0+=[part0]
         edgelist1+=[part1]
+    #for i in range(len(newcomponents)):
+        #part0=[]
+        #part1=[]
+        #for n in newcomponents[i]:
+        #    if n[1]=='edge0':
+        #        part0+=[n[0]]
+        #    if n[1]=='edge1':
+        #        part1+=[n[0]]
+        #edgelist0+=[part0]
+        #edgelist1+=[part1]
     newP0=part.Partition(edgelist0)
     part0coarseningmap=[]
     for i in range(len(P0.parts)):

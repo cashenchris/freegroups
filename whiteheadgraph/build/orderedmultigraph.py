@@ -165,7 +165,7 @@ class OrderedMultiGraph(nx.MultiGraph):
         return nx.node_connected_component(self,vertex)
 
     def connectedComponents(self):
-        return nx.connected_components(self)
+        return [concom for concom in nx.connected_components(self)] # nx.connected_components changed to return generator
     
     def connectedComponentMinusAVertex(self,vertex1, vertex2):
         """
@@ -187,7 +187,7 @@ class OrderedMultiGraph(nx.MultiGraph):
         """
         G=self.copy()
         G.remove_nodes_from([vertex1,vertex2])
-        return nx.connected_components(G)
+        return [concom for concom in nx.connected_components(G)]  # nx.connected_components changed to return generator
       
     def isCutVertex(self,vertex):
         """
