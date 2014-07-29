@@ -28,9 +28,8 @@ class OrderedMultiGraph(nx.MultiGraph):
 
 
     def __init__(self, data=None, edgeorders=None, **attr):
-        nx.MultiGraph.__init__(self, data, **attr)
-         
         self.edgekeys={}
+        nx.MultiGraph.__init__(self, data, **attr)
         for edge in self.edges(keys=True):
             self.edgekeys[edge[2]]=(edge[0],edge[1])
         if edgeorders==None:
@@ -148,7 +147,7 @@ class OrderedMultiGraph(nx.MultiGraph):
             return self.terminus(edge)
         else:
             try:
-                raise OMGError(self.__repr__()+'.oppositeEnd('+str(edge)+','+str(vert)+')',str(vert)+' is not a vertex of '+str(edge))
+                raise OMGError(self.__repr__()+'.opposite_end('+str(edge)+','+str(vert)+')',str(vert)+' is not a vertex of '+str(edge))
             except OMGError as e:
                 print 'Error in', e.expr,': ',e.msg
 
@@ -256,9 +255,9 @@ def splice(G1, G2, v1, v2, splicemap,G1prefix=(),G2prefix=(),lookforisolatedvert
     if lookforisolatedvertices:
         for vert in G1.nodes_iter():
             if G1.valence(vert)==0:
-                newgraph.addVertex(rename(G1prefix,vert))
+                newgraph.add_vertex(rename(G1prefix,vert))
         for vert in G2.nodes_iter():
             if G2.valence(vert)==0:
-                newgraph.addVertex(rename(G2prefix,vert))
+                newgraph.add_vertex(rename(G2prefix,vert))
     
     return newgraph

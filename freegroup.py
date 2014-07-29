@@ -902,7 +902,7 @@ def foldonce(theSG, marking=None, inversemarking=None):
                     newedge=marking[tl-1]['final'][0]
                 else:
                     newedge=marking[tl-1]['initial'][-1]
-                changeOfMarking(theSG,marking,inversemarking,edge2,newedge)
+                change_of_marking(theSG,marking,inversemarking,edge2,newedge)
                           
             # now edge2 is not a loop and has treelabel=0
             
@@ -930,7 +930,7 @@ def foldonce(theSG, marking=None, inversemarking=None):
                 if -edge2[2] in [e[2] for e in marking[tl-1]['final']]:
                     newrepresentativeedge=marking[tl-1]['final'][0]
                 if newrepresentativeedge!=edge1:
-                    changeOfMarking(theSG,marking, inversemarking,edge1,newrepresentativeedge)
+                    change_of_marking(theSG,marking, inversemarking,edge1,newrepresentativeedge)
                 
                                        
                 

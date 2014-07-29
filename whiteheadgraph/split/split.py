@@ -157,7 +157,7 @@ def gives_cut(F,whiteheadgraphorwordlist,inputw,returnnumbercomponents=False,sim
         return False
     else:
         prefixw=F.word(w.letters[0:len(w)-1])
-        G=wg.wgrowWord(W,prefixw)
+        G=wg.wgrow_word(W,prefixw)
         v1=tuple(w.letters)
         v2=(-w.letters[-1],)
         # G is a generalized whitehead graph. The w action will identify vertices v1 and v2.
@@ -537,7 +537,7 @@ def get_relative_cyclic_splitting_over(F, W, wordlist, splittingword, nameprefix
     else:
         numberofcomponents=len(newP1.parts)
     #----------
-    if numberofcomponents==1 or (numberofcomponents==2 and crossingCutPairs(F,W,w,w)): # if this is true the splitting is trivial
+    if numberofcomponents==1 or (numberofcomponents==2 and crossing_cut_pairs(F,W,w,w)): # if this is true the splitting is trivial
     # the function givesSplitting is a conjuntion of givesCut and not crossingCutPairs. The work of givesCut is to compute numberofcomponents, which we've already done here in extra detail.
         return None
     # otherwise we really do get a splitting over the splitting word, so carry on
@@ -556,7 +556,7 @@ def get_relative_cyclic_splitting_over(F, W, wordlist, splittingword, nameprefix
             vert=verts.pop()
             if v2 in G.neighbors(vert):
                 e=G[v2][vert].keys()[0]
-                componentstopartition[i]=newP2.which_part(G.edgeOrder(v2).index(e))
+                componentstopartition[i]=newP2.which_part(G.edge_order(v2).index(e))
                 break
         else:
             raise KeyError("something wrong, any vertex in component "+str(i)+" adjacent to v2")
@@ -813,7 +813,7 @@ def get_relative_cyclic_splitting_over(F, W, wordlist, splittingword, nameprefix
             losers=set(elementsincomplementiwhoseaxisprojectstowj[i][j])-set(champions)
             for loser in losers:
                 indexgiveswminmialelement[i][loser]=False
-        minimalaxesincomplementsofw[i][1]=[(nearbyaxesincomplementsofw[i][1][k],whichComplement([-x for x in reversed(nearbyaxesincomplementsofw[i][1][k].letters)])) for k in range(len(nearbyaxesincomplementsofw[i][1])) if indexgiveswminmialelement[i][k]] 
+        minimalaxesincomplementsofw[i][1]=[(nearbyaxesincomplementsofw[i][1][k],which_complement([-x for x in reversed(nearbyaxesincomplementsofw[i][1][k].letters)])) for k in range(len(nearbyaxesincomplementsofw[i][1])) if indexgiveswminmialelement[i][k]] 
 
     # minimalaxesincomplementsofw[i][0] is the minimal power of w stabilizing component i
     # and minimalaxesincomplementsofw[i][1] is a list of pairs (g,c) where  g is a group element in component i so that the axis of gwG is w minimal and passes within distance 1 of the axis of w and c is the component containing g^{-1}.

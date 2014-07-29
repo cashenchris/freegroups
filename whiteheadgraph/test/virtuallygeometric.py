@@ -39,9 +39,14 @@ def vgtest(maxlength,verbose,debug,randomautomorphismlength,examplename,freegrou
                 print str(newwordlist)+" was not expected to be virtually geometric."
             print '********************************'
     return nonefailed
-        
+
+def testone(k,maxlength=30, randomautomorphismlength=0,verbose=False, debug=False):
+    if vgtest(maxlength,verbose,debug,randomautomorphismlength,k,knownexamples[k]['freegroup'],knownexamples[k]['wordlist'],knownexamples[k]['virtuallygeometric']):
+        print "Found expected virtual geometricity in this example."
+    else:
+        print "Virtual geometrictiy test failed."
+
 def testall(maxlength=30, randomautomorphismlength=0,verbose=False, debug=False):
-    
     if all([vgtest(maxlength,verbose,debug,randomautomorphismlength,k,knownexamples[k]['freegroup'],knownexamples[k]['wordlist'],knownexamples[k]['virtuallygeometric']) for k in knownexamples]):
         print "Found expected virtual geometricity in all examples."
     else:

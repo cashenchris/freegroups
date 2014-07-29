@@ -65,7 +65,7 @@ def compatible(P1,P2,splicemap):
     Check if splicemap maps parts of P1 into parts of P2
     """
     
-    return all([len(set([P2.whichPart(splicemap[x]) for x in p]))==1 for p in P1.parts])
+    return all([len(set([P2.which_part(splicemap[x]) for x in p]))==1 for p in P1.parts])
 
 def is_part_bijection(P1,P2,splicemap):
     """
@@ -92,7 +92,7 @@ def compatible_coarsenings(P1,P2,partmap,splicemap):
     newP2=Partition([p for p in P2.parts])
     while not compatible(newP1,newP2,splicemap):
         connectiongraph=nx.Graph()
-        connectiongraph.add_edges_from([((1,newP1.whichPart(i)),(2,newP2.whichPart(splicemap[i]))) for i in range(0,len(splicemap))])
+        connectiongraph.add_edges_from([((1,newP1.which_part(i)),(2,newP2.which_part(splicemap[i]))) for i in range(0,len(splicemap))])
         components=[comp for comp in nx.connected_components(connectiongraph)]
         newP2=Partition([frozenset.union(*[newP2.parts[comp[i][1]] for i in filter(lambda x: comp[x][0]==2, range(0,len(comp)))]) for comp in components])
         newP1=Partition([frozenset.union(*[newP1.parts[partmap[comp[i][1]]] for i in filter(lambda x: comp[x][0]==2, range(0,len(comp)))]) for comp in components])
@@ -105,5 +105,5 @@ def partcd(P1,partsmap,P2,coarsemap2):
     imageparts=len(set(coarsemap2))
     newpartslist=[[] for i in range(imageparts)]
     for j in range(len(P1.elements())):
-        newpartslist[coarsemap2[partsmap[P1.whichPart(j)]]]+=[j]
+        newpartslist[coarsemap2[partsmap[P1.which_part(j)]]]+=[j]
     return Partition(newpartslist)

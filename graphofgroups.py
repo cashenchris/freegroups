@@ -90,22 +90,22 @@ class FPGraphOfGroups(nx.MultiDiGraph):
         else:  # if the edge group is nontrivial the inclusion maps can not be trivial
             edgegroup=group
             assert(edgegroup.gens)
-            assert(omap.variantGenerators())
-            assert(tmap.variantGenerators())
+            assert(omap.variant_generators())
+            assert(tmap.variant_generators())
         if u not in self:  # if u is not already in the graph add it with group isomorphic to the edge group
             self.add_vertex(u, edgegroup)
-            vertgroup=self.nodes[u]['group']
-            omap=homo(edgegroup,vertgroup,[vertgroup.word([i]) for i in range(1,1+len(edgegroup.gens))])
+            vertgroup=self.node[u]['group']
+            omap=Homomorphism(edgegroup,vertgroup,[vertgroup.word([i]) for i in range(1,1+len(edgegroup.gens))])
         if v not in self:
             self.add_vertex(v, edgegroup)
-            vertgroup=self.nodes[v]['group']
-            tmap=homo(edgegroup,vertgroup,[vertgroup.word([i]) for i in range(1,1+len(edgegroup.gens))])
+            vertgroup=self.node[v]['group']
+            tmap=Homomorphism(edgegroup,vertgroup,[vertgroup.word([i]) for i in range(1,1+len(edgegroup.gens))])
         if omap is None:
             assert(edgegroup.gens==[])
-            omap=homo(edgegroup,self.nodes[u]['group'],[])
+            omap=Homomorphism(edgegroup,self.node[u]['group'],[])
         if tmap is None:
             assert(edgegroup.gens==[])
-            tmap=homo(edgegroup,self.nodes[v]['group'],[])
+            tmap=Homomorphism(edgegroup,self.node[v]['group'],[])
 
         try:
             key=kwargs['key']
@@ -122,7 +122,7 @@ class FPGraphOfGroups(nx.MultiDiGraph):
         for kw in kwargs:
             if kw!='key':
                 datadict[kw]=kwargs[kw]
-        self.add_edge(u,v,key,datadict)
+        nx.MultiDiGraph.add_edge(self,u,v,key,datadict)
         self.edgekeys[key]=(u,v)
 
     def neighbors(self, vert):
