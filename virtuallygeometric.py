@@ -70,9 +70,9 @@ def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=Fal
             if not split.is_circle(newgroup,newwordlist): # if it's a circle it is geometric, otherwise this is a rigid vertex, and it is virtually geometric if and only if it is geometric
                                                  # We check geometricity via the program Heegaard. The catch is that Heegaard only checks for geometricity in orientable handlebodies
                                                  # To check non-orienatable geometricity we need to check double covers as well.
-                newvertgeometric=orientably_geometric(newwordlist, maxtime=Heegaardwaittime)
+                newvertgeometric=is_orientably_geometric(newwordlist, maxtime=Heegaardwaittime)
                 if not newvertgeometric:
-                    newvertgeometric=nonorientably_geometric(newwordlist,newgroup.rank,maxtime=Heegaardwaittime)
+                    newvertgeometric=is_nonorientably_geometric(newwordlist,newgroup.rank,maxtime=Heegaardwaittime)
                     if newvertgeometric:
                         nonorientablygeometicvertices=True
                     elif newvertgeometric is False:

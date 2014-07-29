@@ -45,7 +45,7 @@ class FGFreeGroup(FPGroup):
     #    return "< "+", ".join([str(g) for g in self.gens])+" | "+", ".join([self.word(r)() for r in self.rels])+" >"
 
 
-    def isFree(self):
+    def is_free(self):
         return True
     
     def word__ne__(self,v, w):
