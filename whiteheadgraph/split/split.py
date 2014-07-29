@@ -1258,10 +1258,10 @@ def missing_3_letter_subwords(*wordlist):
     Return the set of 3 letter words in F that do not occur as subwords in w or w**(-1) as cyclic words.
     """
     thegroup=wordlist[0].group
-    wordgenerator=enumeratewords.generatewords(thegroup,3,3)
+    wordgenerator=enumeratewords.generate_words(thegroup,3,3)
     missingWords=set([tuple(x.letters) for x in wordgenerator])
     for theword in wordlist:
-        reducedword=thegroup.cyclicReduce(theword)
+        reducedword=thegroup.cyclic_reduce(theword)
         for i in range(len(reducedword)):
             missingWords.discard((reducedword.letters[i],reducedword.letters[(i+1)%len(reducedword)],reducedword.letters[(i+2)%len(reducedword)]))
             missingWords.discard((-reducedword.letters[(i+2)%len(reducedword)],-reducedword.letters[(i+1)%len(reducedword)],-reducedword.letters[i]))

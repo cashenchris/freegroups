@@ -79,6 +79,8 @@ while True:
         w = F.random_word(length)
         if not split.missing_3_letter_subwords(w):
             not_vg+=1
+            print length,geometric,vg,not_vg,'\r',
+            sys.stdout.flush()
             continue
         if test_geometric:
             try:
@@ -87,6 +89,8 @@ while True:
                 heegaard_yes = False
             if heegaard_yes:
                 geometric+=1
+                print length,geometric,vg,not_vg,'\r',
+                sys.stdout.flush()
                 continue
         try:
             if multiword.is_virtually_geometric(F,[w],maxnumberof2componentcutstoconsider=cut_pair_limit):
