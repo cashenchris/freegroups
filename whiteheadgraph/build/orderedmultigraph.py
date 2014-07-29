@@ -52,26 +52,26 @@ class OrderedMultiGraph(nx.MultiGraph):
     def terminus(self,edge):
         return self.edgekeys[edge][1]
 
-    def incidentEdges(self, vert):
+    def incident_edges(self, vert):
         return self.node[vert]['edgeorder']
 
-    def edgeOrder(self, vert):
+    def edge_order(self, vert):
         return self.node[vert]['edgeorder']
         
-    def addVertex(self,vert):
+    def add_vertex(self,vert):
         self.add_node(vert)
         self.node[vert]['edgeorder']=[]
 
-    def removeVertex(self,vert):
+    def remove_vertex(self,vert):
         for edge in self.edges_iter(vert, keys=True):
             opvert=edge[1]
             edgekey=edge[2]
-            self.node[opvert]['edgeorder']=self.edgeOrder(opvert)[:self.edgeOrder(opvert).index(edgekey)]+self.edgeOrder(opvert)[1+self.edgeOrder(opvert).index(edgekey):]
+            self.node[opvert]['edgeorder']=self.edge_order(opvert)[:self.edge_order(opvert).index(edgekey)]+self.edge_order(opvert)[1+self.edge_order(opvert).index(edgekey):]
             del self.edgekeys[edgekey]
         self.remove_node(vert)
 
 
-    def addEdge(self, u, v, key=None, uposition=-1, vposition=-1, attr_dict=None, **attr):
+    def add_edge(self, u, v, key=None, uposition=-1, vposition=-1, attr_dict=None, **attr):
         # Adds an edge from u to v with given key. If no key given a unique one will
         # be generated. The edge is also inserted into the lists of incident edges to u and v
         # before the current entries in uposition and vposition, respectively.
@@ -96,7 +96,7 @@ class OrderedMultiGraph(nx.MultiGraph):
             key=0
             while key in self.edgekeys:
                 key+=1
-        self.add_edge(u, v, key, attr_dict, **attr)
+        nx.MultiGraph.add_edge(self, u, v, key, attr_dict, **attr)
         self.edgekeys[key]=(u,v)
         if uisnew:
             self.node[u]['edgeorder']=[key]
@@ -116,32 +116,32 @@ class OrderedMultiGraph(nx.MultiGraph):
             else:
                 self.node[v]['edgeorder'].insert(vposition,key)
         
-    def removeEdge(self,edge):
+    def remove_edge(self,edge):
         u=self.origin(edge)
-        ulist=self.edgeOrder(u)
+        ulist=self.edge_order(u)
         uposition=ulist.index(edge)
         self.node[u]['edgeorder']=ulist[:uposition]+ulist[1+uposition:]
         
         v=self.terminus(edge)
-        vlist=self.edgeOrder(v)
+        vlist=self.edge_order(v)
         vposition=vlist.index(edge)
         self.node[v]['edgeorder']=vlist[:vposition]+vlist[1+vposition:]
         
         del self.edgekeys[edge]
         self.remove_edge(u, v, edge)
 
-    def changeEdgeKey(self,oldkey, newkey):
+    def change_edge_key(self,oldkey, newkey):
         u=self.origin(oldkey)
-        uposition=self.edgeOrder(u).index(oldkey)
+        uposition=self.edge_order(u).index(oldkey)
         
         v=self.terminus(oldkey)
-        vposition=self.edgeOrder(v).index(oldkey)
+        vposition=self.edge_order(v).index(oldkey)
         
         del self.edgekeys[oldkey]
         self.remove_edge(u, v, oldkey)
-        self.addEdge(u,v,newkey,uposition,vposition)
+        self.add_edge(u,v,newkey,uposition,vposition)
 
-    def oppositeEnd(self,edge,vert):
+    def opposite_end(self,edge,vert):
         if vert==self.terminus(edge):
             return self.origin(edge)
         elif vert==self.origin(edge):
@@ -155,19 +155,19 @@ class OrderedMultiGraph(nx.MultiGraph):
     def valence(self, vertex):
         return self.degree(vertex)
     
-    def isConnected(self):
+    def is_connected(self):
         if len(self)==0:
             return False 
         else:
             return nx.is_connected(self)
     
-    def connectedComponent(self,vertex):
+    def connected_component(self,vertex):
         return nx.node_connected_component(self,vertex)
 
-    def connectedComponents(self):
+    def connected_components(self):
         return [concom for concom in nx.connected_components(self)] # nx.connected_components changed to return generator
     
-    def connectedComponentMinusAVertex(self,vertex1, vertex2):
+    def connected_component_minus_a_vertex(self,vertex1, vertex2):
         """
         find the connected component of vertex1 in the graph-vertex2
         """
@@ -181,7 +181,7 @@ class OrderedMultiGraph(nx.MultiGraph):
             seen.add(nextvert)
         return seen
     
-    def connectedComponentsMinusTwoVertices(self,vertex1, vertex2):
+    def connected_components_minus_two_vertices(self,vertex1, vertex2):
         """
         Connected components of W-{v1,v2}
         """
@@ -189,26 +189,26 @@ class OrderedMultiGraph(nx.MultiGraph):
         G.remove_nodes_from([vertex1,vertex2])
         return [concom for concom in nx.connected_components(G)]  # nx.connected_components changed to return generator
       
-    def isCutVertex(self,vertex):
+    def is_cut_vertex(self,vertex):
         """
         check if given vertex is a cut vertex
         """
-        if self.incidentEdges(vertex)==[]:
+        if self.incident_edges(vertex)==[]:
             return True
         else:
             aneighbor=self.neighbors(vertex)[0]
-            return self.connectedComponentMinusAVertex(aneighbor, vertex)!=(set(self.nodes())-set([vertex]))
+            return self.connected_component_minus_a_vertex(aneighbor, vertex)!=(set(self.nodes())-set([vertex]))
             
-    def findCutVertex(self):
+    def find_cut_vertex(self):
         for vert in self.nodes_iter():
-            if self.isCutVertex(vert):
+            if self.is_cut_vertex(vert):
                 return vert
         return None                
             
-    def isCircle(self):
+    def is_circle(self):
         if any(self.valence(vertex)!=2 for vertex in self.nodes_iter()):
             return False
-        elif not self.isConnected():
+        elif not self.is_connected():
             return False
         else:
             return True
@@ -229,11 +229,11 @@ def splice(G1, G2, v1, v2, splicemap,G1prefix=(),G2prefix=(),lookforisolatedvert
     newedgeorders.update(G2edgeorders)
     newedgeorders.update(G1edgeorders)
     for i in range(G1.valence(v1)):
-        G1edge=G1.incidentEdges(v1)[i] # an edge in G1 incident to v1
-        G2edge=G2.incidentEdges(v2)[splicemap[i]] # the edge of G2 incident to v2 to which we splice G1edge
+        G1edge=G1.incident_edges(v1)[i] # an edge in G1 incident to v1
+        G2edge=G2.incident_edges(v2)[splicemap[i]] # the edge of G2 incident to v2 to which we splice G1edge
         newedgename=rename(G1prefix,G1edge) # new edge will take the name from G1 with the G1prefix
-        neworigin=rename(G1prefix,G1.oppositeEnd(G1edge, v1))
-        newterminus=rename(G2prefix,G2.oppositeEnd(G2edge, v2))
+        neworigin=rename(G1prefix,G1.opposite_end(G1edge, v1))
+        newterminus=rename(G2prefix,G2.opposite_end(G2edge, v2))
         #k={k for k in range(len(G1edges)) if G1edges[k][2]==newedgename}.pop() # position of the edge named newedgename in the edgelist G1edges
         for k in range(1+len(G1edges)):
             if G1edges[k][2]==newedgename:
@@ -262,15 +262,3 @@ def splice(G1, G2, v1, v2, splicemap,G1prefix=(),G2prefix=(),lookforisolatedvert
                 newgraph.addVertex(rename(G2prefix,vert))
     
     return newgraph
-
-
-    
-
-    
-    
-
-           
-                
- 
-    
-        

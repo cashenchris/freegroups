@@ -24,7 +24,7 @@ class WhiteheadAuto(Automorphism):
             self.Z=set([1])
         assert((self.x in self.Z) and not(-self.x in self.Z))          
 
-    def variantGenerators(self):
+    def variant_generators(self):
         return [i for i in self.Z if i!=self.x]
         
     def __call__(self,w): #evaluate the automorphism on the word w and return a word in codomain
@@ -89,7 +89,7 @@ class WhiteheadAuto(Automorphism):
             return result
             
 
-def randomWhiteheadAutomorphism(F):
+def random_whitehead_automorphism(F):
     """
     Generate a random Whitehead automorphism of a free group F.
     """
@@ -104,24 +104,24 @@ def randomWhiteheadAutomorphism(F):
     return WhiteheadAuto(F,x,Z)
 
 
-def randomAutomorphismPair(F,length):
+def random_automorphism_pair(F,length):
     """
     Generate an automorphism and its inverse by taking a product of 'length' random Whitehead automorphisms.
     """
     randomaut=Automorphism(F)
     inverse=Automorphism(F)
     for i in range(length):
-        w=randomWhiteheadAutomorphism(F)
+        w=random_whitehead_automorphism(F)
         randomaut=w*randomaut
         inverse=inverse*(w.inverse())
     return randomaut, inverse
 
-def randomAutomorphism(F, length):
-    return randomAutomorphismPair(F,length)[0]
+def random_automorphism(F, length):
+    return random_automorphism_pair(F,length)[0]
 
 
 
-def isInnerAutoBy(alpha):
+def is_inner_auto_by(alpha):
     """
     Return a word w such that alpha(f)=w**(-1)*f*w for all f in alpha.domain.
     """
@@ -133,7 +133,7 @@ def isInnerAutoBy(alpha):
         else:
             return None
     else:
-        conjugators=[F.getConjugator(F.word([i]),alpha(F.word([i]))) for i in range(1,1+F.rank)]
+        conjugators=[F.get_conjugator(F.word([i]),alpha(F.word([i]))) for i in range(1,1+F.rank)]
         if any(conj is None for conj in conjugators):
             return None
         # alpha(F.word([i]))=conjugators[i-1]**(-1)*F.word([i])*conjugators[i-1]
@@ -206,14 +206,9 @@ def isInnerAutoBy(alpha):
                         return None
             return w
                 
-def isInnerAuto(alpha):
-    w=isInnerAutoBy(alpha)
+def is_inner_auto(alpha):
+    w=is_inner_auto_by(alpha)
     if w is None:
         return False
     else:
         return True
-        
-        
-
-    
-

@@ -19,16 +19,16 @@ def rjsjtest(maxlength,verbose,debug,randomautomorphismlength,examplename,freegr
     # take a known example and mix it up with an automorphism alpha
     F=freegroup
     rank=F.rank
-    alpha,alphainv=aut.randomAutomorphismPair(F,randomautomorphismlength)
+    alpha,alphainv=aut.random_automorphism_pair(F,randomautomorphismlength)
 
     if verbose:
         print "Trying example ", examplename, " changed by automorphism:\n", alpha
     newwordlist=[alpha(w) for w in wordlist]
-    gamma, wordmap=F.getRJSJ(newwordlist, withmap=True)
+    gamma, wordmap=F.get_RJSJ(newwordlist, withmap=True)
     minimizedwordlist=[]
     for (v,w,p) in wordmap:
         minimizedwordlist.append(gamma.localgroup(v).getInclusion(F)(w))
-    if not F.isRJSJ(wordmap,gamma,verbose=verbose):
+    if not F.is_RJSJ(wordmap,gamma,verbose=verbose):
         if verbose:
             print "Error computing RJSJ for", examplename,"."
         nonefailed=False

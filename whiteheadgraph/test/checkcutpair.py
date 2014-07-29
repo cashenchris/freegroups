@@ -17,12 +17,12 @@ def cutpairtest(maxlength,verbose,debug,randomautomorphismlength,examplename,fre
     # take a known example and mix it up with an automorphism alpha
     F=freegroup
     rank=F.rank
-    alpha,alphainv=aut.randomAutomorphismPair(F,randomautomorphismlength)
+    alpha,alphainv=aut.random_automorphism_pair(F,randomautomorphismlength)
 
     if verbose:
         print "Trying example ", examplename, " changed by automorphism:\n", alpha
     
-    wm=wreduce.WhiteheadMinimal(F,[alpha(w) for w in wordlist], verbose=verbose)
+    wm=wreduce.whitehead_minimal(F,[alpha(w) for w in wordlist], verbose=verbose)
     minimizingautomorphism=wm['minimizingautomorphism']
     newwordlist=wm['wordlist']
     W=wg.WGraph(newwordlist, simplified=True, verbose=verbose)
@@ -31,36 +31,36 @@ def cutpairtest(maxlength,verbose,debug,randomautomorphismlength,examplename,fre
     newcutpoints=[wholeautomorphism(cutpoint) for cutpoint in cutpoints] 
     newuncrossed=[wholeautomorphism(uncross) for uncross in uncrossed]
     
-    if not F.areEquivalentWordlists(W.getWordlist(),newwordlist):
+    if not F.are_equivalent_wordlists(W.getWordlist(),newwordlist):
         if verbose:
-            print "Error in getWordlist for ", examplename
+            print "Error in get_wordlist for ", examplename
         nonefailed=False
-    if  splitsfreely!=F.splitsFreelyRel(W.wordlist):
+    if  splitsfreely!=F.splits_freely_rel(W.wordlist):
         if verbose:
-            print "Error in splitsFreely for ", examplename
+            print "Error in splits_freely for ", examplename
         nonefailed=False
-    if  iscircle!=W.isCircle():
+    if  iscircle!=W.is_circle():
         if verbose:
-            print "Error in isCircle for ", examplename
+            print "Error in is_circle for ", examplename
         nonefailed=False
-    if isrigid!=F.isRigidRel(W,maxlength):
+    if isrigid!=F.is_rigid_rel(W,maxlength):
         if verbose:
-            print "Error in isRigid for ", examplename
+            print "Error in is_rigid_rel for ", examplename
         nonefailed=False
-    if not F.areEquivalentWordlists(newcutpoints,split.findCutPoints(F,W)):
+    if not F.are_equivalent_wordlists(newcutpoints,split.find_cut_points(F,W)):
         if verbose:
-            print "Error in split.findCutPoints for ", examplename
+            print "Error in split.find_cut_points for ", examplename
         nonefailed=False
-    cuts=split.findCutPairs(F,W,newwordlist,maxlength)[0]
-    if not F.areEquivalentWordlists(list(cuts['cutpoints']),newcutpoints):
+    cuts=split.find_cut_pairs(F,W,newwordlist,maxlength)[0]
+    if not F.are_equivalent_wordlists(list(cuts['cutpoints']),newcutpoints):
         if verbose:
             print "Error finding cut points in split.findCutPairs for ", examplename
         nonefailed=False
-    if not F.simplifyWordlist(list(cuts['uncrossed']),newuncrossed)==[]:
+    if not F.simplify_wordlist(list(cuts['uncrossed']),newuncrossed)==[]:
         if verbose:
             print "Error too many uncrossed cut pairs in split.findCutPairs for ", examplename
         nonefailed=False
-    if not F.simplifyWordlist(newuncrossed,list(set.union(set(cuts['uncrossed']),set(cuts['othercuts']))))==[]:
+    if not F.simplify_wordlist(newuncrossed,list(set.union(set(cuts['uncrossed']),set(cuts['othercuts']))))==[]:
         if verbose:
             print "Error didn't find all uncrossed cut pairs in split.findCutPairs for ", examplename
         nonefailed=False        
@@ -68,16 +68,16 @@ def cutpairtest(maxlength,verbose,debug,randomautomorphismlength,examplename,fre
     # test some random words to see if splitting info is correct
     for i in range(1,maxlength):
         w=F.randomword(i)
-        w=F.cyclicReduce(w)
+        w=F.cyclic_reduce(w)
         if len(w)>0:
             if iscircle:
-                if not split.givesCut(F,W,w)!=F.isConjugateInto(w,*newwordlist):
+                if not split.gives_cut(F,W,w)!=F.is_conjugate_into(w,*newwordlist):
                     if verbose:
                         print "Error: W is a circle, so ",w," should be a cut pair in ", examplename
                     nonefailed=False
                     break
             else:
-                if not split.givesCut(F,W,w)==F.isConjugateInto(w,*set.union(set(newuncrossed),set(newcutpoints))):
+                if not split.gives_cut(F,W,w)==F.is_conjugate_into(w,*set.union(set(newuncrossed),set(newcutpoints))):
                     if verbose:
                         print "Warning",w," gives a cut but wasn't found in ", examplename
                         print "It may be that ",w," is a crossed cut pair and everything is ok."

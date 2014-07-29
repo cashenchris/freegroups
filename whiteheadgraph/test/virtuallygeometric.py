@@ -20,12 +20,12 @@ def vgtest(maxlength,verbose,debug,randomautomorphismlength,examplename,freegrou
         return nonefailed
     F=freegroup
     rank=F.rank
-    alpha,alphainv=aut.randomAutomorphismPair(F,randomautomorphismlength)
+    alpha,alphainv=aut.random_automorphism_pair(F,randomautomorphismlength)
 
     if verbose:
         print "Trying example ", examplename, " changed by automorphism:\n", alpha
     newwordlist=[alpha(w) for w in wordlist]
-    if multiword.isVirtuallyGeometric(F,newwordlist)==virtuallygeometric:
+    if multiword.is_virtually_geometric(F,newwordlist)==virtuallygeometric:
         if verbose:
             print "Correctly found vg for",examplename,"."
     else:

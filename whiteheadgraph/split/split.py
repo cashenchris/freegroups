@@ -8,7 +8,7 @@ import partition as part
 import whiteheadgraph.build.whiteheadreduce as wreduce
 import AutF
 import graphofgroups as gog
-from fish import ProgressFish
+#from fish import ProgressFish
 import enumeratewords
 
 
@@ -21,11 +21,11 @@ class TooBigError(Exception):
      def __str__(self):
          return repr(self.value)
 
-def isPrimitive(F,w):
+def is_primitive(F,w):
     """
     Decide if w is a primitive word in F.
     """
-    r,p=F.maxRoot(w,uptoconjugacy=True,withpower=True)
+    r,p=F.max_root(w,uptoconjugacy=True,withpower=True)
     if p != 1:
         return False
     W=wg.WGraph([r],autominimize=True)
@@ -33,35 +33,35 @@ def isPrimitive(F,w):
         return True
     else:
         return False
-freegroup.FGFreeGroup.isPrimitive=isPrimitive
+freegroup.FGFreeGroup.is_primitive=is_primitive
 
-def isSubbasic(F,wordlist):
+def is_subbasic(F,wordlist):
     """
     Decide if the wordlist determines the same list of conjugacy classes of maximal cyclic subgroups as a basis.
     """
-    simplifiedwordlist=wg.blindSimplifyWordlist(F,wordlist)
+    simplifiedwordlist=wg.blind_simplify_wordlist(F,wordlist)
     W=wg.WGraph(simplifiedwordlist,autominimize=True)
     return len(simplifiedwordlist)==len(W.edges())
-freegroup.FGFreeGroup.isSubbasic=isSubbasic
+freegroup.FGFreeGroup.is_subbasic=is_subbasic
 
-def splitsFreelyRel(F, wordlist, simplified=False, minimized=False, verbose=False):
+def splits_freely_rel(F, wordlist, simplified=False, minimized=False, verbose=False):
     """
     Decide if F  splits freely relative to the multiword.
     """
-    return not wreduce.WhiteheadMinimal(F,wordlist, blind=True,stopatdisconnected=True,simplified=simplified,verbose=verbose,cutvertsonly=True)['connected']
-freegroup.FGFreeGroup.splitsFreelyRel=splitsFreelyRel
+    return not wreduce.whitehead_minimal(F,wordlist, blind=True,stopatdisconnected=True,simplified=simplified,verbose=verbose,cutvertsonly=True)['connected']
+freegroup.FGFreeGroup.splits_freely_rel=splits_freely_rel
 
-def isCircle(F, whiteheadgraphorwordlist, simplified=False, minimized=False, verbose=False):
+def is_circle(F, whiteheadgraphorwordlist, simplified=False, minimized=False, verbose=False):
     """
     Decide if Whitehead graph is a circle.
     """
     W=wg.wgparse(F,whiteheadgraphorwordlist, simplified=simplified, minimized=minimized,verbose=verbose,simplifyandminimize=True,blind=True)['WhiteheadGraph']
-    return W.isCircle()
-freegroup.FGFreeGroup.isCircle=isCircle
-freegroup.FGFreeGroup.isQH=isCircle
+    return W.is_circle()
+freegroup.FGFreeGroup.is_circle=is_circle
+freegroup.FGFreeGroup.is_QH=is_circle
 
 
-def getFreeSplittingRel(F, originalwordlist, simplified=False, minimized=False, verbose=False, withwordmap=False, blind=False, printresult=False):
+def get_free_splitting_rel(F, originalwordlist, simplified=False, minimized=False, verbose=False, withwordmap=False, blind=False, printresult=False):
     """
     Find canonical maximal free splitting of free group of given rank relative to words.
 
@@ -80,7 +80,7 @@ def getFreeSplittingRel(F, originalwordlist, simplified=False, minimized=False, 
     wordlist=wgp['wordlist']
     wordmap=wgp['wordmap']
     wordgens=[set([abs(i) for i in w.letters]) for w in wordlist] # the generators of the new basis that are used in the wordlist
-    usedpartition=part.makePartition(*wordgens) # partition of the used generators according to whether they are used in a common word
+    usedpartition=part.make_partition(*wordgens) # partition of the used generators according to whether they are used in a common word
     partcontainingword=[]
     for i in range(len(wordlist)):
         for j in range(len(usedpartition.parts)): 
@@ -103,20 +103,20 @@ def getFreeSplittingRel(F, originalwordlist, simplified=False, minimized=False, 
         print "Constructing graph of groups."
     Gamma=gog.FPGraphOfGroups()
     if len(usedpartition.parts)>1:
-        Gamma.addVertex('v0', freegroup.FGSubgroupOfFree(F,[]))
+        Gamma.add_vertex('v0', freegroup.FGSubgroupOfFree(F,[]))
         for i in range(len(obused)):
-            Gamma.addVertex('v'+str(i+1), freegroup.FGSubgroupOfFree(F,[w for w in obused[i]]))
-            Gamma.addEdge('v0','v'+str(i+1), freegroup.FGSubgroupOfFree(F,[]),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v0']['group']),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v'+str(i+1)]['group']))
+            Gamma.add_vertex('v'+str(i+1), freegroup.FGSubgroupOfFree(F,[w for w in obused[i]]))
+            Gamma.add_edge('v0','v'+str(i+1), freegroup.FGSubgroupOfFree(F,[]),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v0']['group']),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v'+str(i+1)]['group']))
         for w in obunused:
-            Gamma.addEdge('v0','v0',freegroup.FGSubgroupOfFree(F,[]),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v0']['group']),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v0']['group']), label=w() )
+            Gamma.add_edge('v0','v0',freegroup.FGSubgroupOfFree(F,[]),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v0']['group']),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v0']['group']), label=w() )
     elif (len(usedpartition.parts)==1):
-        Gamma.addVertex('v1', freegroup.FGSubgroupOfFree(F,[w for w in obused[0]]))
+        Gamma.add_vertex('v1', freegroup.FGSubgroupOfFree(F,[w for w in obused[0]]))
         for w in obunused:
-            Gamma.addEdge('v1','v1',freegroup.FGSubgroupOfFree(F,[]),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v1']['group']),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v1']['group']), label=w() )
+            Gamma.add_edge('v1','v1',freegroup.FGSubgroupOfFree(F,[]),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v1']['group']),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v1']['group']), label=w() )
     else:
-         Gamma.addVertex('v0', freegroup.FGSubgroupOfFree(F,[]))
+         Gamma.add_vertex('v0', freegroup.FGSubgroupOfFree(F,[]))
          for w in obunused:
-            Gamma.addEdge('v0','v0',freegroup.FGSubgroupOfFree(F,[]),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v0']['group']),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v0']['group']), label=w() )
+            Gamma.add_edge('v0','v0',freegroup.FGSubgroupOfFree(F,[]),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v0']['group']),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v0']['group']), label=w() )
     if not withwordmap:
         if printresult:
             print Gamma
@@ -124,16 +124,17 @@ def getFreeSplittingRel(F, originalwordlist, simplified=False, minimized=False, 
     else:
         if verbose:
             print "Finding conjugates of words in the vertex groups."
-            fishy=ProgressFish(total=len(wordmap))
+            #fishy=ProgressFish(total=len(wordmap))
         for i in range(len(wordmap)):
             if verbose:
-                fishy.animate(amount=i)
+                pass
+                #fishy.animate(amount=i)
             whichvert='v'+str(1+partcontainingword[wordmap[i][0]])
             whichgroup=Gamma.localgroup(whichvert)
             if not blind:
-                whichword=whichgroup.findConjugateInSubgroup(wgp['inverseminimizer'](wordlist[wordmap[i][0]]))
+                whichword=whichgroup.find_conjugate_in_subgroup(wgp['inverseminimizer'](wordlist[wordmap[i][0]]))
             else:
-                whichword=whichgroup.findConjugateInSubgroup(wordlist[wordmap[i][0]])
+                whichword=whichgroup.find_conjugate_in_subgroup(wordlist[wordmap[i][0]])
             wordmap[i]=(whichvert, whichword, wordmap[i][1])
         if printresult:
             print Gamma
@@ -142,9 +143,9 @@ def getFreeSplittingRel(F, originalwordlist, simplified=False, minimized=False, 
             else:
                 print "\n".join(["'"+str(originalwordlist[i]())+"' is conjugate to ('"+str(wordmap[i][1]())+"')**('"+str(wordmap[i][2])+"') in vertex "+wordmap[i][0] for i in range(len(originalwordlist))])
         return Gamma, wordmap
-freegroup.FGFreeGroup.getFreeSplittingRel=getFreeSplittingRel
+freegroup.FGFreeGroup.get_free_splitting_rel=get_free_splitting_rel
 
-def givesCut(F,whiteheadgraphorwordlist,inputw,returnnumbercomponents=False,simplified=False, minimized=False, verbose=False):
+def gives_cut(F,whiteheadgraphorwordlist,inputw,returnnumbercomponents=False,simplified=False, minimized=False, verbose=False):
     """
     Check if endpoints of word w give cut point/pair in decomposition space for Whitehead graph W.
     """
@@ -163,20 +164,20 @@ def givesCut(F,whiteheadgraphorwordlist,inputw,returnnumbercomponents=False,simp
         # G-{v1,v2} is a findamental domain for the action of w on the infinte whitehead graph over <w>.
         # We can compute the number of complementary components of this infinte whitehead graph by understanding how the splicemap interacts with connected components of the finite whitehead graph.
         
-        components=G.connectedComponentsMinusTwoVertices(v2,v1)
-        edgelist1=[[e for e in range(0, G.valence(v1)) if G.oppositeEnd(G.edgeOrder(v1)[e],v1) in components[i]] for i in range(0,len(components))] # edgelist1[k] is list of loose edges at v1 that connected to vertices in component k
-        edgelist2=[[e for e in range(0, G.valence(v2)) if G.oppositeEnd(G.edgeOrder(v2)[e],v2) in components[i]] for i in range(0,len(components))]      # edgelist2[k] is list of loose edges at v2 that connected to vertices in component k             
-        missededges=set(G.incidentEdges(v1))-set.union(*[set([G.edgeOrder(v1)[e] for e in p]) for p in edgelist1]) # edges that go directly between v1 and v2
+        components=G.connected_components_minus_two_vertices(v2,v1)
+        edgelist1=[[e for e in range(0, G.valence(v1)) if G.opposite_end(G.edge_order(v1)[e],v1) in components[i]] for i in range(0,len(components))] # edgelist1[k] is list of loose edges at v1 that connected to vertices in component k
+        edgelist2=[[e for e in range(0, G.valence(v2)) if G.opposite_end(G.edge_order(v2)[e],v2) in components[i]] for i in range(0,len(components))]      # edgelist2[k] is list of loose edges at v2 that connected to vertices in component k             
+        missededges=set(G.incident_edges(v1))-set.union(*[set([G.edge_order(v1)[e] for e in p]) for p in edgelist1]) # edges that go directly between v1 and v2
         while missededges!=set([]):
             nextedge=missededges.pop()
-            edgelist1+=[[G.edgeOrder(v1).index(nextedge)]]
-            edgelist2+=[[G.edgeOrder(v2).index(nextedge)]]
+            edgelist1+=[[G.edge_order(v1).index(nextedge)]]
+            edgelist2+=[[G.edge_order(v2).index(nextedge)]]
         P1=part.Partition(edgelist1)
         P2=part.Partition(edgelist2)
         partitionmap=range(0,len(P1.parts))
         splicemap=W.splicemaps[w.letters[-1]]
-        (newP1,newP2)=part.compatibleCoarsenings(P1,P2,partitionmap,splicemap)
-        if F.isConjugateInto(w,*W.wordlist): # If w is conjugate into the wordlist then one part of the partition does not correspond to a component, just a segregated edge.
+        (newP1,newP2)=part.compatible_coarsenings(P1,P2,partitionmap,splicemap)
+        if F.is_conjugate_into(w,*W.wordlist): # If w is conjugate into the wordlist then one part of the partition does not correspond to a component, just a segregated edge.
             numberofcomponents=len(newP1.parts)-1
         else:
             numberofcomponents=len(newP1.parts)
@@ -187,13 +188,13 @@ def givesCut(F,whiteheadgraphorwordlist,inputw,returnnumbercomponents=False,simp
         
         
 
-def numberComplementaryComponents(F, whiteheadgraphorwordlist,w,simplified=False, minimized=False, verbose=False):
+def number_complementary_components(F, whiteheadgraphorwordlist,w,simplified=False, minimized=False, verbose=False):
     """
     Find numberof complementary components of <w> in W
     """
-    return givesCut(F,whiteheadgraphorwordlist,w,returnnumbercomponents=True,simplified=simplified, minimized=minimized,verbose=verbose)
+    return gives_cut(F,whiteheadgraphorwordlist,w,returnnumbercomponents=True,simplified=simplified, minimized=minimized,verbose=verbose)
 
-def findCutPoints(F, whiteheadgraphorwordlist, simplified=False, minimized=False, verbose=False):
+def find_cut_points(F, whiteheadgraphorwordlist, simplified=False, minimized=False, verbose=False):
     """
     Return list of reperesentatives of the cut points.
     """
@@ -205,13 +206,14 @@ def findCutPoints(F, whiteheadgraphorwordlist, simplified=False, minimized=False
     cutpoints=[]
     manywords=bool(len(wordlist)>9)
     if verbose and manywords:
-        fish=ProgressFish(total=len(wordlist))
+        #fish=ProgressFish(total=len(wordlist))
         print "Checking if generating words give cut points."
     for j in range(len(wordlist)):
         if verbose and manywords:
-            fish.animate(amount=j)
+            pass
+            #fish.animate(amount=j)
         w=wordlist[j]
-        if givesCut(F,W,w, simplified=True,minimized=True,verbose=verbose):
+        if gives_cut(F,W,w, simplified=True,minimized=True,verbose=verbose):
             for i in range(len(wgp['originalwordlist'])):
                 if wordmap[i][0]==j:
                     if verbose:
@@ -219,10 +221,10 @@ def findCutPoints(F, whiteheadgraphorwordlist, simplified=False, minimized=False
                     break
             else:
                 raise KeyError
-            cutpoints.append(F.maxRoot(wgp['originalwordlist'][i], uptoconjugacy=True)[0])
+            cutpoints.append(F.max_root(wgp['originalwordlist'][i], uptoconjugacy=True)[0])
     return cutpoints
 
-def crossingCutPairs(F, whiteheadgraphorwordlist,w1,w2, simplified=False, minimized=False, verbose=False, theyareknowncutpairs=False):
+def crossing_cut_pairs(F, whiteheadgraphorwordlist,w1,w2, simplified=False, minimized=False, verbose=False, theyareknowncutpairs=False):
     """
     Decide if w1 and w1 give crossing cut pairs for W.
 
@@ -230,26 +232,26 @@ def crossingCutPairs(F, whiteheadgraphorwordlist,w1,w2, simplified=False, minimi
     """
     wgp=wg.wgparse(F,whiteheadgraphorwordlist, simplified=simplified, minimized=minimized,verbose=verbose, blind=True)
     W=wgp['WhiteheadGraph']
-    w1=F.cyclicReduce(w1)
-    w2=F.cyclicReduce(w2)
+    w1=F.cyclic_reduce(w1)
+    w2=F.cyclic_reduce(w2)
     if theyareknowncutpairs: # skip cut pair check
-        return not givesCut(F,W.wordlist+[w1],w2) # If they cross and we add one of them to the wordlist then the second word no longer gives a cut.
+        return not gives_cut(F,W.wordlist+[w1],w2) # If they cross and we add one of them to the wordlist then the second word no longer gives a cut.
     else:    # First check if they are even cut pairs.
-        if not numberComplementaryComponents(F,W,w1)==2 and numberComplementaryComponents(F,W,w2)==2: 
+        if not number_complementary_components(F,W,w1)==2 and number_complementary_components(F,W,w2)==2: 
             return False
         else:
-            return not givesCut(F,W.wordlist+[w1],w2) # If they cross and we add one of them to the wordlist then the second word no longer gives a cut.
+            return not gives_cut(F,W.wordlist+[w1],w2) # If they cross and we add one of them to the wordlist then the second word no longer gives a cut.
 
-def givesSplitting(F, whiteheadgraphorwordlist,w,simplified=False, minimized=False, verbose=False):
+def gives_splitting(F, whiteheadgraphorwordlist,w,simplified=False, minimized=False, verbose=False):
     """
     Decide if W splits over <w>.
     """
     wgp=wg.wgparse(F,whiteheadgraphorwordlist, extrawordlist=[w], simplified=simplified, minimized=minimized,verbose=verbose, blind=True)
-    return givesCut(F,wgp['WhiteheadGraph'],wgp['extrawordlist'][0]) and not crossingCutPairs(F,wgp['WhiteheadGraph'],wgp['extrawordlist'][0],wgp['extrawordlist'][0]) # <w> gives a splitting if it gives a cut and it doesn't cross itself.
+    return gives_cut(F,wgp['WhiteheadGraph'],wgp['extrawordlist'][0]) and not crossing_cut_pairs(F,wgp['WhiteheadGraph'],wgp['extrawordlist'][0],wgp['extrawordlist'][0]) # <w> gives a splitting if it gives a cut and it doesn't cross itself.
 
 
     
-def pushForwardPartition(W,v0,P0,v1,precomputedcomponents=None):
+def push_forward_partition(W,v0,P0,v1,precomputedcomponents=None):
     """
     Find partitions newP0 of of v0 edges and P1 of v1 edges compatible with P0 and connectivity in W-{v0,v1}
     """
@@ -259,23 +261,23 @@ def pushForwardPartition(W,v0,P0,v1,precomputedcomponents=None):
         if (v0,v1) in precomputedcomponents:
             components=precomputedcomponents[(v0,v1)]
         else:
-            components=W.connectedComponentsMinusTwoVertices(v0,v1)
+            components=W.connected_components_minus_two_vertices(v0,v1)
             precomputedcomponents[(v0,v1)]=components
     else:
-        components=W.connectedComponentsMinusTwoVertices(v0,v1)
+        components=W.connected_components_minus_two_vertices(v0,v1)
     newgraph=nx.Graph()
     for c in components:
         newgraph.add_star([(n,'vert') for n in c])
     for p in P0.parts:
         newgraph.add_star([(e,'edge0') for e in p])
     for i in range(W.valence(v1)):
-        if W.oppositeEnd(W.incidentEdges(v1)[i],v1)==v0:
-            newgraph.add_edge((i,'edge1'),(W.incidentEdges(v0).index(W.incidentEdges(v1)[i]),'edge0'))
+        if W.opposite_end(W.incident_edges(v1)[i],v1)==v0:
+            newgraph.add_edge((i,'edge1'),(W.incident_edges(v0).index(W.incident_edges(v1)[i]),'edge0'))
         else:
-            newgraph.add_edge((i,'edge1'),(W.oppositeEnd(W.incidentEdges(v1)[i],v1),'vert'))
+            newgraph.add_edge((i,'edge1'),(W.opposite_end(W.incident_edges(v1)[i],v1),'vert'))
     for i in range(W.valence(v0)):
-        if W.oppositeEnd(W.incidentEdges(v0)[i],v0)!=v1:
-            newgraph.add_edge((i,'edge0'),(W.oppositeEnd(W.incidentEdges(v0)[i],v0),'vert'))
+        if W.opposite_end(W.incident_edges(v0)[i],v0)!=v1:
+            newgraph.add_edge((i,'edge0'),(W.opposite_end(W.incident_edges(v0)[i],v0),'vert'))
     newcomponents=nx.connected_components(newgraph)
     edgelist0=[]
     edgelist1=[]
@@ -303,19 +305,19 @@ def pushForwardPartition(W,v0,P0,v1,precomputedcomponents=None):
     part0coarseningmap=[]
     for i in range(len(P0.parts)):
         for e in P0.parts[i]: break
-        part0coarseningmap+=[newP0.whichPart(e)]
+        part0coarseningmap+=[newP0.which_part(e)]
     return (part0coarseningmap, newP0 , part.Partition(edgelist1))
             
 
 
     
-def findUniversalSplittingWords(F, W, wordlist, DoNotVerifyTwoComponentWords=False, StopAtFirstCut=False, MinNumComponents=2, simplified=False, minimized=False, verbose=False, check3LetterSubwords=True,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
+def find_universal_splitting_words(F, W, wordlist, DoNotVerifyTwoComponentWords=False, StopAtFirstCut=False, MinNumComponents=2, simplified=False, minimized=False, verbose=False, check3LetterSubwords=True,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
     #repalces findCutPairs
     """
     Find cut pairs for a whitehead graph.
     """
     if check3LetterSubwords:
-        if containsAll3LetterSubwords(*wordlist): # if the multiword contains all 3 letter subwords of F then it is rigid.
+        if contains_all_3_letter_subwords(*wordlist): # if the multiword contains all 3 letter subwords of F then it is rigid.
             return ({'cutpoints':set([]),'uncrossed':set([]),'othercuts':set([])},True)
     rank=F.rank
     precomputedcomponents=dict() # this will be a dict with key (v0,v1) containing the components of W-{v0,v1}, populated as needed
@@ -351,7 +353,7 @@ def findUniversalSplittingWords(F, W, wordlist, DoNotVerifyTwoComponentWords=Fal
             inpart=thisbud[1]
             for outdirec in directions:
                 if outdirec!=indirec: # don't backtrack
-                    (coarseningmap,coarsenedinpart,outpart)=pushForwardPartition(W,indirec,inpart,outdirec,precomputedcomponents)
+                    (coarseningmap,coarsenedinpart,outpart)=push_forward_partition(W,indirec,inpart,outdirec,precomputedcomponents)
                     keepgoing=True
                     if whiteheadgraphiscomplete and len(outpart.parts)==2:
                             if len(outpart.parts[0])==1 or len(outpart.parts[1])==1:
@@ -362,13 +364,13 @@ def findUniversalSplittingWords(F, W, wordlist, DoNotVerifyTwoComponentWords=Fal
                         newindirec=-outdirec
                         newinpartslist=[[] for i in range(len(outpart.parts))]
                         for i in range(W.valence(newindirec)):
-                            newinpartslist[outpart.whichPart(W.splicemaps[newindirec][i])]+=[i]
+                            newinpartslist[outpart.which_part(W.splicemaps[newindirec][i])]+=[i]
                         newinpart=part.Partition(newinpartslist)
                         newbud=(newindirec,newinpart)
                         # check if newbud is already in SM
                         for n in SM:
                             if newbud[0]==n[0]:
-                                if part.isReorderedPartition(newbud[1],n[1]): # newbud is already in SM, so don't add a new vertex
+                                if part.is_reordered_partition(newbud[1],n[1]): # newbud is already in SM, so don't add a new vertex
                                     SM.add_edge(thisbud,n)#,{'label':outdirec,'coarseningmap':newcoarseningmap})
                                     break
                         else: # newbud is a new node.
@@ -401,8 +403,8 @@ def findUniversalSplittingWords(F, W, wordlist, DoNotVerifyTwoComponentWords=Fal
         else: # networkx <=1.7 cycle is a list of vertices with first and last nodes equal
             for i in range(1,len(cycle)): # read off the word of the free group from the cycle in the state machine
                 thewordletters+=[-cycle[i][0]]
-        theword=F.conjugateRoot(F.word(thewordletters))
-        wordinlist=bool(F.isConjugateInto(theword,*wordlist)) # see if theword is in the generating wordlist
+        theword=F.conjugate_root(F.word(thewordletters))
+        wordinlist=bool(F.is_conjugate_into(theword,*wordlist)) # see if theword is in the generating wordlist
         if wordinlist:
             complementarycomponents=len(cycle[0][1].parts)-1 # if theword is in the wordlist then one component is just the word itself and not a complementary component
         else:
@@ -431,36 +433,38 @@ def findUniversalSplittingWords(F, W, wordlist, DoNotVerifyTwoComponentWords=Fal
         reduceduncrossed=set([F.word(t) for t in uncrossed])
         reducedothercuts=set([F.word(t) for t in potentiallyuncrossed])
     else:
-        uncrossed|=verifyUncrossedSplittingWords(F,wordlist,potentiallyuncrossed,verbose=verbose)
+        uncrossed|=verify_uncrossed_splitting_words(F,wordlist,potentiallyuncrossed,verbose=verbose)
         reduceduncrossed=set([F.word(t) for t in uncrossed])
         reducedothercuts=set([F.word(t) for t in othercuts-uncrossed])
     if verbose:
         print "Found "+str(len(reducedcutpoints)+len(reduceduncrossed))+" splitting elements."
     return ({'cutpoints':reducedcutpoints,'uncrossed':reduceduncrossed,'othercuts':reducedothercuts},surethatsall)
 
-def verifyUncrossedSplittingWords(F,wordlist,potentiallyuncrossed, verbose=False):
+def verify_uncrossed_splitting_words(F,wordlist,potentiallyuncrossed, verbose=False):
     """
     Take a list of letter tuples that are known to give cup pairs and check if they cross each other. Return set containing those that are uncrossed.
     """
     uncrossed=set([])
     # check if any of the othercuts are really 2 component uncrossed cut pairs.
     if verbose and len(potentiallyuncrossed)>20:
-        fish= ProgressFish(total=len(potentiallyuncrossed))
+        pass
+        #fish= ProgressFish(total=len(potentiallyuncrossed))
     for i in range(len(potentiallyuncrossed)):
         thisword=potentiallyuncrossed[i]
-        if not crossingCutPairs(F,wordlist, F.word(thisword),F.word(thisword), theyareknowncutpairs=True): # If it crosses itself we can not split over thisword.
+        if not crossing_cut_pairs(F,wordlist, F.word(thisword),F.word(thisword), theyareknowncutpairs=True): # If it crosses itself we can not split over thisword.
             for otherword in potentiallyuncrossed: # If it doesn't cross itself it does give a splitting, but maybe in a surface component if thisword crosses something else.
-                if crossingCutPairs(F,wordlist,F.word(thisword),F.word(otherword),theyareknowncutpairs=True):
+                if crossing_cut_pairs(F,wordlist,F.word(thisword),F.word(otherword),theyareknowncutpairs=True):
                     break
             else:
                 uncrossed.add(thisword)
         if verbose and len(othercuts)>20:
-            fish.animate(amount=i+1)
+            pass
+            #fish.animate(amount=i+1)
     return uncrossed
 
 
 
-def isRigidRel(F, whiteheadgraphorwordlist, simplified=False, minimized=False, verbose=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
+def is_rigid_rel(F, whiteheadgraphorwordlist, simplified=False, minimized=False, verbose=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
     """
     Decide if W is rigid.
     """
@@ -469,11 +473,11 @@ def isRigidRel(F, whiteheadgraphorwordlist, simplified=False, minimized=False, v
     wordlist=wgp['wordlist']
     if not wgp['connected']:
         return False
-    elif W.isCircle():
+    elif W.is_circle():
         return False
     else:
         try:
-            cuts,surethatsall=findUniversalSplittingWords(F,W,wordlist, DoNotVerifyTwoComponentWords=True, StopAtFirstCut=True, simplified=True, minimized=True, verbose=verbose,cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
+            cuts,surethatsall=find_universal_splitting_words(F,W,wordlist, DoNotVerifyTwoComponentWords=True, StopAtFirstCut=True, simplified=True, minimized=True, verbose=verbose,cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
         except TooBigError:
             raise TooBigError("Could not determine with 'cutpairsearchrecursionlimit'="+str(cutpairsearchrecursionlimit))
         if set.union(cuts['cutpoints'],cuts['uncrossed'], cuts['othercuts']): # found some cuts
@@ -483,7 +487,7 @@ def isRigidRel(F, whiteheadgraphorwordlist, simplified=False, minimized=False, v
                 return True
             else: # otherwise we quit looking because the state machine got too big, so we can't be sure that there are really no cuts
                 raise TooBigError("Could not determine with given value of 'maxnumberof2componentcutstoconsider'="+str(maxnumberof2componentcutstoconsider))
-freegroup.FGFreeGroup.isRigidRel=isRigidRel
+freegroup.FGFreeGroup.is_rigid_rel=is_rigid_rel
     
 def smash(prefix,oldname):
     try:
@@ -497,7 +501,7 @@ def smash(prefix,oldname):
             except TypeError:
                 return (prefix,)+(oldname,)
 
-def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='', extrawordlist=None, simplified=False, minimized=False, verbose=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
+def get_relative_cyclic_splitting_over(F, W, wordlist, splittingword, nameprefix='', extrawordlist=None, simplified=False, minimized=False, verbose=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
     """
     Return graph of groups splitting of F relative to a multiword over the cyclic subgroup < splittingword >, and 
     a list whose ith element is (imagevertex,imageword in imagevertex group) of the ith element of the original wordlist.
@@ -508,27 +512,27 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
     w=splittingword
     #--------- from givesCut
     prefixw=F.word(w.letters[0:len(w)-1])
-    G=wg.wgrowWord(W,prefixw)
+    G=wg.wgrow_word(W,prefixw)
     v1=tuple(w.letters)
     v2=(-w.letters[-1],)
     # G is a generalized whitehead graph. The w action will identify vertices v1 and v2.
     # G-{v1,v2} is a fundamental domain for the action of w on the infinte whitehead graph over <w>.
     # We can compute the number of complementary components of this infinte whitehead graph by understanding how the splicemap interacts with connected components of the finite whitehead graph.
         
-    components=G.connectedComponentsMinusTwoVertices(v2,v1)
-    edgelist1=[[e for e in range(0, G.valence(v1)) if G.oppositeEnd(G.edgeOrder(v1)[e],v1) in components[i]] for i in range(0,len(components))] # edgelist1[k] is list of loose edges at v1 that connected to vertices in component k
-    edgelist2=[[e for e in range(0, G.valence(v2)) if G.oppositeEnd(G.edgeOrder(v2)[e],v2) in components[i]] for i in range(0,len(components))]      # edgelist2[k] is list of loose edges at v2 that connected to vertices in component k             
-    missededges=set(G.incidentEdges(v1))-set.union(*[set([G.edgeOrder(v1)[e] for e in p]) for p in edgelist1]) # edges that go directly between v1 and v2
+    components=G.connected_components_minus_two_vertices(v2,v1)
+    edgelist1=[[e for e in range(0, G.valence(v1)) if G.opposite_end(G.edge_order(v1)[e],v1) in components[i]] for i in range(0,len(components))] # edgelist1[k] is list of loose edges at v1 that connected to vertices in component k
+    edgelist2=[[e for e in range(0, G.valence(v2)) if G.opposite_end(G.edge_order(v2)[e],v2) in components[i]] for i in range(0,len(components))]      # edgelist2[k] is list of loose edges at v2 that connected to vertices in component k             
+    missededges=set(G.incident_edges(v1))-set.union(*[set([G.edge_order(v1)[e] for e in p]) for p in edgelist1]) # edges that go directly between v1 and v2
     while missededges!=set([]):
         nextedge=missededges.pop()
-        edgelist1+=[[G.edgeOrder(v1).index(nextedge)]]
-        edgelist2+=[[G.edgeOrder(v2).index(nextedge)]]
+        edgelist1+=[[G.edge_order(v1).index(nextedge)]]
+        edgelist2+=[[G.edge_order(v2).index(nextedge)]]
     P1=part.Partition(edgelist1)
     P2=part.Partition(edgelist2)
     partitionmap=range(0,len(P1.parts))
     splicemap=W.splicemaps[w.letters[-1]]
-    (newP1,newP2)=part.compatibleCoarsenings(P1,P2,partitionmap,splicemap)
-    if F.isConjugateInto(w,*W.wordlist): # If w is conjugate into the wordlist then one part of the partition does not correspond to a component, just a segregated edge.
+    (newP1,newP2)=part.compatible_coarsenings(P1,P2,partitionmap,splicemap)
+    if F.is_conjugate_into(w,*W.wordlist): # If w is conjugate into the wordlist then one part of the partition does not correspond to a component, just a segregated edge.
         numberofcomponents=len(newP1.parts)-1
     else:
         numberofcomponents=len(newP1.parts)
@@ -542,7 +546,7 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
     partsplicemap=[None]*len(newP1.parts)
     for i in range(len(partsplicemap)):
         for j in newP1.parts[i]: break # take a sample from newP1parts[i]
-        partsplicemap[i]=newP2.whichPart(splicemap[j]) # see which part of newP2 it splices to
+        partsplicemap[i]=newP2.which_part(splicemap[j]) # see which part of newP2 it splices to
 
     # components are components just over the fundamental domain for the w action on its axis, not over the infinite w axis, so components may be strictly finer than the partition
     componentstopartition=[None]*len(components)
@@ -552,7 +556,7 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
             vert=verts.pop()
             if v2 in G.neighbors(vert):
                 e=G[v2][vert].keys()[0]
-                componentstopartition[i]=newP2.whichPart(G.edgeOrder(v2).index(e))
+                componentstopartition[i]=newP2.which_part(G.edgeOrder(v2).index(e))
                 break
         else:
             raise KeyError("something wrong, any vertex in component "+str(i)+" adjacent to v2")
@@ -571,11 +575,11 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
             complementsofw[i]=[1,verticesinthiscomponent]
     # the keys of complementsofw correspond to indices in bigcomponents, except that we've dropped the non-component corresponding to the splitting word, if there is one.
 
-    def whichComplement(inputz):
+    def which_complement(inputz):
         # find the big component containing z
         z=F.word(inputz)
         assert(F.degree(w)==1)
-        if F.isPower(z,w):
+        if F.is_power(z,w):
             raise RuntimeError('Input axis equal to splitting axis.')
         zcomponent=None
         zpre=list(z.letters[:1])
@@ -649,7 +653,7 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
                 worbitofcomplement[nextpart]=thiscomp
             prefix=prefix*w # prefix becomes one higher power of w
             for e in newP2.parts[nextpart]:
-                v=G.oppositeEnd(G.edgeOrder(v2)[e],v2)
+                v=G.opposite_end(G.edge_order(v2)[e],v2)
                 if v==v1:    
                     pass # don't get any vertices from this edge
                 else:
@@ -722,7 +726,7 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
         X=x**(-1)
         z=X*y
         e=F.word([])
-        if F.isPower(x,w) or F.isPower(y,w) or F.isPower(X*y,w): # degenerate cases, not three distinct axes
+        if F.is_power(x,w) or F.is_power(y,w) or F.is_power(X*y,w): # degenerate cases, not three distinct axes
             return False
 
         # for convenience, translate by w until X and z minimally do not begin with winverse
@@ -732,9 +736,9 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
         while X.letters[0]==-w.letters[-1] or z.letters[0]==-w.letters[-1]:
             X=w*X
             z=w*z
-        return whichComplement(X)!=whichComplement(z)
+        return which_complement(X)!=which_complement(z)
 
-    def runTheGauntlet(groupelementlist,champions,challenger):
+    def run_the_gauntlet(groupelementlist,champions,challenger):
         """
         Compare challenger to each champion. If challenger < champion then champion is removed from champions list. If challenger > some champion then stop and return False.
         If challenger not > champion for all champions then return True.
@@ -761,7 +765,7 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
                     champions.pop(x) # remove any fallen champions
         return newchampion
 
-    def tournamentOfChampions(groupelementlist,challengers):
+    def tournament_of_champions(groupelementlist,challengers):
         divideandcounquerparameter=16 # This is to balance the search savings of 
         if len(challengers)<2:
             return challengers
@@ -769,18 +773,18 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
             champions=[challengers.pop(0)]
             while challengers:
                 challenger=challengers.pop(0)
-                if runTheGauntlet(groupelementlist,champions, challenger):
+                if run_the_gauntlet(groupelementlist,champions, challenger):
                     champions.append(challenger)
             return champions
         else:
             pool1=challengers[:len(challengers)//2]
             pool2=challengers[len(challengers)//2:]
-            champions1=tournamentOfChampions(groupelementlist,pool1)
-            champions2=tournamentOfChampions(groupelementlist,pool2)
+            champions1=tournament_of_champions(groupelementlist,pool1)
+            champions2=tournament_of_champions(groupelementlist,pool2)
             champions3=[]
             while champions2:
                 challenger=champions2.pop(0)
-                if runTheGauntlet(groupelementlist,champions1,challenger):
+                if run_the_gauntlet(groupelementlist,champions1,challenger):
                     champions3.append(challenger)
             return champions1+champions3
             
@@ -802,7 +806,7 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
             print "Component "+str(1+i)+" has "+str(len(nearbyaxesincomplementsofw[i][1]))+" axes in "+str(len(elementsincomplementiwhoseaxisprojectstowj[i]))+" groups."
         for j in elementsincomplementiwhoseaxisprojectstowj[i]:
             challengers=list(elementsincomplementiwhoseaxisprojectstowj[i][j])
-            champions=tournamentOfChampions(nearbyaxesincomplementsofw[i][1], challengers) # this is a list of indices in the list nearbyaxesincomplementsofw[i][1] such that the axis of the corresponding element projects to the point at distance j along the w axis, and such that the element is w minmal among all such elements
+            champions=tournament_of_champions(nearbyaxesincomplementsofw[i][1], challengers) # this is a list of indices in the list nearbyaxesincomplementsofw[i][1] such that the axis of the corresponding element projects to the point at distance j along the w axis, and such that the element is w minmal among all such elements
                                                          # the point here is that elements whose axes have disjoint projections to the w axis are not w comparable, so we should not waste time trying to compare them
             if verbose:
                 print "Of "+str(len(elementsincomplementiwhoseaxisprojectstowj[i][j]))+" axes considered in group "+str(1+j)+" of component "+str(1+i)+", "+str(len(champions))+" are minimal."
@@ -859,7 +863,7 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
     for v in quotientgraph.nodes():
         thisstabwl=[F.word(s) for s in quotientgraph.node[v]['stabilizer']]
         thisstabilizer=freegroup.FGSubgroupOfFreeFrom(F,thisstabwl, generatorbasename=str(v), displaystyle=list)
-        qgog.addVertex(v,vertgroup=thisstabilizer)
+        qgog.add_vertex(v,vertgroup=thisstabilizer)
     for e in quotientgraph.edges(keys=True):
         ogroup=qgog.node[e[0]]['group']
         tgroup=qgog.node[e[1]]['group']
@@ -868,18 +872,18 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
         assert(len(originword))
         assert(len(terminusword))
         edgegroup=freegroup.FGSubgroupOfFree(F,[originword],generatorbasename='e'+str(e[2]), displaystyle=list)
-        orestricted=ogroup.restrictWord(originword)
-        trestricted=tgroup.restrictWord(terminusword)
+        orestricted=ogroup.restrict_word(originword)
+        trestricted=tgroup.restrict_word(terminusword)
         omap=group.Homomorphism(edgegroup,ogroup,dict([(1,orestricted)]))
         tmap=group.Homomorphism(edgegroup,tgroup,dict([(1,trestricted)]))
-        qgog.addEdge(e[0],e[1],edgegroup,omap,tmap,label=quotientgraph[e[0]][e[1]][e[2]]['label'],key=e[2]) 
+        qgog.add_edge(e[0],e[1],edgegroup,omap,tmap,label=quotientgraph[e[0]][e[1]][e[2]]['label'],key=e[2]) 
 
     # figure out where words of the original wordlist go in qgog
     ##### figure out where generators of the free group go in qgog
     wordmap=[]
     for thisword in wordlist:
         for vert in qgog:
-            conjugateword=qgog.localgroup(vert).findConjugateInSubgroup(thisword)
+            conjugateword=qgog.localgroup(vert).find_conjugate_in_subgroup(thisword)
             if conjugateword is not None:
                 wordmap.append((vert,conjugateword,1))
                 break
@@ -889,7 +893,7 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
         extrawordmap=[]
         for thisword in extrawordlist:
             for vert in qgog:
-                conjugateword=qgog.localgroup(vert).findConjugateInSubgroup(thisword)
+                conjugateword=qgog.localgroup(vert).find_conjugate_in_subgroup(thisword)
                 if conjugateword is not None:
                     extrawordmap.append((vert,conjugateword,1))
                     break
@@ -898,13 +902,13 @@ def getRelativeCyclicSplittingOver(F, W, wordlist, splittingword, nameprefix='',
         return qgog, wordmap, extrawordmap
     return qgog, wordmap
 
-freegroup.FGFreeGroup.getRelativeCyclicSplittingOver=getRelativeCyclicSplittingOver 
+freegroup.FGFreeGroup.get_relative_cyclic_splitting_over=get_relative_cyclic_splitting_over 
                 
 
 
 
 
-def getInducedMultiword(thisgog, thisvert, multiwordmap, simplifyandminimize=False, blind=False,withedgemap=False):
+def get_induced_multiword(thisgog, thisvert, multiwordmap, simplifyandminimize=False, blind=False,withedgemap=False):
     """
     Find the induced multiword in the vertex group of vert.
     multiwordmap is a list [(v,w),...] so that v is a vertex of thisgog and w is a word in thisgog.localgroup(v).
@@ -959,7 +963,7 @@ def getInducedMultiword(thisgog, thisvert, multiwordmap, simplifyandminimize=Fal
         else:
             return inducedmultiword, images
     else:
-        smwl=wg.simplifyAndMinimizeWordlist(thisgroup, inducedmultiword, blind=blind)
+        smwl=wg.simplify_and_minimize_wordlist(thisgroup, inducedmultiword, blind=blind)
         mswordmap=smwl['wordmap']
         if not withedgemap:
             return smwl['wordlist']
@@ -971,7 +975,7 @@ def getInducedMultiword(thisgog, thisvert, multiwordmap, simplifyandminimize=Fal
             else:
                 return smwl['wordlist'], images, smwl['minimizingautomorphism']
         
-def isRJSJ(F,wlmap,thisgog, verbose=False):
+def is_RJSJ(F,wlmap,thisgog, verbose=False):
     """
     Check if the given graph of groups thisgog is the RJSJ for F rel a wordlist.
     wlmap is a list with entries (vertex of thisgog, word in the vertex group, power)
@@ -981,10 +985,10 @@ def isRJSJ(F,wlmap,thisgog, verbose=False):
     degree2verts=[]
     for vert in thisgog.nodes():
         if thisgog.localgroup(vert).rank>1:
-            iwl=getInducedMultiword(thisgog,vert, wlmap,simplifyandminimize=True)
+            iwl=get_induced_multiword(thisgog,vert, wlmap,simplifyandminimize=True)
             if thisgog.localgroup(vert).isCircle(iwl):
                 circleverts.append(vert)
-            elif thisgog.localgroup(vert).isRigidRel(iwl):
+            elif thisgog.localgroup(vert).is_rigid_rel(iwl):
                 rigidverts.append(vert)
             else:
                 if verbose:
@@ -1004,17 +1008,17 @@ def isRJSJ(F,wlmap,thisgog, verbose=False):
     # if still going then all nonabelian vertex groups are rigid or circles. This is not the RJSJ if there is a degree two vertex adjacent only to circles, unless it is a cutpoint.
     toosplit=False
     for vert in degree2verts:
-        if not F.isConjugateInto(thisgog.localgroup(vert).word([1]), *[w for (v,w,p) in wlmap]):
+        if not F.is_conjugate_into(thisgog.localgroup(vert).word([1]), *[w for (v,w,p) in wlmap]):
             if all([v in circleverts for v in thisgog.neighbors(vert)]):
                 if verbose:
                     print "vertex "+str(vert)+" should be inside a larger circle"
                 toosplit=True
                 break
     return not toosplit
-freegroup.FGFreeGroup.isRJSJ=isRJSJ
+freegroup.FGFreeGroup.is_RJSJ=is_RJSJ
 
-def simplifyGOG(thisgog, thisvert, multiwordmap):
-    # What is this function doing here? This stuff was done directly in getRJSJ. Factor it out?
+def simplify_GOG(thisgog, thisvert, multiwordmap):
+    # What is this function doing here? This stuff was done directly in get_RJSJ. Factor it out?
     """
     thisgog is a graph of free groups with cyclic edge groups. multiwordmap is a list [(v,w),...] where v is a vertex of thisgog and w is a word in thisgog.localgroup(v). Change the graph of groups structure at vert so that the induced multiword is simplified and Whitehead minimized.
     That
@@ -1025,7 +1029,7 @@ def simplifyGOG(thisgog, thisvert, multiwordmap):
     for i in range(len(multiwordmap)):
         if multiwordmap[i][0]==thisvert:
             multiwordmap[i]=(thisvert, inducedmultiword[images[i][0]], multiwordmap[i][1]*images[i][1])
-    thisgog.changeVertexGroupbyAutomorphism(thisvert,minimizingautomorphism)
+    thisgog.change_vertex_group_by_automorphism(thisvert,minimizingautomorphism)
     edges=[(e,0) for e in thisgog.out_edges(thisvert,keys=True)]+[(e,1) for e in thisgog.in_edges(thisvert,keys=True)]
     for edge in edges:
         # the image of the edge generator is conjugate to a power of images[edge]. Need to find the conjugator and adjust the edgemap.
@@ -1035,11 +1039,11 @@ def simplifyGOG(thisgog, thisvert, multiwordmap):
             edgeimage=thisgog.gettmap(edge[0]).images[0]
         else:
             raise KeyError() 
-        conjugator=thisgroup.isConjugateInto(edgeimage,inducedmultiword[images[edge][0]])['conjugator']
-        thisgog.changeEdgeMap(edge[0],edge[1], conjugator)
+        conjugator=thisgroup.is_conjugate_into(edgeimage,inducedmultiword[images[edge][0]])['conjugator']
+        thisgog.change_edge_map(edge[0],edge[1], conjugator)
     
 
-def getRJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, nameprefix='', blind=True, simplified=False, minimized=False, verbose=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
+def get_RJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, nameprefix='', blind=True, simplified=False, minimized=False, verbose=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
     """
     Find the JSJ splitting for F relative to the worldlist represented as whiteheadgraphorwordlist.
     """
@@ -1057,19 +1061,19 @@ def getRJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, namepre
     W=wgp['WhiteheadGraph']
     wordlist=wgp['wordlist']
     wordmap=wgp['wordmap']
-    assert(W.isConnected()) # if it's not connected must first pass to free factors
+    assert(W.is_connected()) # if it's not connected must first pass to free factors
 
     rjsj=gog.FPGraphOfGroups()
     thisvert=smash(nameprefix,0)
-    rjsj.addVertex(thisvert,F)
+    rjsj.add_vertex(thisvert,F)
     wheredidmywordsgo=[]
     for i in range(len(wordmap)):
         wheredidmywordsgo.append((thisvert,wordlist[wordmap[i][0]],wordmap[i][1]))
-    universalSplitVertex(rjsj,thisvert,wheredidmywordsgo,MinNumComponents=3,verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider) # performs all splittings corresponding to cut points or uncrossed cut pairs with at least 3 components
+    universal_split_vertex(rjsj,thisvert,wheredidmywordsgo,MinNumComponents=3,verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider) # performs all splittings corresponding to cut points or uncrossed cut pairs with at least 3 components
     firstroundverts=[n for n in rjsj.nodes()]
     for thisvert in firstroundverts: # now for each higher rank vertex try to split it over uncrossed cut pairs with 2 components
         if rjsj.localgroup(thisvert).rank>1:
-            universalSplitVertex(rjsj,thisvert,wheredidmywordsgo,MinNumComponents=2,verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
+            universal_split_vertex(rjsj,thisvert,wheredidmywordsgo,MinNumComponents=2,verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
     if printresult:
         print rjsj
         if withmap and type(whiteheadgraphorwordlist)==list:
@@ -1079,19 +1083,19 @@ def getRJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, namepre
         return rjsj, wheredidmywordsgo
     else:
         return rjsj
-freegroup.FGFreeGroup.getRJSJ=getRJSJ
+freegroup.FGFreeGroup.get_RJSJ=get_RJSJ
 
-def universalSplitVertex(thisgog,thisvert,wheredidmywordsgo, MinNumComponents=2,verbose=False, cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
+def universal_split_vertex(thisgog,thisvert,wheredidmywordsgo, MinNumComponents=2,verbose=False, cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
     """
     Refine thisgog by performing universal splittings of thisvert.
     """
-    inducedmultiword,images,inducedmultiwordminimizingautomorphism =getInducedMultiword(thisgog,thisvert,wheredidmywordsgo, blind=False, simplifyandminimize=True,withedgemap=True)
-    thisgog.changeVertexGroupbyAutomorphism(thisvert,inducedmultiwordminimizingautomorphism)
+    inducedmultiword,images,inducedmultiwordminimizingautomorphism =get_induced_multiword(thisgog,thisvert,wheredidmywordsgo, blind=False, simplifyandminimize=True,withedgemap=True)
+    thisgog.change_vertex_group_by_automorphism(thisvert,inducedmultiwordminimizingautomorphism)
     for i in range(len(wheredidmywordsgo)):
         if wheredidmywordsgo[i][0]==thisvert:
             wheredidmywordsgo[i]=(thisvert, inducedmultiwordminimizingautomorphism(wheredidmywordsgo[i][1]),wheredidmywordsgo[i][2])
     W=wg.WGraph(inducedmultiword, simplified=True, autominimize=False)
-    if W.isCircle(): # we're done, no universal splittings
+    if W.is_circle(): # we're done, no universal splittings
         pass
     else:
         if verbose:
@@ -1100,7 +1104,7 @@ def universalSplitVertex(thisgog,thisvert,wheredidmywordsgo, MinNumComponents=2,
             DoNotVerifyTwoComponentWords=True
         else:
             DoNotVerifyTwoComponentWords=False
-        cuts,surethatsall=findUniversalSplittingWords(thisgog.localgroup(thisvert), W, inducedmultiword, DoNotVerifyTwoComponentWords=DoNotVerifyTwoComponentWords, MinNumComponents=MinNumComponents, simplified=True,minimized=True,verbose=verbose,cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
+        cuts,surethatsall=find_universal_splitting_words(thisgog.localgroup(thisvert), W, inducedmultiword, DoNotVerifyTwoComponentWords=DoNotVerifyTwoComponentWords, MinNumComponents=MinNumComponents, simplified=True,minimized=True,verbose=verbose,cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
         if not surethatsall:
             raise TooBigError("Could not determine with 'cutpairsearchrecursionlimit'="+str(cutpairsearchrecursionlimit))
         splittingelements=cuts['cutpoints']|cuts['uncrossed']
@@ -1114,10 +1118,10 @@ def universalSplitVertex(thisgog,thisvert,wheredidmywordsgo, MinNumComponents=2,
             thiscut=splittingelementsbyvertex[newvert].pop()
             if not splittingelementsbyvertex[newvert]:
                 del splittingelementsbyvertex[newvert]
-            splitAndRefine(thisgog,newvert,thiscut,wheredidmywordsgo, splittingelementsbyvertex, verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
+            split_and_refine(thisgog,newvert,thiscut,wheredidmywordsgo, splittingelementsbyvertex, verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
             # function refines thisgog, no return
 
-def splitAndRefine(thisgog, thisvert, thiscut, wheredidmywordsgo, splittingelementsbyvertex, verbose=False, cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
+def split_and_refine(thisgog, thisvert, thiscut, wheredidmywordsgo, splittingelementsbyvertex, verbose=False, cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
     """
     Refine thisgog by splitting the local group of thisvert over the word thiscut relative to incident edges.
     """
@@ -1130,10 +1134,10 @@ def splitAndRefine(thisgog, thisvert, thiscut, wheredidmywordsgo, splittingeleme
     outedges=outedges-loops
     inedges=inedges-loops
 
-    inducedmultiword,images,inducedmultiwordminimizingautomorphism =getInducedMultiword(thisgog,thisvert,wheredidmywordsgo, blind=False, simplifyandminimize=True,withedgemap=True)
+    inducedmultiword,images,inducedmultiwordminimizingautomorphism =get_induced_multiword(thisgog,thisvert,wheredidmywordsgo, blind=False, simplifyandminimize=True,withedgemap=True)
     # we want the inducedmultiword to be simplified and minimized, which means we may need to apply an automorphism to the vertex group at thisvertex. We should then change the incident edge maps and the splitting elements at this vertex.
-    thisgog.changeVertexGroupbyAutomorphism(thisvert,inducedmultiwordminimizingautomorphism)
-    thiscutconjugateword=thisgroup.cyclicReduce(inducedmultiwordminimizingautomorphism(thiscut))       
+    thisgog.change_vertex_group_by_automorphism(thisvert,inducedmultiwordminimizingautomorphism)
+    thiscutconjugateword=thisgroup.cyclic_reduce(inducedmultiwordminimizingautomorphism(thiscut))       
     if thisvert in splittingelementsbyvertex:
         newcutsinthisvert=set([inducedmultiwordminimizingautomorphism(w) for w in splittingelementsbyvertex[thisvert]])
         splittingelementsbyvertex[thisvert]=newcutsinthisvert
@@ -1150,7 +1154,7 @@ def splitAndRefine(thisgog, thisvert, thiscut, wheredidmywordsgo, splittingeleme
 
     if thisvert in splittingelementsbyvertex: # there are more splitting words in thisgroup so make sure to track where they go when we refine thisgog
         exwordlist=list(splittingelementsbyvertex[thisvert])
-        refinedvert, emap, extrawordmap=thisgroup.getRelativeCyclicSplittingOver(inducedW,inducedmultiword, thiscutconjugateword, thisvert, extrawordlist=exwordlist,verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider, simplified=True, minimized=True)
+        refinedvert, emap, extrawordmap=thisgroup.get_relative_cyclic_splitting_over(inducedW,inducedmultiword, thiscutconjugateword, thisvert, extrawordlist=exwordlist,verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider, simplified=True, minimized=True)
         for (newvert,newsplittingelement,newpower) in extrawordmap:
             try:
                 splittingelementsbyvertex[newvert].add(newsplittingelement)
@@ -1158,7 +1162,7 @@ def splitAndRefine(thisgog, thisvert, thiscut, wheredidmywordsgo, splittingeleme
                 splittingelementsbyvertex[newvert]=set([newsplittingelement])
         del splittingelementsbyvertex[thisvert] # any splitting elements that were in thisvert are now contained in one of the refinement vertices
     else: #there are no further splitting words in thisgroup so this is the only refinement of thisvert
-        refinedvert, emap=thisgroup.getRelativeCyclicSplittingOver(inducedW,inducedmultiword, thiscutconjugateword, thisvert, verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider, simplified=True, minimized=True)
+        refinedvert, emap=thisgroup.get_relative_cyclic_splitting_over(inducedW,inducedmultiword, thiscutconjugateword, thisvert, verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider, simplified=True, minimized=True)
 
     for i in range(len(wheredidmywordsgo)):
         if wheredidmywordsgo[i][0]==thisvert: # words conjugate to thisvert are now conjugate into one of the verts of refinedvert
@@ -1187,12 +1191,12 @@ def splitAndRefine(thisgog, thisvert, thiscut, wheredidmywordsgo, splittingeleme
     if verbose:
         print "Refining the splitting."
     # replace thisvert by a graph of groups compatible with previous splitting
-    thisgog.refineVertex(thisvert, refinedvert, edgeupdate)
+    thisgog.refine_vertex(thisvert, refinedvert, edgeupdate)
     # the function modifies thisgog, wheredidmywordsgo, and splittingelementsbyvertex
     # does not return anything
 
 
-def getMaxFreeAndCyclicSplittingRel(F, whiteheadgraphorwordlist, withmap=False, printresult=False, verbose=False, cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None, simplified=False, minimized=False, blind=True):
+def get_max_free_and_cyclic_splitting_rel(F, whiteheadgraphorwordlist, withmap=False, printresult=False, verbose=False, cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None, simplified=False, minimized=False, blind=True):
     assert(blind) # blind=False not implemented yet
     wgp=wg.wgparse(F,whiteheadgraphorwordlist, blind=blind,simplified=simplified, minimized=minimized,simplifyandminimize=True, verbose=verbose)
     W=wgp['WhiteheadGraph']
@@ -1200,7 +1204,7 @@ def getMaxFreeAndCyclicSplittingRel(F, whiteheadgraphorwordlist, withmap=False, 
     wordmap=wgp['wordmap']
     if verbose:
         print "Looking for free splittings."
-    freesplitting,wmap=F.getFreeSplittingRel(wordlist, withwordmap=True, minimized=True, simplified=True, blind=blind)
+    freesplitting,wmap=F.get_free_splitting_rel(wordlist, withwordmap=True, minimized=True, simplified=True, blind=blind)
     wheredidmywordsgo=[(wmap[wordmap[i][0]][0], wmap[wordmap[i][0]][1],wmap[wordmap[i][0]][2]*wordmap[i][1]) for i in range(len(wordmap))]
     higherrankvertices=[v for v in freesplitting.nodes() if freesplitting.localgroup(v).rank>1]
     if verbose:
@@ -1215,7 +1219,7 @@ def getMaxFreeAndCyclicSplittingRel(F, whiteheadgraphorwordlist, withmap=False, 
             if wheredidmywordsgo[i][0]==thisvert:
                 indexofthiswordlistintomainwordlist.append(i)
                 thiswordlist.append(wheredidmywordsgo[i][1])
-        thisrjsj,thiswmap=thisgroup.getRJSJ(thiswordlist,withmap=True, nameprefix=thisvert, verbose=verbose, simplified=True, minimized=True, blind=blind, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
+        thisrjsj,thiswmap=thisgroup.get_RJSJ(thiswordlist,withmap=True, nameprefix=thisvert, verbose=verbose, simplified=True, minimized=True, blind=blind, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
         for j in range(len(thiswordlist)):
             wheredidmywordsgo[indexofthiswordlistintomainwordlist[j]]=thiswmap[j]
         # To refine the freesplitting we need to know how to attach edges from freesplitting incident to thisvert to thisrjsj.
@@ -1244,12 +1248,12 @@ def getMaxFreeAndCyclicSplittingRel(F, whiteheadgraphorwordlist, withmap=False, 
         return freesplitting, wheredidmywordsgo
     else:
         return freesplitting
-freegroup.FGFreeGroup.getMaxFreeAndCyclicSplittingRel=getMaxFreeAndCyclicSplittingRel
+freegroup.FGFreeGroup.get_max_free_and_cyclic_splitting_rel=get_max_free_and_cyclic_splitting_rel
 
     
         
 
-def missing3LetterSubwords(*wordlist):
+def missing_3_letter_subwords(*wordlist):
     """
     Return the set of 3 letter words in F that do not occur as subwords in w or w**(-1) as cyclic words.
     """
@@ -1263,12 +1267,12 @@ def missing3LetterSubwords(*wordlist):
             missingWords.discard((-reducedword.letters[(i+2)%len(reducedword)],-reducedword.letters[(i+1)%len(reducedword)],-reducedword.letters[i]))
     return [thegroup.word(lets) for lets in missingWords]
     
-def containsAll3LetterSubwords(*wordlist):
+def contains_all_3_letter_subwords(*wordlist):
     thegroup=wordlist[0].group
     total3LetterSubwords=2*thegroup.rank*(2*thegroup.rank-1)**2
     the3LetterSubwords=set()
     for theword in wordlist:
-        reducedword=thegroup.cyclicReduce(theword)
+        reducedword=thegroup.cyclic_reduce(theword)
         for i in range(len(reducedword)):
             the3LetterSubwords.add((reducedword.letters[i],reducedword.letters[(i+1)%len(reducedword)],reducedword.letters[(i+2)%len(reducedword)]))
             the3LetterSubwords.add((-reducedword.letters[(i+2)%len(reducedword)],-reducedword.letters[(i+1)%len(reducedword)],-reducedword.letters[i]))

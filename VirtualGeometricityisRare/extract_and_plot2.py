@@ -222,7 +222,7 @@ def getWeightedLogDataPlot(rank,gvgfile):
     plt.plot(lengths,approxgvg,color='r',linestyle="dotted",label="$\log($v. geometric $) \sim "+"%.3f"%(gvgslope)+"x+"+"%.3f"%(gvgintercept)+"$")
     ax.errorbar(gvglengths,loggs,yerr=glogerrors,fmt='o',c='b')
     plt.plot(lengths,approxg,c='b',label="$\log($geometic$)$      $\sim "+"%.3f"%(gslope)+"x+"+"%.3f"%(gintercept)+"$")
-    ax.legend()
+    ax.legend(loc=3)
     return fig
 
 def weightedlogapproximatebottomhalf(xs,ys,trials,outputdomain=None):
@@ -244,8 +244,8 @@ def weightedlogapproximatebottomhalf(xs,ys,trials,outputdomain=None):
 
 rank = int(sys.argv[1])
 fig=getWeightedDataPlot(rank,"rk"+str(rank)+"data.txt","fullwordsrank"+str(rank)+".p")
-fig.set_size_inches(14,4)
+fig.set_size_inches(12,2.9)
 fig.savefig("rank"+str(rank)+"gvgfull.pdf",bbox_inches='tight')
 fig=getWeightedLogDataPlot(rank,"rk"+str(rank)+"data.txt")
-fig.set_size_inches(14,4)
+fig.set_size_inches(12,2.9)
 fig.savefig("rank"+str(rank)+"loggvg.pdf",bbox_inches='tight')

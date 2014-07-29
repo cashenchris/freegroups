@@ -25,15 +25,15 @@ class Partition(object):
     def elements(self):
         return set.union(*[set(x) for x in self.parts])
 
-    def whichPart(self, element):
+    def which_part(self, element):
         return filter(lambda x: element in self.parts[x], range(0,len(self.parts)))[0]
 
 
-def partitionUnion(*args):
+def partition_union(*args):
     """
     Finest partition that coarsens a sequence of partitions.
     """
-    def partitionUnion2(P1,P2):
+    def partition_union2(P1,P2):
         """
         Finest partition that coarsens both P1 and P2.
         """
@@ -45,9 +45,9 @@ def partitionUnion(*args):
         connectiongraph.add_edges_from([((1,e),(2,e)) for e in P1.elements()])
         components=[comp for comp in nx.connected_components(connectiongraph)]
         return Partition([set([comp[i][1] for i in range(len(comp))]) for comp in components])
-    return reduce(partitionUnion2,args)
+    return reduce(partition_union2,args)
     
-def makePartition(*args):
+def make_partition(*args):
     """
     Finest partition that contains each set of args in a part.
     """
@@ -57,7 +57,7 @@ def makePartition(*args):
         partslist=[set(arg)]
         partslist.extend([ set([i]) for i in totalspace-set(arg) ])
         partitionlist.append(Partition(partslist))
-    return partitionUnion(*partitionlist)
+    return partition_union(*partitionlist)
         
 
 def compatible(P1,P2,splicemap):
@@ -67,16 +67,16 @@ def compatible(P1,P2,splicemap):
     
     return all([len(set([P2.whichPart(splicemap[x]) for x in p]))==1 for p in P1.parts])
 
-def isPartBijection(P1,P2,splicemap):
+def is_part_bijection(P1,P2,splicemap):
     """
     Check if splicemap maps parts of P1 bijectively to parts of P2.
     """
     # First clause says parts map into parts.
     # Second clause says map is 1 to 1 on parts.
     # Third clause says map is onto on parts.
-    return all([len(set([P2.whichPart(splicemap[x]) for x in p]))==1 for p in P1.parts]) and all([len(set([P1.whichPart(x) for x in P1.elements() if P2.whichPart(splicemap[x])==i]))==1  for i in range(len(P2.parts))]) and all([len(set([x for x in P1.elements() if P2.whichPart(splicemap[x])==i]))>0 for i in range(len( P2.parts))])
+    return all([len(set([P2.which_part(splicemap[x]) for x in p]))==1 for p in P1.parts]) and all([len(set([P1.which_part(x) for x in P1.elements() if P2.which_part(splicemap[x])==i]))==1  for i in range(len(P2.parts))]) and all([len(set([x for x in P1.elements() if P2.which_part(splicemap[x])==i]))>0 for i in range(len( P2.parts))])
 
-def isReorderedPartition(P1,P2):
+def is_reordered_partition(P1,P2):
     """
     Decide if P1 and P2 are same up to reordering parts.
     """
@@ -84,7 +84,7 @@ def isReorderedPartition(P1,P2):
     fP2=set([frozenset(x) for x in P2.parts])
     return fP1==fP2
 
-def compatibleCoarsenings(P1,P2,partmap,splicemap):
+def compatible_coarsenings(P1,P2,partmap,splicemap):
     """
     Finest coarsenings of P1 and P2 compatible with splicemap and partitionmap.
     """

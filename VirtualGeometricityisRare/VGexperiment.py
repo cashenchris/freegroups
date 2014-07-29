@@ -76,8 +76,8 @@ while True:
     not_vg = 0
     longrunwords=[]
     for i in range(sample_size):
-        w = F.randomWord(length)
-        if not split.missing3LetterSubwords(w):
+        w = F.random_word(length)
+        if not split.missing_3_letter_subwords(w):
             not_vg+=1
             continue
         if test_geometric:
@@ -89,7 +89,7 @@ while True:
                 geometric+=1
                 continue
         try:
-            if multiword.isVirtuallyGeometric(F,[w],maxnumberof2componentcutstoconsider=cut_pair_limit):
+            if multiword.is_virtually_geometric(F,[w],maxnumberof2componentcutstoconsider=cut_pair_limit):
                 vg+=1
             else:
                 not_vg+=1

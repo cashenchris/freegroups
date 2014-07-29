@@ -78,7 +78,7 @@ class FGGroup(object):
     def generators(self):
         return self.gens
 
-    def freeReduce(self,w):
+    def free_reduce(self,w):
         return self.word(freereduce(w.letters))
 
     # comparison operators for words in the group, to be overriden in subclasses if we know a good way to compare
@@ -98,14 +98,14 @@ class FGGroup(object):
         return None
        
 
-    def cyclicReduce(self,w):
+    def cyclic_reduce(self,w):
         w1=copy.copy(w.letters)
         w1=freereduce(w1)
         while len(w1) > 2 and w1[0]+w1[-1]==0:
             w1=w1[1:-1]
         return self.word(w1)
 
-    def cyclicReducer(self,w):
+    def cyclic_reducer(self,w):
         """
         return w0,w1 such that w1 is cyclically reduced and w0**(-1)w1w0=wi.
         """
@@ -122,7 +122,7 @@ class FGGroup(object):
         """
         return Word(letters, self)
 
-    def isSubgroup(self,G):
+    def is_subgroup(self,G):
         """
         Check if group is a subgroup of G.
         """
@@ -135,9 +135,9 @@ class FGGroup(object):
                   return False
         return True
      
-    def getInclusion(self,G):
+    def get_inclusion(self,G):
         """
-        If H is a subgroup of G return the inclusion homomorphism, else error.
+        If self is a subgroup of G return the inclusion homomorphism, else error.
         """
         # As in isSubgroup, nothing intelligent here. Subgroups are defined with an inclusion into a supergroup.
         currentgroup=self
@@ -165,13 +165,13 @@ class FGGroup(object):
             letters.append(nextletter)
         return self.word(letters)
 
-    def randomWord(self,length):
+    def random_word(self,length):
         """
         same as randomword
         """
         return self.randomword(length)
 
-    def randomCyclicallyReducedWord(self,length):
+    def random_cyclically_reduced_word(self,length):
         """
         Word that is the result of a random walk without backtracking of given length in the generators and inverses, and such that last letter is not inverse of first letter.
         """
@@ -196,7 +196,7 @@ class FGGroup(object):
             letters.append(nextletter)
         return self.word(letters)
 
-    def randomWalk(self,length):
+    def random_walk(self,length):
         """
         Word that is the free reduction of a random walk of length n in the generators and inverses.
         """
@@ -208,7 +208,7 @@ class FGGroup(object):
         return self.word(letters)
         
 
-    def randomMultiword(self,length):
+    def random_multiword(self,length):
         """
         Generate a list of random words of random length with total characters of about length.
         """
@@ -298,7 +298,7 @@ class FGSubgroup(FGGroup):
         if ancestor is None:
             ancestor=self.supergroup
         G=ancestor
-        selfinG=self.getInclusion(G)
+        selfinG=self.get_inclusion(G)
         return "< "+", ".join([selfinG(self.word([i]))() for i in range(1,1+len(self.gens)) ])+" >"
         
         
@@ -310,7 +310,7 @@ class FGSubgroup(FGGroup):
 
 
 
-def commonAncestor(G,H):
+def common_ancestor(G,H):
         """
         Return a (smallish) group containing both G and H.
         """
@@ -424,40 +424,40 @@ class Word(object):
         return str(self.letters)      
 
     def __mul__(self,other):
-        G=commonAncestor(self.group,other.group)
+        G=common_ancestor(self.group,other.group)
         if G is None:
             raise TypeError("can not multiply words that are not in a common group")
         else:
-            selfinG=self.group.getInclusion(G)(self)
-            otherinG=other.group.getInclusion(G)(other)
+            selfinG=self.group.get_inclusion(G)(self)
+            otherinG=other.group.get_inclusion(G)(other)
             return G.word(selfinG.letters+otherinG.letters)
     
     def __ne__(self, other):
-        G=commonAncestor(self.group,other.group)
+        G=common_ancestor(self.group,other.group)
         if G is None:
             return True
         else:
-            return G.word__ne__(self.group.getInclusion(G)(self),other.group.getInclusion(G)(other))
+            return G.word__ne__(self.group.get_inclusion(G)(self),other.group.get_inclusion(G)(other))
 
     def __eq__(self, other):
-        G=commonAncestor(self.group,other.group)
+        G=common_ancestor(self.group,other.group)
         if G is None:
             return False
         else:
-            return G.word__eq__(self.group.getInclusion(G)(self),other.group.getInclusion(G)(other))
+            return G.word__eq__(self.group.get_inclusion(G)(self),other.group.get_inclusion(G)(other))
 
     def __cmp__(self, other):
-        G=commonAncestor(self.group,other.group)
+        G=common_ancestor(self.group,other.group)
         if G is None:
             return False
         else:
-            return G.word__cmp__(self.group.getInclusion(G)(self),other.group.getInclusion(G)(other))
+            return G.word__cmp__(self.group.get_inclusion(G)(self),other.group.get_inclusion(G)(other))
 
     def __hash__(self):
         G=self.group
         while hasattr(G,'supergroup'):
             G=G.supergroup
-        return G.word__hash__(self.group.getInclusion(G)(self))
+        return G.word__hash__(self.group.get_inclusion(G)(self))
         
 
 
@@ -476,11 +476,11 @@ class Word(object):
                 result = result * inverse
             return result
         
-    def isElement(self,G):
+    def is_element(self,G):
         """
         True if word belongs to a subgroup of G.
         """
-        return self.group.isSubgroup(G)
+        return self.group.is_subgroup(G)
 
     def __call__(self,supergroup=None):
         """
@@ -548,7 +548,7 @@ class Word(object):
 
 
 
-def guessRank(*wordlist):
+def guess_rank(*wordlist):
     """
     The highest generator appearing in wordlist.
     """
@@ -570,12 +570,12 @@ class PDHomo(object):
         # listofimagesofgens[i]=word in codomain that is image of i st generator of domain
         self.domain=domain
         self.codomain=codomain
-        if generatorimagedict==None:
+        if generatorimagedict is None:
              self.images=dict()
         else:
              self.images=generatorimagedict
 
-    def variantGenerators(self):
+    def variant_generators(self):
         return self.images.keys()
     
     def __repr__(self):
@@ -583,7 +583,7 @@ class PDHomo(object):
     
     def __str__(self):
         imagelist=[]
-        vG=list(set([abs(j) for j in self.variantGenerators()]))
+        vG=list(set([abs(j) for j in self.variant_generators()]))
         vG.sort()
         for i in vG:
             imagelist+=[self.domain.word([i])()+" -> "+self(self.domain.word([i]))()]
@@ -607,7 +607,7 @@ class PDHomo(object):
         return self.codomain.word(imagewordletters)
 
     def alpha(self):
-        print str(domain)+" -> "+str(codomain)+":\n"+"\n".join([domain.word([i]).alpha()+" -> "+self(self.domain.word([i])).alpha() for i in self.variantGenerators()])
+        print str(domain)+" -> "+str(codomain)+":\n"+"\n".join([domain.word([i]).alpha()+" -> "+self(self.domain.word([i])).alpha() for i in self.variant_generators()])
 
 class Homomorphism(PDHomo):
     """
@@ -633,7 +633,7 @@ class Homomorphism(PDHomo):
 
     def __str__(self):
         imagelist=[]
-        vG=list(set([abs(j) for j in self.variantGenerators()]))
+        vG=list(set([abs(j) for j in self.variant_generators()]))
         vG.sort()
         for i in vG:
             imagelist+=[self.domain.word([i])()+" -> "+self(self.domain.word([i]))()]
@@ -666,11 +666,11 @@ class Automorphism(Endomorphism):
     
     def __mul__(self,other):
         assert(self.domain is other.domain)
-        return Automorphism(self.domain, dict([(i,self(other(other.domain.word([i])))) for i in set(other.variantGenerators())|set(self.variantGenerators())]))
+        return Automorphism(self.domain, dict([(i,self(other(other.domain.word([i])))) for i in set(other.variant_generators())|set(self.variant_generators())]))
 
     def __str__(self):
         imagelist=[]
-        vG=list(set([abs(j) for j in self.variantGenerators()]))
+        vG=list(set([abs(j) for j in self.variant_generators()]))
         vG.sort()
         for i in vG:
             imagelist+=[self.domain.word([i])()+" -> "+self(self.domain.word([i]))()]
@@ -717,7 +717,7 @@ class InnerAutomorphism(Automorphism):
         self.domain=domain
         self.codomain=domain
 
-    def variantGenerators(self):
+    def variant_generators(self):
         return range(1,1+len(self.domain.gens))
         
     def __call__(self,w):
@@ -737,7 +737,7 @@ class InnerAutomorphism(Automorphism):
 
 
 def PDcompose(alpha,beta):
-    return PDHomo(beta.domain,alpha.codomain,dict([(i,alpha(beta(beta.domain.word([i])))) for i in beta.variantGenerators()]))
+    return PDHomo(beta.domain,alpha.codomain,dict([(i,alpha(beta(beta.domain.word([i])))) for i in beta.variant_generators()]))
 
 
 def compose(alpha,beta):
@@ -748,9 +748,9 @@ def compose(alpha,beta):
     if isinstance(beta,Automorphism) and isinstance(alpha,Automorphism):
         return alpha*beta
     elif isinstance(beta,Automorphism):
-        return Homomorphism(beta.domain,alpha.codomain,dict([(i,alpha(beta(beta.domain.word([i])))) for i in set(beta.variantGenerators()+alpha.variantGenerators())]))
+        return Homomorphism(beta.domain,alpha.codomain,dict([(i,alpha(beta(beta.domain.word([i])))) for i in set(beta.variant_generators()+alpha.variant_generators())]))
     else:
-        return Homomorphism(beta.domain,alpha.codomain,dict([(i,alpha(beta(beta.domain.word([i])))) for i in beta.variantGenerators()]))
+        return Homomorphism(beta.domain,alpha.codomain,dict([(i,alpha(beta(beta.domain.word([i])))) for i in beta.variant_generators()]))
 
 
 def product(*args):

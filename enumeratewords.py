@@ -3,7 +3,7 @@ import group
 import itertools
 import whiteheadgraph.build.whiteheadreduce as wr
 
-def advancecounter(thecounter,place,resetval):
+def advance_counter(thecounter,place,resetval):
     """
     Advance a little endian counter. thecounter is a list of non-negative integers. place is index to be incremented by 1. resetval is number at which the place should rollover and the next place should be incremented.
     Return value is 0 if the result has the same number of places as the original counter, or 1 if the length of the counter has increased.
@@ -14,13 +14,13 @@ def advancecounter(thecounter,place,resetval):
             thecounter[place+1]=0
             return 1
         else:
-            result=advancecounter(thecounter,place+1,resetval)
+            result=advance_counter(thecounter,place+1,resetval)
             return result
     else:
         return 0
     
 
-def generatewords(F,maxlen,startlength=1):
+def generate_words(F,maxlen,startlength=1):
     """
     Generator of unique, non-trivial words in a free group F up to length maxlen.
     """
@@ -34,19 +34,19 @@ def generatewords(F,maxlen,startlength=1):
     theword=F.word(theletters)
     while maxindex<maxlen:    
         yield theword
-        maxindex=maxindex+advancecounter(counters,0,2*rank)
+        maxindex=maxindex+advance_counter(counters,0,2*rank)
         theletters=[letters[counters[i]] for i in range(maxindex+1)]
         theword=F.word(theletters)
         while len(theword)<1+maxindex:# while there is some free reduction in the word, discard it and get a new one
-            maxindex=maxindex+advancecounter(counters,0,2*rank)
+            maxindex=maxindex+advance_counter(counters,0,2*rank)
             theletters=[letters[counters[i]] for i in range(maxindex+1)]
             theword=F.word(theletters)
 
-def generatewordsincommutatorsubgroup(F,maxcommutatorlength,maxsinglewordlength):
+def generate_words_in_commutator_subgroup(F,maxcommutatorlength,maxsinglewordlength):
     """
     Generator of words in commutator subgroup of F.
     """
-    wordgen=generatewords(F,maxsinglewordlength)
+    wordgen=generate_words(F,maxsinglewordlength)
     while True:
         w=wordgen.next()
         if freegroup.ishomologicallytrivial(w):
@@ -61,7 +61,7 @@ def generatewordsincommutatorsubgroup(F,maxcommutatorlength,maxsinglewordlength)
     #    if len(commutator)>0:
     #       yield commutator
 
-def isMinimallyOrdered(thetuple):
+def is_minimally_ordered(thetuple):
     if len(thetuple)>1:
         if len(thetuple)%2>0:
             return False
@@ -105,7 +105,7 @@ def aut2forbits(F,maxlength):
         if wordlength<maxlength:
             for k in range(1,1+min(maxlength-wordlength,oldword[0])):
                 newword=oldword+(k,)
-                if isMinimallyOrdered(newword):
+                if is_minimally_ordered(newword):
                     newwords.append(newword)
                     reps.append(newword)
     lastroundadded=newwords
@@ -118,7 +118,7 @@ def aut2forbits(F,maxlength):
                 for k in range(1,1+min(oldword[0],maxlength-wordlength))+range(max(-oldword[0],-maxlength+wordlength+1),0):
                     for h in range(1,1+maxlength-wordlength-k)+range(-1-maxlength+wordlength+k,-1):
                         newword=oldword+(k,h)
-                        if isMinimallyOrdered(newword):
+                        if is_minimally_ordered(newword):
                             newwords.append(newword)
                             reps.append(newword)
         lastroundadded=newwords
@@ -138,9 +138,9 @@ def aut2forbits(F,maxlength):
                 else:
                     theletters.extend([1]*rep[i])
         theword=F.word(theletters)
-        theroot=F.maxRoot(theword,withpower=False)
+        theroot=F.max_root(theword,withpower=False)
         if len(theroot)>1:
-            minimal=wr.WhiteheadMinimal(F,[theroot],simplified=True,blind=True)
+            minimal=wr.whitehead_minimal(F,[theroot],simplified=True,blind=True)
             if len(minimal['wordlist'][0])<len(theroot):
                 pass
             else:
@@ -148,14 +148,3 @@ def aut2forbits(F,maxlength):
         else:
             wordreps.append(theword)
     return wordreps
-            
-                    
-                
-            
-            
-        
-    
-            
-        
-    
-    

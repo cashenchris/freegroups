@@ -2,11 +2,11 @@ import wgraph as wg
 import group
 import AutF as aut
 import networkx as nx
-from fish import ProgressFish
+#from fish import ProgressFish
 from itertools import product
 from networkx.algorithms.flow import ford_fulkerson
 
-def findMincutPart(G,origin,terminus):
+def find_mincut_part(G,origin,terminus):
     """
     Find the vertices on the origin side of a mincut of G separating origin from terminus.
     """
@@ -24,7 +24,7 @@ def findMincutPart(G,origin,terminus):
                 newverts.add(e[1])
     return verts
 
-def findCutVertReduction(F, simplifiedwordlist, stopatdisconnected=False, verbose=False):
+def find_cut_vert_reduction(F, simplifiedwordlist, stopatdisconnected=False, verbose=False):
     """
     Find a Whitehead automorphism that reduces complexity, either by making components inverse closed or by eliminating a cut vertex.
     Assume the wordlist is already simplified.
@@ -90,7 +90,7 @@ def findCutVertReduction(F, simplifiedwordlist, stopatdisconnected=False, verbos
         reduction=(cutvert, Z)
     return graphisconnected, reduction
 
-def findMinCutReduction(F, simplifiedwordlist, startingvertex=None, verbose=False):
+def find_min_cut_reduction(F, simplifiedwordlist, startingvertex=None, verbose=False):
     """
     Find a Whitehead automorphism that reduces complexity.
     Assume the wordlist is already simplified.
@@ -125,16 +125,18 @@ def findMinCutReduction(F, simplifiedwordlist, startingvertex=None, verbose=Fals
             undirectedsimplewg.add_edge(*edge, capacity=edgemultiplicities[(edge[1],edge[0])])
     simplewg=nx.DiGraph(undirectedsimplewg) # This just doubles each edge, with opposite orientations. Need directed for maxflow algorithm.
     if verbose:
-        fish2=ProgressFish(total=F.rank)
+        pass
+        #fish2=ProgressFish(total=F.rank)
     if not startingvertex:
         startingvertex=1
     for i in range(F.rank):
         j=(i+startingvertex-1)%F.rank +1
         if verbose:
-            fish2.animate(amount=i)
+            pass
+            #fish2.animate(amount=i)
         if j in vertexvalences:
             if vertexvalences[j]>2:
-                z=findMincutPart(simplewg,j,-j)
+                z=find_mincut_part(simplewg,j,-j)
                 if len(z)>1:
                     Z=list(z)
                     reduction=(j,Z)
@@ -146,21 +148,21 @@ def findMinCutReduction(F, simplifiedwordlist, startingvertex=None, verbose=Fals
 
 
         
-def isMinimal(F,wordlist):
+def is_minimal(F,wordlist):
     complexity=sum([len(w) for w in wordlist])
-    minimization=WhiteheadMinimal(F,wordlist,simplified=True,blind=True)
+    minimization=whitehead_minimal(F,wordlist,simplified=True,blind=True)
     newcomplexity=sum([len(w) for w in minimization['wordlist']])
     if newcomplexity<complexity:
         return False
     else:
         return True
 
-def WhiteheadComplexity(F,wordlist):
-    minimization=WhiteheadMinimal(F,wordlist,blind=True)
+def whitehead_complexity(F,wordlist):
+    minimization=whitehead_minimal(F,wordlist,blind=True)
     return sum([len(w) for w in minimization['wordlist']])
     
 
-def WhiteheadMinimal(F,wordlist,extrawordlist=None,simplified=False,verbose=False,blind=False,stopatdisconnected=False, minimizingsequence=False,cutvertsonly=False):
+def whitehead_minimal(F,wordlist,extrawordlist=None,simplified=False,verbose=False,blind=False,stopatdisconnected=False, minimizingsequence=False,cutvertsonly=False):
     """
     Make wordlist Whitehead minimal.
 
@@ -181,7 +183,7 @@ def WhiteheadMinimal(F,wordlist,extrawordlist=None,simplified=False,verbose=Fals
     if minimizingsequence:
         results['whiteheadsequence']=[]
     if not simplified:
-        results['wordlist']=wg.blindSimplifyWordlist(F,wordlist)
+        results['wordlist']=wg.blind_simplify_wordlist(F,wordlist)
     else:
         results['wordlist']=wordlist
     if extrawordlist is not None:
@@ -191,11 +193,11 @@ def WhiteheadMinimal(F,wordlist,extrawordlist=None,simplified=False,verbose=Fals
         results['inverseminimizer']=group.Automorphism(F)
     if verbose:
         complexity=sum([len(w) for w in results['wordlist']])
-        fish1=ProgressFish(total=complexity)
+        #fish1=ProgressFish(total=complexity)
         print "Looking for cut vertex reductions. Current complexity:"
 
     # Look for cut vertex reductions.
-    graphisconnected,  nextred=findCutVertReduction(F, results['wordlist'], stopatdisconnected=stopatdisconnected, verbose=verbose)
+    graphisconnected,  nextred=find_cut_vert_reduction(F, results['wordlist'], stopatdisconnected=stopatdisconnected, verbose=verbose)
     if stopatdisconnected and not graphisconnected:
         results['connected']=graphisconnected
         return results
@@ -207,12 +209,13 @@ def WhiteheadMinimal(F,wordlist,extrawordlist=None,simplified=False,verbose=Fals
         if not blind:
             results['minimizingautomorphism']=reducingautomorphism*results['minimizingautomorphism']
             results['inverseminimizer']=results['inverseminimizer']*reducingautomorphism**(-1)
-        results['wordlist']=[F.cyclicReduce(reducingautomorphism(w)) for w in results['wordlist']]
+        results['wordlist']=[F.cyclic_reduce(reducingautomorphism(w)) for w in results['wordlist']]
         if results['extrawordlist']:
-            results['extrawordlist']=[F.cyclicReduce(reducingautomorphism(w)) for w in results['extrawordlist']]
+            results['extrawordlist']=[F.cyclic_reduce(reducingautomorphism(w)) for w in results['extrawordlist']]
         if verbose:
-            fish1.animate(amount=sum([len(w) for w in results['wordlist']]))
-        graphisconnected, nextred=findCutVertReduction(F,results['wordlist'], stopatdisconnected=stopatdisconnected, verbose=verbose)
+            pass
+            #fish1.animate(amount=sum([len(w) for w in results['wordlist']]))
+        graphisconnected, nextred=find_cut_vert_reduction(F,results['wordlist'], stopatdisconnected=stopatdisconnected, verbose=verbose)
         if stopatdisconnected and not graphisconnected:
             results['connected']=graphisconnected
             return results
@@ -224,7 +227,7 @@ def WhiteheadMinimal(F,wordlist,extrawordlist=None,simplified=False,verbose=Fals
         return results
     if verbose:
         print "Looking for mincut reductions. Current complexity:"
-    nextred=findMinCutReduction(F, results['wordlist'], verbose=verbose)
+    nextred=find_min_cut_reduction(F, results['wordlist'], verbose=verbose)
     while nextred is not None:
         reducingautomorphism=aut.WhiteheadAuto(F,*nextred)
         if minimizingsequence:
@@ -232,11 +235,11 @@ def WhiteheadMinimal(F,wordlist,extrawordlist=None,simplified=False,verbose=Fals
         if not blind:
             results['minimizingautomorphism']=reducingautomorphism*results['minimizingautomorphism']
             results['inverseminimizer']=results['inverseminimizer']*reducingautomorphism**(-1)
-        results['wordlist']=[F.cyclicReduce(reducingautomorphism(w)) for w in results['wordlist']]
+        results['wordlist']=[F.cyclic_reduce(reducingautomorphism(w)) for w in results['wordlist']]
         if results['extrawordlist']:
-            results['extrawordlist']=[F.cyclicReduce(reducingautomorphism(w)) for w in results['extrawordlist']]
+            results['extrawordlist']=[F.cyclic_reduce(reducingautomorphism(w)) for w in results['extrawordlist']]
         if verbose:
-            fish1.animate(amount=sum([len(w) for w in results['wordlist']]))
-        nextred=findMinCutReduction(F,results['wordlist'], startingvertex=nextred[0],verbose=verbose)
+            pass
+            #fish1.animate(amount=sum([len(w) for w in results['wordlist']]))
+        nextred=find_min_cut_reduction(F,results['wordlist'], startingvertex=nextred[0],verbose=verbose)
     return results
-
