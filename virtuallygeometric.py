@@ -89,7 +89,7 @@ def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=Fal
     else:
         return maybevirtuallygeometric
 
-def orientably_geometric(wordlist,maxtime=None):
+def is_orientably_geometric(wordlist,maxtime=None):
     """
     Check if given wordlist is geometric in an orientable handlebody using heegaard.
     Return True/False if such an answer is returned by heegaard, or none if heegaard fails.
@@ -107,7 +107,7 @@ def orientably_geometric(wordlist,maxtime=None):
             pass
     return geometric
         
-def nonorientably_geometric(wordlist,rank,maxtime=None):
+def is_nonorientably_geometric(wordlist,rank,maxtime=None):
     """
     Check if given wordlist is geometric in an non-orientable handlebody by checking orientable geometricity for lifts to all index 2 subgroups.
     Return True/False if such an answer is returned by heegaard, or none if heegaard fails.
