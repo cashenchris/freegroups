@@ -56,7 +56,7 @@ for i in range(sample_size/10):
                     splitsfreely+=1
                     wl=F.random_multiword(number_of_words_in_multiword,length)
                 if splitsfreely>=50:
-                    print g,vg,notvg,'\r',
+                    print numg,numvg,numnotvg,'\r',
                     sys.stdout.flush()
                     break
                 try:
