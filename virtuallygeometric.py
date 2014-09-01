@@ -2,9 +2,9 @@ import re
 import group
 import freegroup
 import whiteheadgraph.split.split as split
-import old_python.gengraphs as gengraphs
-import old_python.heegaard as heegaard
-import old_python.subgroup as subgroup
+import geometric.gengraphs as gengraphs
+import geometric.heegaard as heegaard
+import geometric.subgroup as subgroup
 import whiteheadgraph.build.wgraph as wg
 
 # F=freegroup.FGFreeGroup(numgens=3)
@@ -14,7 +14,7 @@ import whiteheadgraph.build.wgraph as wg
 # isVirtuallyGeometric(F,wordlist2)=True
 
 
-def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None,tellmeifnonorientablygeometricvertices=False):
+def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None,tellmeifnonorientablygeometricvertices=False, rjsjprofile=False):
     """
     Decides if a multiword is virtually geometric.
     F is a free group. wordlist is a list of words in F.
@@ -22,7 +22,10 @@ def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=Fal
     maybevirtuallygeometric=True
     rigid=True
     nonorientablygeometicvertices=False
-
+    if rjsjprofile:
+        trivrjsj=True
+        numqh=0
+        numrigid=0
     wgp=wg.wgparse(F,wordlist,simplifyandminimize=True)
     W=wgp['WhiteheadGraph']
     wordlist=wgp['wordlist']
@@ -31,6 +34,8 @@ def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=Fal
     freesplitting,wmap=split.get_free_splitting_rel(F,wordlist, withwordmap=True, minimized=True, simplified=True)
     if freesplitting.edges(): # if splits freely then is not rigid
         rigid=False
+        if rjsjprofile:
+            trivrjsj=False
     wheredidmywordsgo=[(wmap[wordmap[i][0]][0], wmap[wordmap[i][0]][1],wmap[wordmap[i][0]][2]*wordmap[i][1]) for i in range(len(wordmap))]
     higherrankverticestobechecked=set([v for v in freesplitting.nodes() if freesplitting.localgroup(v).rank>1])
     higherrankverticesthatarevg=set([])
@@ -46,6 +51,8 @@ def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=Fal
                 thiswordlist.append(wheredidmywordsgo[i][1])
         if split.is_circle(thisgroup,thiswordlist):
             higherrankverticesthatarevg.add(thisvert)
+            if rjsjprofile:
+                numqh+=1
     higherrankverticestobechecked-=higherrankverticesthatarevg
     # remaining higherrankverticestobechecked are either rigid or have non-trivial rJSJ
     while higherrankverticestobechecked and maybevirtuallygeometric:
@@ -57,9 +64,11 @@ def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=Fal
             maybevirtuallygeometric=False
             break
         # get the rJSJ for thisvert with respect to thiswordlist
-        thissplitting, thiswordmap=split.get_RJSJ(thisgroup,thiswordlist, withmap=True, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
+        thissplitting, thiswordmap=split.get_RJSJ(thisgroup,thiswordlist, withmap=True, simplified=True,minimized=True,cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
         if thissplitting.edges(): # if the rSJ has edges then it is a non-trivial decomposition
             rigid=False
+            if rjsjprofile:
+                trivrjsj=False
         unchecked=[v for v in thissplitting.nodes() if thissplitting.localgroup(v).rank>1]
         # now check each vertex in the rJSJ to see if it is vg
         # maybevirtuallygeometric means we have not found any non-vg vertices anywhere. If we ever find one we can stop immediately.
@@ -70,6 +79,8 @@ def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=Fal
             if not split.is_circle(newgroup,newwordlist): # if it's a circle it is geometric, otherwise this is a rigid vertex, and it is virtually geometric if and only if it is geometric
                                                  # We check geometricity via the program Heegaard. The catch is that Heegaard only checks for geometricity in orientable handlebodies
                                                  # To check non-orienatable geometricity we need to check double covers as well.
+                if rjsjprofile:
+                    numrigid+=1
                 newvertgeometric=is_orientably_geometric(newwordlist, maxtime=Heegaardwaittime)
                 if not newvertgeometric:
                     newvertgeometric=is_nonorientably_geometric(newwordlist,newgroup.rank,maxtime=Heegaardwaittime)
@@ -79,8 +90,13 @@ def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=Fal
                         maybevirtuallygeometric=False
                     else:
                         raise RuntimeError('Heegaard failed')
+            elif rjsjprofile:
+                numqh+=1
 
     # At this point either we have found a non-vg vertex and broken out of the loop, or we have checked every vertex group and found everything to be vg, in which case the whole thing is vg
+    if rjsjprofile:
+        # search stops at first non-geometric vertex, so numqh and numrigid are only accurate if multiword is vg
+        return maybevirtuallygeometric, trivrjsj, numqh, numrigid
     if tellmeifitsrigid:
         if tellmeifnonorientablygeometricvertices:
             return maybevirtuallygeometric, rigid, nonorientablygeometicvertices
@@ -112,6 +128,7 @@ def is_nonorientably_geometric(wordlist,rank,maxtime=None):
     Check if given wordlist is geometric in an non-orientable handlebody by checking orientable geometricity for lifts to all index 2 subgroups.
     Return True/False if such an answer is returned by heegaard, or none if heegaard fails.
     """
+    # This algorithm is only correct if wordlist is rigid. Otherwise, True could also indicate that the wordlist is not geometric but becomes geometric in an index 2 subgroup.
     if maxtime:
         foundsomethinggood=geometric_2_cover(wordlist,rank,Heegaardwaittime=maxtime)
     else:

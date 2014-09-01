@@ -208,24 +208,13 @@ class FGGroup(object):
         return self.word(letters)
         
 
-    def random_multiword(self,length):
+    def random_multiword(self,numberofwords,length):
         """
-        Generate a list of random words of random length with total characters of about length.
+        Generate a list of numberofwords random words of given length.
         """
-        if length==0:
-            return [self.word([])]
-        numgens=len(self.gens)
         wordlist=[]
-        totallength=0
-        numberofwords=random.choice(range(1,max(2,1+int(sqrt(length)))))
-        for i in range(1,numberofwords+1):
-            if totallength<length:
-                ilen=random.choice(range(1,1+length-totallength))
-                w=self.randomword(ilen)
-                wordlist.append(w)
-                totallength+=len(w.letters)
-            else:
-                wordlist.append(self.word([]))
+        for i in range(numberofwords):
+            wordlist.append(self.random_word(length))
         return wordlist
       
                   
