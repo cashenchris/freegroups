@@ -33,47 +33,58 @@ def extractdata(filename,rank,mwlength,geometric,vg):
     lines = list(f)
     f.close()
     datadict=dict()
+    trials=dict()
     for line in lines:
         sline=line.split()
         if len(sline)==9:
             intline=[int(entry) for entry in sline]
-            if intline[0]==rank and intline[1]==mwlength and intline[5]==vg and intline[4]==geometric:
-                if intline[3]==1:
-                    numverts=0
-                else:
-                    numverts=intline[6]+intline[7]
-                if not intline[2] in datadict:
-                    datadict[intline[2]]=dict()
+            if intline[0]==rank and intline[1]==mwlength:
                 try:
-                    datadict[intline[2]][numverts]+=intline[8]
+                    trials[intline[2]]+=intline[8]
                 except KeyError:
-                    datadict[intline[2]][numverts]=intline[8]
-    return datadict
+                    trials[intline[2]]=intline[8]
+                if intline[5]==vg and (intline[4]==geometric or (geometric==0 and intline[4]==-1)):
+                    if intline[3]==1:
+                        numverts=0
+                    else:
+                        numverts=intline[6]+intline[7]
+                    if not intline[2] in datadict:
+                        datadict[intline[2]]=dict()
+                    try:
+                        datadict[intline[2]][numverts]+=intline[8]
+                    except KeyError:
+                        datadict[intline[2]][numverts]=intline[8]
+    t=max([trials[l] for l in trials])
+    return datadict, t
 
 howmanyvg=[]
-datavg=extractdata(vgprofilefilename,rank,mwlength,0,1)
+datavg, trials=extractdata(vgprofilefilename,rank,mwlength,0,1)
+howmanyg=[]
+datag, trialsg=extractdata(vgprofilefilename,rank,mwlength,1,1)
+assert(trials==trialsg)
+xs=sorted(list(set(datag.keys()+datavg.keys())))
+# x is length, y is rjsj profile
 for y in range(0,3):
-    for x in range(6,25,3):
+    for x in xs:
         try:
             howmanyvg.append(datavg[x][y])
         except KeyError:
             howmanyvg.append(0)
-for x in range(6,25,3):
+for x in xs:
     morethan2=0
     if x in datavg:
          for y in [y for y in datavg[x] if y>2]:
              morethan2+=datavg[x][y]
     howmanyvg.append(morethan2)
 
-howmanyg=[]
-datag=extractdata(vgprofilefilename,rank,mwlength,1,1)
+
 for y in range(0,3):
-    for x in range(6,25,3):
+    for x in xs:
         try:
             howmanyg.append(datag[x][y])
         except KeyError:
             howmanyg.append(0)
-for x in range(6,25,3):
+for x in xs:
     morethan2=0
     if x in datag:
          for y in [y for y in datag[x] if y>2]:
@@ -84,18 +95,18 @@ for x in range(6,25,3):
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-
-xpos = np.array([5.5,8.5,11.5,14.5,17.5,20.5,23.5,5.5,8.5,11.5,14.5,17.5,20.5,23.5,5.5,8.5,11.5,14.5,17.5,20.5,23.5,5.5,8.5,11.5,14.5,17.5,20.5,23.5]+[6.5,9.5,12.5,15.5,18.5,21.5,24.5,6.5,9.5,12.5,15.5,18.5,21.5,24.5,6.5,9.5,12.5,15.5,18.5,21.5,24.5,6.5,9.5,12.5,15.5,18.5,21.5,24.5])
-ypos = np.array([-.16]*7+[1-.16]*7+[2-.16]*7+[3-.16]*7+[-.16]*7+[1-.16]*7+[2-.16]*7+[3-.16]*7)
-zpos = np.array([0]*56)
-dx = 1
+nxs=len(xs)
+xpos = np.array([x-.125 for x in xs]*4+[x+.125 for x in xs]*4)
+ypos = np.array([-.16]*nxs+[1-.16]*nxs+[2-.16]*nxs+[3-.16]*nxs+[-.16]*nxs+[1-.16]*nxs+[2-.16]*nxs+[3-.16]*nxs)
+zpos = np.array([0]*(nxs*8))
+dx = .25
 dy = .33
 dz = np.array(howmanyg+howmanyvg)
 
-ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color=np.array(['g']*28+['violet']*28), zsort='average')
+ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color=np.array(['g']*(4*nxs)+['violet']*(4*nxs)), zsort='average')
 plt.xlabel('Word length')
 plt.ylabel('rJSJ profile')
-plt.title('Random '+str(mwlength)+'-multiwords in rank '+str(rank))
+plt.title('Random '+str(mwlength)+'-multiwords in rank '+str(rank)+' ('+str(trials)+' trials/length)')
 
 plt.show()
 
