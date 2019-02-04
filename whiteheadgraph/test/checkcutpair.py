@@ -31,7 +31,7 @@ def cutpairtest(maxlength,verbose,debug,randomautomorphismlength,examplename,fre
     newcutpoints=[wholeautomorphism(cutpoint) for cutpoint in cutpoints] 
     newuncrossed=[wholeautomorphism(uncross) for uncross in uncrossed]
     
-    if not F.are_equivalent_wordlists(W.getWordlist(),newwordlist):
+    if not F.are_equivalent_wordlists(W.get_wordlist(),newwordlist):
         if verbose:
             print "Error in get_wordlist for ", examplename
         nonefailed=False
