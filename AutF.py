@@ -1,7 +1,7 @@
 from group import *
 import copy
 import random
-
+import itertools
 
 
 class WhiteheadAuto(Automorphism):
@@ -26,6 +26,11 @@ class WhiteheadAuto(Automorphism):
 
     def variant_generators(self):
         return [i for i in self.Z if i!=self.x]
+
+    def __repr__(self):
+        return str(self.x)+', '+str(self.Z)
+    def __str__(self):
+        return 'Push '+str(self.Z)+' through {'+str(self.x)+'}'
         
     def __call__(self,w): #evaluate the automorphism on the word w and return a word in codomain
         theletters=copy.copy(w.letters)
@@ -106,7 +111,7 @@ def random_whitehead_automorphism(F):
 
 def random_automorphism_pair(F,length):
     """
-    Generate an automorphism and its inverse by taking a product of 'length' random Whitehead automorphisms.
+    Generate an automorphism and its inverse by taking a product of 'length' many random Whitehead automorphisms.
     """
     randomaut=Automorphism(F)
     inverse=Automorphism(F)
@@ -212,3 +217,26 @@ def is_inner_auto(alpha):
         return False
     else:
         return True
+
+
+def NielsenGenerators(F):
+    """
+    Generator that yields Nielsen generators of Aut(F)
+    """
+    yield Automorphism(F,{1:F.word([2]),2:F.word([1])})
+    yield Automorphism(F,dict({i:F.word([i+1]) for i in range(1,F.rank)},**{F.rank:F.word([1])}))
+    yield Automorphism(F,{1:F.word([-1])})
+    yield Automorphism(F,{1:F.word([1,2])})
+
+def WhiteheadAutomorphisms(F,allow_inner=False):
+    """
+    Generator that yields non-trivial Whitehead automorphisms of F.
+    """
+    letters= range(1,1+F.rank)+range(-F.rank,0)
+    for x in letters:
+        if allow_inner:
+            Zs=itertools.chain.from_iterable((itertools.combinations([y for y in letters if abs(y)!=abs(x)],r) for r in range(1,2*F.rank-1)))
+        else:
+            Zs=itertools.chain.from_iterable((itertools.combinations([y for y in letters if abs(y)!=abs(x)],r) for r in range(1,2*F.rank-2)))
+        for Z in Zs:
+            yield WhiteheadAuto(F,x,[x]+[y for y in Z])

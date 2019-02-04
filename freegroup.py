@@ -8,6 +8,7 @@ import networkx as nx
 import itertools
 import pylab
 from numpy import prod
+from collections import deque
 #from fish import ProgressFish
 
 
@@ -296,7 +297,8 @@ class FGFreeGroup(FPGroup):
         """
         return F.max_root(w,uptoconjugacy=True)[1]
 
-
+    
+   
 
 
 #---------------------------

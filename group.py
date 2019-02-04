@@ -1,6 +1,7 @@
 import copy
 import random
 from numpy import log, ceil, sqrt, sign
+import networkx as nx
      
  
 class FGGroup(object):
@@ -225,7 +226,7 @@ class FPGroup(FGGroup):
     """
     def __init__(self,gens=[], rels=[], **kwargs):
         FGGroup.__init__(self,gens, **kwargs)
-        self.rels=rels
+        self.rels=[self.word(r) for r in rels]
 
     def __repr__(self):
         return "< "+", ".join([str(g) for g in self.gens])+" | "+", ".join([self.word(r)() for r in self.rels])+" >"
@@ -233,6 +234,15 @@ class FPGroup(FGGroup):
     def relators(self):
         return self.rels
     
+    def link(self):
+        L=nx.MultiGraph()
+        for i in range(1,1+len(self.gens)):
+            L.add_node(i)
+            L.add_node(-i)
+        for relator in self.rels:
+            for i in range(len(relator)):
+                L.add_edge(relator.letters[i],-relator.letters[i-1])
+        return L
 
 
 
