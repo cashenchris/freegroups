@@ -1,0 +1,147 @@
+
+
+The initial presentation was: 
+
+ R  1:   bca
+ R  2:   abc
+
+
+This presentation has length 6 and is freely reduced.
+
+Rewrote the presentation using the substitution: cab
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ABC
+
+
+                    The initial relators are not of full rank.
+
+                    Reducing the number of generators. . .
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   cab
+ R  2:   bca
+
+
+This presentation has length 6 and is freely reduced.
+
+Rewrote the presentation using the substitution: bca
+
+The rewritten initial presentation is:
+
+ R  1:   ABC
+ R  2:   ABC
+
+
+                    The initial relators are not of full rank.
+
+                    Reducing the number of generators. . .
+
+
+                    The data appears consistent.
+
+                    The initial presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   baba
+ R  2:   cc
+
+
+This presentation has length 6 and is freely reduced.
+
+Rewrote the presentation using the substitution: bac
+
+The rewritten initial presentation is:
+
+ R  1:   ABAB
+ R  2:   CC
+
+
+                    The initial relators are not of full rank.
+
+                    Reducing the number of generators. . .
+
+
+                    The Whitehead graph is not connected.
+
+The initial presentation was: 
+
+
+
+This presentation has length 0 and is freely reduced.
+
+The initial presentation was: 
+
+ R  1:   AABBCCACB
+
+
+This presentation has length 9 and is freely reduced.
+
+Rewrote the presentation using the substitution: BCA
+
+The rewritten initial presentation is:
+
+ R  1:   AABACBBCC
+
+
+Presentation 1 is not realizable.
+
+ R  1:   AABACBBCC
+
+
+     The Whitehead graph is connected, has no cut-vertices and is non-planar.
+     This is impossible if the presentation is realizable.
+
+The initial presentation was: 
+
+ R  1:   CCCacaCBcaCAbCCCCbcbAbCBcaC
+
+
+This presentation has length 27 and is freely reduced.
+
+Rewrote the presentation using the substitution: cBa
+
+The rewritten initial presentation is:
+
+ R  1:   AAAABCAcabAcacAAAAcabABCBaB
+
+
+                    The Whitehead graph has a pair of separating vertices.
+
+                    The Whitehead graph is nonplanar.
+
+Presentation 2 is not realizable.
+
+ R  1:   AAAAABBACaBAbcAAAAAccbcACaB
+
+
+The initial presentation was: 
+
+ R  1:   BBBabcBAcBCbaBBBBcbaCbaBAcB
+
+
+This presentation has length 27 and is freely reduced.
+
+Rewrote the presentation using the substitution: caB
+
+The rewritten initial presentation is:
+
+ R  1:   AAAABCAcabcaBAAAAcabABCABac
+
+
+                    The Whitehead graph has a pair of separating vertices.
+
+                    The Whitehead graph is nonplanar.
+
+Presentation 2 is not realizable.
+
+ R  1:   AAAAABCAbCAcaBAAAAACBcaBAbC
