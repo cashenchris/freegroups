@@ -17,8 +17,15 @@ def imprimitivityrank(theword,precomputedWsubgroups=None):
     """
     Given a list or tuple of non-zero integers interpreted as a word in a free group, returns the minimal rank of a subgroup contaiing theword as an imprimitive element. Returns float('inf') if theword is primitve.
     If precomputedWsubgroups=None then Wsubgroups are computed and their rank is returned. Otherwise, the rank of the precomputedWsubgroups is returned.
+
+    >>> imprimitivityrank([1])
+    inf
+    >>> imprimitivityrank([1,1,1])
+    1
+    >>> imprimitivityrank([1,1,2,2,3,3])
+    3
     """
-    if precomputededWsubgroups is None:
+    if precomputedWsubgroups is None:
         graphs=constructgraphs(theword)
     else:
         graphs=precomputedWsubgroups
@@ -27,27 +34,19 @@ def imprimitivityrank(theword,precomputedWsubgroups=None):
     else:
         return float('inf')
 
+def graphrank(thegraph):
+    """
+    Returns the rank of a connected graph.
+    """
+    return len(thegraph.edges())-len(thegraph)+1
 
-def immersedcycle(thegraph,theword,thebasepoint):#unused
-    """
-    thegraph is nx.MultiDiGraph where each edge has a non-zero integer 'label'. the word is a list of non-zero integers. Function checks if the word labels an immersed loop in thegraph based at thebasepoint.
-    """
-    nextvertex=thebasepoint
-    for theletter in theword:
-        for e in G.out_edges(nextvertex,keys=True,data=True):
-            if e[3]['label']==theletter:
-                nextvertex=e[1]
-                break
-        else:
-            for e in G.in_edges(nextvertex,keys=True,data=True):
-                if e[3]['label']==-theletter:
-                    nextvertex=e[0]
-                    break
-            else:
-                return False
-    return nextvertex==thebasepoint
-                
+
 def vertexhaslabel(thegraph,thevertex,thelabel,returnopvert=False):
+    """
+    Check if thevertex already has an outgoing edge labelled with thelabel.
+    returnopvert=False then return bool.
+    returnopvert=True then return the oppositve vertex on the edge labelled with thelabel, if such an edge exists, or None if no such edge.
+    """
     for e in thegraph.out_edges(thevertex,data=True,keys=True):
         if e[3]['label']==thelabel:
             if returnopvert:
@@ -66,18 +65,21 @@ def vertexhaslabel(thegraph,thevertex,thelabel,returnopvert=False):
                 return None
             else:
                 return False
-def graphrank(thegraph):
-    return len(thegraph.edges())-len(thegraph)+1
 
-def constructgraphs(rel):
-    rank=max([abs(x) for x in rel])
+
+def constructgraphs(theword):
+    """
+    Given a list or tuple of non-zero integers interpreted as a word in a free group, returns a list of Stallings graphs representing the subgroups of minimal rank contaiing theword as an imprimitive element.
+    Returns an empty list if theword is primitive.
+    """
+    rank=max([abs(x) for x in theword])
     bestrank=rank
-    maxedges=dict([(i,[abs(x) for x in rel].count(i)/2) for i in range(1,1+rank)])
+    maxedges=dict([(i,[abs(x) for x in theword].count(i)/2) for i in range(1,1+rank)])
     G=nx.MultiDiGraph()
     G.add_node(0)
     workinggraphs=[]
     finishedgraphs=[]
-    workinggraphs.append((G,0,rel))
+    workinggraphs.append((G,0,theword))
     while workinggraphs:
         oldg=workinggraphs.pop()
         if graphrank(oldg[0])>bestrank:
@@ -91,7 +93,7 @@ def constructgraphs(rel):
             if not nextsuffix:
                 if nextvert==0:
                     thisrank=graphrank(oldg[0])
-                    if thisrank<=bestrank and not containedinproperfactor(oldg[0],0,rel):
+                    if thisrank<=bestrank and not containedinproperfactor(oldg[0],0,theword):
                         finishedgraphs.append(oldg[0].copy())
                         bestrank=min(thisrank,bestrank)
             else:
@@ -105,7 +107,7 @@ def constructgraphs(rel):
                         newg=nx.MultiDiGraph(oldg[0])
                         newg.add_edge(currentvertex,0,label=nextlabel)
                         newrank=graphrank(newg)
-                        if newrank<=bestrank and not containedinproperfactor(newg,0,rel):
+                        if newrank<=bestrank and not containedinproperfactor(newg,0,theword):
                             finishedgraphs.append(newg)
                             bestrank=min(newrank,bestrank)
                 else: # we are not out of leffers, so can add a new edge going to any available vertex, or to a new vertex
@@ -125,7 +127,11 @@ def constructgraphs(rel):
     return [G for G in finishedgraphs if graphrank(G)<=bestrank]
                             
                     
-def spanningtree(G,basepoint):
+def spanningtree(G):
+    """
+    Return a list of edges of a graph G that give a spanning tree.
+    """
+    basepoint=list(G)[0]
     seen=set([basepoint])
     newvertices=[basepoint]
     treeedges=[]
@@ -147,11 +153,18 @@ def spanningtree(G,basepoint):
                 newvertices.append(e[0])
     return treeedges
 
-def freebasis(G,basepoint):
-    T=spanningtree(G,basepoint)
+def freebasis(G):
+    """
+    The complement of a spanning tree.
+    """
+    T=spanningtree(G)
     return [e for e in G.edges(keys=True) if e not in T]
 
 def wordexpressedinfreebasis(thegraph,thebasepoint,theword,thefreebasis):
+    """
+    Given a labelled, based graph,  a list of edges that form the complement of a spanning tree and a word that is the concatenation of labels read on a loop based at thebasepoint, return the expression of that loop in terms of the given freebasis for the fundamental group of thegraph with respect to thebasepoint.
+    Returns a list of non-zero integers where i corresponds to the edge thefreebasis[i-1] and -i corresponds to the edge thefreebasis[i-1] traversed backwards.
+    """
     newexpression=[]
     currentvertex=thebasepoint
     for theletter in theword:
@@ -176,7 +189,10 @@ def wordexpressedinfreebasis(thegraph,thebasepoint,theword,thefreebasis):
         raise KeyError
                     
 def containedinproperfactor(thegraph,thebasepoint,theword):
-    thefreebasis=freebasis(thegraph,thebasepoint)
+    """
+    theword is the label of a loop in thegraph based at thebasepoint. Check if that represents an element contained in a proper free factor of the fundamental group the thegraph with respect to thebasepoint.
+    """
+    thefreebasis=freebasis(thegraph)
     if len(thefreebasis)<=1:
         return False
     newword=wordexpressedinfreebasis(thegraph,thebasepoint,theword,thefreebasis)
@@ -191,30 +207,6 @@ def containedinproperfactor(thegraph,thebasepoint,theword):
     return not results['connected']
     
     
-        
-    
-
-    
-def spanningpaths(G,basepoint):# unused
-    T=spanningtree(G,basepoint)
-    workingpaths=[([],basepoint)]
-    finishedpaths=[]
-    while workingpaths:
-        pathbase=workingpaths.pop()
-        terminus=pathbase[1]
-        terminal=True
-        for e in G.out_edges(terminus,keys=True):
-            if e!=pathbase[0][-1] and e in T:
-                workingpaths.append((pathbase[0]+[e],e[1]))
-                terminal=False
-        for e in G.in_edges(terminus,keys=True):
-            if e!=pathbase[0][-1] and e in T:
-                workingpaths.append((pathbase[0]+[e],e[0]))
-                terminal=False
-        if terminal:
-            finishedpaths.append(pathbase)
-    return finishedpaths
-
 def contains(G,Gbase,H,Hbase):
     """
     Return true if the subgroup defined by G contains the subgroup defined by H, where G and H are folded Stallings graphs.
@@ -253,6 +245,9 @@ def contains(G,Gbase,H,Hbase):
                 
 
 def maximalelements(graphs):
+    """
+    Given a list of Stallings graphs, return the ones representing subgroups that are maximal with respect to inclusion among elements in the input list.
+    """
     maximalelements=[]
     for i in range(len(graphs)):
         for j in range(len(graphs)):
