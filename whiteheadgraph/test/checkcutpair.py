@@ -51,7 +51,8 @@ def cutpairtest(maxlength,verbose,debug,randomautomorphismlength,examplename,fre
         if verbose:
             print "Error in split.find_cut_points for ", examplename
         nonefailed=False
-    cuts=split.find_cut_pairs(F,W,newwordlist,maxlength)[0]
+    #cuts=split.find_cut_pairs(F,W,newwordlist,maxlength)[0]
+    cuts=split.find_universal_splitting_words(F,W,newwordlist,maxlength)[0]
     if not F.are_equivalent_wordlists(list(cuts['cutpoints']),newcutpoints):
         if verbose:
             print "Error finding cut points in split.findCutPairs for ", examplename

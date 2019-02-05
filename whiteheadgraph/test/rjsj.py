@@ -27,7 +27,7 @@ def rjsjtest(maxlength,verbose,debug,randomautomorphismlength,examplename,freegr
     gamma, wordmap=F.get_RJSJ(newwordlist, withmap=True)
     minimizedwordlist=[]
     for (v,w,p) in wordmap:
-        minimizedwordlist.append(gamma.localgroup(v).getInclusion(F)(w))
+        minimizedwordlist.append(gamma.localgroup(v).get_inclusion(F)(w))
     if not F.is_RJSJ(wordmap,gamma,verbose=verbose):
         if verbose:
             print "Error computing RJSJ for", examplename,"."

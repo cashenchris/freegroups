@@ -986,7 +986,7 @@ def is_RJSJ(F,wlmap,thisgog, verbose=False):
     for vert in thisgog.nodes():
         if thisgog.localgroup(vert).rank>1:
             iwl=get_induced_multiword(thisgog,vert, wlmap,simplifyandminimize=True)
-            if thisgog.localgroup(vert).isCircle(iwl):
+            if thisgog.localgroup(vert).is_circle(iwl):
                 circleverts.append(vert)
             elif thisgog.localgroup(vert).is_rigid_rel(iwl):
                 rigidverts.append(vert)
