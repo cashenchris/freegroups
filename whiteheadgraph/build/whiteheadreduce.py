@@ -4,25 +4,22 @@ import AutF as aut
 import networkx as nx
 #from fish import ProgressFish
 from itertools import product
-# from networkx.algorithms.flow import ford_fulkerson           workd for nextworkx <=1.9
-from networkx.algorithms.flow import edmonds_karp
+from networkx.algorithms.flow import ford_fulkerson
 
 def find_mincut_part(G,origin,terminus):
     """
     Find the vertices on the origin side of a mincut of G separating origin from terminus.
     """
-#    try: # old version of networkx 1.8
-  #      flow_rate, flow_dict=nx.ford_fulkerson(G,origin,terminus)
-    #except AttributeError: # new version of networkx 1.9
-      #  flow_value, flow_dict = nx.maximum_flow(G, origin, terminus,flow_func=ford_fulkerson)
-    flow_value, flow_dict = nx.maximum_flow(G, origin, terminus,flow_func=edmonds_karp)
+    try: # old version of networkx
+        flow_rate, flow_dict=nx.ford_fulkerson(G,origin,terminus)
+    except AttributeError: # new version of networkx
+        flow_value, flow_dict = nx.maximum_flow(G, origin, terminus,flow_func=ford_fulkerson)
     newverts=set([origin])
     verts=set([])
     while newverts:
         thisvert=newverts.pop()
         verts.add(thisvert)
-        #for e in G.out_edges_iter(thisvert, data=True):
-        for e in G.out_edges(thisvert, data=True): # change to networkx 2.x
+        for e in G.out_edges_iter(thisvert, data=True):
             if e[2]['capacity']>flow_dict[e[0]][e[1]] and e[1] not in verts:
                 newverts.add(e[1])
     return verts
@@ -121,9 +118,7 @@ def find_min_cut_reduction(F, simplifiedwordlist, startingvertex=None, verbose=F
                 edgemultiplicities[turn]=1
     
     # Change graph to a directed graph and use maxflow/mincut to find such a cut set.
-    #for edge in undirectedsimplewg.edges_iter(): # write the edge multiplicities into the graph as 'capacity'
-    for edge in undirectedsimplewg.edges(): # change to networkx 2.x
-
+    for edge in undirectedsimplewg.edges_iter(): # write the edge multiplicities into the graph as 'capacity'
         if edge[0]<edge[1]:
             undirectedsimplewg.add_edge(*edge, capacity=edgemultiplicities[edge])
         else:
@@ -183,8 +178,9 @@ def whitehead_minimal(F,wordlist,extrawordlist=None,simplified=False,verbose=Fal
     minimizingsequence=True to track the entire sequence of reducing automorphisms.
 
     extrawordlist is a list of words to which reducing automorphisms are also applied. This is useful to track the effect of the minimization on, for instance, a given basis, without keeping track of the entire sequence of minimizing automorphisms.
+
     stopatfirstreduction=True to stop as soon as one reduction is found.
-    
+
     """
     results=dict([('connected',None),('wordlist',None),('minimizingautomorphism',None),('inverseminimizer',None), ('whiteheadsequence',None),('extrawordlist',None)])
     if minimizingsequence:
