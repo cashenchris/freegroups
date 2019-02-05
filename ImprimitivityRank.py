@@ -260,5 +260,16 @@ def maximalelements(graphs):
     return maximalelements
 
 
-        
+def test(theword):
+    graphs=Wsubgroups(theword)
+    assert(len(graphs)<=1)
+    ir=imprimitivityrank(theword,graphs)
+    if ir==1:
+        F=fg.FGFreeGroup(numgens=max([abs(x) for x in theword]))
+        assert(F.degree(F.word(theword))>1)
+    elif ir==float('inf'):
+        F=fg.FGFreeGroup(numgens=max([abs(x) for x in theword]))
+        assert(wreduce.whitehead_complexity(F,[F.word(theword)])==1)
+    
+    
     
