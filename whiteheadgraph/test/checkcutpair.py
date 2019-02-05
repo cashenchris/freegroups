@@ -72,16 +72,16 @@ def cutpairtest(maxlength,verbose,debug,randomautomorphismlength,examplename,fre
         w=F.cyclic_reduce(w)
         if len(w)>0:
             if iscircle:
-                if not split.gives_cut(F,W,w)!=F.is_conjugate_into(w,*newwordlist):
+                if not split.gives_cut(F,W,w)!=bool(F.is_conjugate_into(w,*newwordlist)):
                     if verbose:
                         print "Error: W is a circle, so ",w," should be a cut pair in ", examplename
                     nonefailed=False
                     break
             else:
-                if not split.gives_cut(F,W,w)==F.is_conjugate_into(w,*set.union(set(newuncrossed),set(newcutpoints))):
+                if not split.gives_cut(F,W,w)==bool(F.is_conjugate_into(w,*set.union(set(newuncrossed),set(newcutpoints)))):
                     if verbose:
-                        print "Warning",w," gives a cut but wasn't found in ", examplename
-                        print "It may be that ",w," is a crossed cut pair and everything is ok."
+                        print "Warning",w()," gives a cut but wasn't found in ", examplename
+                        print "It may be that ",w()," is a crossed cut pair and everything is ok. Check by hand."
                     #nonefailed=False
                     break
     if verbose and nonefailed:

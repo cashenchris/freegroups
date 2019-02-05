@@ -162,6 +162,8 @@ class FGFreeGroup(FPGroup):
     def is_conjugate_into_one(F,v,w):
         """
         Decide if v is conjugate into <w>.
+        If yes, returns dict with 'conjugator' containing element conjugating v to a power of w and 'power' telling which power of w.
+        If v is not conjugate into <w> returns empty dict.
         """
         v0,v1=F.cyclic_reducer(v)
         w0,w1=F.cyclic_reducer(w)

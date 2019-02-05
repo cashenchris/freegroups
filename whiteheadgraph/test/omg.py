@@ -29,4 +29,4 @@ circle.is_circle()
 circle.find_cut_vertex()
 
 h=omg.splice(g,circle,1,1,[0,1],('g',),('c',),lookforisolatedvertices=True)
-k,foundfree=omg.selfsplice(circle,1,2,[0,1],lookforisolatedvertices=True,reportfreeedges=True)
+#k,foundfree=omg.selfsplice(circle,1,2,[0,1],lookforisolatedvertices=True,reportfreeedges=True)

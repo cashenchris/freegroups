@@ -4,7 +4,10 @@ import AutF as aut
 import networkx as nx
 #from fish import ProgressFish
 from itertools import product
-from networkx.algorithms.flow import ford_fulkerson
+try:
+    from networkx.algorithms.flow import ford_fulkerson
+except ImportError:
+    raise Exception('Requires networkx<=1.9.1') # This particular problem can be resolved in networkx 1.10 by using  edmonds_karp instead of ford_fulkerson, but networkx 1.10 introduces other API changes that break other parts of the code too.
 
 def find_mincut_part(G,origin,terminus):
     """
@@ -197,7 +200,7 @@ def whitehead_minimal(F,wordlist,extrawordlist=None,simplified=False,verbose=Fal
     if verbose:
         complexity=sum([len(w) for w in results['wordlist']])
         #fish1=ProgressFish(total=complexity)
-        print "Looking for cut vertex reductions. Current complexity:"
+        print "Looking for cut vertex reductions. Current complexity:"+str(complexity)
 
     # Look for cut vertex reductions.
     graphisconnected,  nextred=find_cut_vert_reduction(F, results['wordlist'], stopatdisconnected=stopatdisconnected, verbose=verbose)
@@ -231,7 +234,8 @@ def whitehead_minimal(F,wordlist,extrawordlist=None,simplified=False,verbose=Fal
     if cutvertsonly:
         return results
     if verbose:
-        print "Looking for mincut reductions. Current complexity:"
+        complexity=sum([len(w) for w in results['wordlist']])
+        print "Looking for mincut reductions. Current complexity:"+str(complexity)
     nextred=find_min_cut_reduction(F, results['wordlist'], verbose=verbose)
     if stopatfirstreduction:
         if nextred is None:

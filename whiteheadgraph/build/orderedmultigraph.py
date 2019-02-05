@@ -127,7 +127,8 @@ class OrderedMultiGraph(nx.MultiGraph):
         self.node[v]['edgeorder']=vlist[:vposition]+vlist[1+vposition:]
         
         del self.edgekeys[edge]
-        self.remove_edge(u, v, edge)
+        #self.remove_edge(u, v, edge)
+        nx.MultiGraph.remove_edge(self,u,v,edge)
 
     def change_edge_key(self,oldkey, newkey):
         u=self.origin(oldkey)
