@@ -93,7 +93,7 @@ def constructgraphs(theword):
             if not nextsuffix:
                 if nextvert==0:
                     thisrank=graphrank(oldg[0])
-                    if thisrank<=bestrank and not containedinproperfactor(oldg[0],0,theword):
+                    if thisrank<=bestrank:# and not containedinproperfactor(oldg[0],0,theword):
                         finishedgraphs.append(oldg[0].copy())
                         bestrank=min(thisrank,bestrank)
             else:
@@ -107,7 +107,7 @@ def constructgraphs(theword):
                         newg=nx.MultiDiGraph(oldg[0])
                         newg.add_edge(currentvertex,0,label=nextlabel)
                         newrank=graphrank(newg)
-                        if newrank<=bestrank and not containedinproperfactor(newg,0,theword):
+                        if newrank<=bestrank:# and not containedinproperfactor(newg,0,theword):
                             finishedgraphs.append(newg)
                             bestrank=min(newrank,bestrank)
                 else: # we are not out of leffers, so can add a new edge going to any available vertex, or to a new vertex
@@ -188,7 +188,7 @@ def wordexpressedinfreebasis(thegraph,thebasepoint,theword,thefreebasis):
     else:
         raise KeyError
                     
-def containedinproperfactor(thegraph,thebasepoint,theword):
+def containedinproperfactor(thegraph,thebasepoint,theword):#unused
     """
     theword is the label of a loop in thegraph based at thebasepoint. Check if that represents an element contained in a proper free factor of the fundamental group the thegraph with respect to thebasepoint.
     """
