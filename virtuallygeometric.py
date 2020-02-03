@@ -1,17 +1,16 @@
 import re
 import group
 import freegroup
-import whiteheadgraph.split.split as split
 import geometric.gengraphs as gengraphs
 import geometric.heegaard as heegaard
 import geometric.subgroup as subgroup
-import whiteheadgraph.build.wgraph as wg
+import whiteheadgraph as wg
 
 # F=freegroup.FGFreeGroup(numgens=3)
 # wordlist1=[F.word('aabbccacb')]
 # wordlist2=[F.word([1]), F.word([2]), F.word([3]), F.word([1,3,-2,1,-3,2])]
-# isVirtuallyGeometric(F,wordlist1)=False
-# isVirtuallyGeometric(F,wordlist2)=True
+# is_virtually_geometric(F,wordlist1)=False
+# is_virtually_geometric(F,wordlist2)=True
 
 
 def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None,tellmeifnonorientablygeometricvertices=False, rjsjprofile=False):
@@ -31,7 +30,7 @@ def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=Fal
     wordlist=wgp['wordlist']
     wordmap=wgp['wordmap']
     # first check if F splits freely rel wordlist
-    freesplitting,wmap=split.get_free_splitting_rel(F,wordlist, withwordmap=True, minimized=True, simplified=True)
+    freesplitting,wmap=wg.get_free_splitting_rel(F,wordlist, withwordmap=True, minimized=True, simplified=True)
     if freesplitting.edges(): # if splits freely then is not rigid
         rigid=False
         if rjsjprofile:
@@ -49,7 +48,7 @@ def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=Fal
             if wheredidmywordsgo[i][0]==thisvert:
                 indexofthiswordlistintomainwordlist.append(i)
                 thiswordlist.append(wheredidmywordsgo[i][1])
-        if split.is_circle(thisgroup,thiswordlist):
+        if wg.is_circle(thisgroup,thiswordlist):
             higherrankverticesthatarevg.add(thisvert)
             if rjsjprofile:
                 numqh+=1
@@ -60,11 +59,11 @@ def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=Fal
         thisgroup=freesplitting.localgroup(thisvert)
         thiswordlist=[w[1] for w in wheredidmywordsgo if w[0]==thisvert]
         # quick pre-check: if thiswordlist contins every 3-letter subword in thisgroup then it is not vg
-        if split.contains_all_3_letter_subwords(*thiswordlist):
+        if wg.contains_all_3_letter_subwords(*thiswordlist):
             maybevirtuallygeometric=False
             break
         # get the rJSJ for thisvert with respect to thiswordlist
-        thissplitting, thiswordmap=split.get_RJSJ(thisgroup,thiswordlist, withmap=True, simplified=True,minimized=True,cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
+        thissplitting, thiswordmap=wg.get_RJSJ(thisgroup,thiswordlist, withmap=True, simplified=True,minimized=True,cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
         if thissplitting.edges(): # if the rSJ has edges then it is a non-trivial decomposition
             rigid=False
             if rjsjprofile:
@@ -75,8 +74,8 @@ def is_virtually_geometric(F,wordlist, Heegaardwaittime=10, tellmeifitsrigid=Fal
         while unchecked and maybevirtuallygeometric:
             newvert=unchecked.pop()
             newgroup=thissplitting.localgroup(newvert)
-            newwordlist=split.get_induced_multiword(thissplitting,newvert,thiswordmap,simplifyandminimize=True)
-            if not split.is_circle(newgroup,newwordlist): # if it's a circle it is geometric, otherwise this is a rigid vertex, and it is virtually geometric if and only if it is geometric
+            newwordlist=wg.get_induced_multiword(thissplitting,newvert,thiswordmap,simplifyandminimize=True)
+            if not wg.is_circle(newgroup,newwordlist): # if it's a circle it is geometric, otherwise this is a rigid vertex, and it is virtually geometric if and only if it is geometric
                                                  # We check geometricity via the program Heegaard. The catch is that Heegaard only checks for geometricity in orientable handlebodies
                                                  # To check non-orienatable geometricity we need to check double covers as well.
                 if rjsjprofile:

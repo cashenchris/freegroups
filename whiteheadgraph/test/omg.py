@@ -3,7 +3,7 @@ from networkx.classes.graph import Graph
 from networkx import NetworkXException, NetworkXError
 import networkx.convert as convert
 from copy import deepcopy
-import whiteheadgraph.build.orderedmultigraph as omg
+from ..build import orderedmultigraph as omg
 import copy
 
 g=omg.OrderedMultiGraph()

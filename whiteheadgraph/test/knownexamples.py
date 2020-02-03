@@ -1,6 +1,6 @@
-import group
-import freegroup
-import whiteheadgraph.build.wgraph as wg
+import grouptheory.freegroups.group as group
+import grouptheory.freegroups.freegroup as freegroup
+import whiteheadgraph as wg
 
 F2=freegroup.FGFreeGroup(numgens=2)
 F3=freegroup.FGFreeGroup(numgens=3)

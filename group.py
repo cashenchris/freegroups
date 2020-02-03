@@ -130,10 +130,10 @@ class FGGroup(object):
         # No group theory here, subgroups are explicitly declared. This just looks for a chain of declarations leading to G.
         currentgroup=self
         while currentgroup!=G:
-             try:
-                  currentgroup=currentgroup.supergroup
-             except AttributeError:
-                  return False
+            try:
+                currentgroup=currentgroup.supergroup
+            except AttributeError:
+                return False
         return True
      
     def get_inclusion(self,G):

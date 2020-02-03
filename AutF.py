@@ -223,10 +223,10 @@ def NielsenGenerators(F):
     """
     Generator that yields Nielsen generators of Aut(F)
     """
-    yield Automorphism(F,{1:F.word([2]),2:F.word([1])})
-    yield Automorphism(F,dict({i:F.word([i+1]) for i in range(1,F.rank)},**{F.rank:F.word([1])}))
-    yield Automorphism(F,{1:F.word([-1])})
-    yield Automorphism(F,{1:F.word([1,2])})
+    yield Automorphism(F,{1:F.word([2]),2:F.word([1])}) # swap first two basis elements
+    yield Automorphism(F,dict({i:F.word([i+1]) for i in range(1,F.rank)},**{F.rank:F.word([1])})) # cycically permute basis
+    yield Automorphism(F,{1:F.word([-1])}) # invert first basis element
+    yield Automorphism(F,{1:F.word([1,2])}) # transvection
 
 def WhiteheadAutomorphisms(F,allow_inner=False):
     """

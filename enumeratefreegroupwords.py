@@ -3,6 +3,7 @@ import itertools
 def generate_words(rank,maxlen,startlength=1,reversed=True):
     """
     Generator of unique, non-trivial words in a free group of given rank,  up to length maxlen. Words returned as list of non-zero integers, with 1 corresponding to first generator, -1 its inverse, etc.
+    If reversed=True then the words increment on the right.
     """
     letters=[-x for x in range(rank,0,-1)]+[x for x in range(1,1+rank)]
     counters=dict()
@@ -20,28 +21,28 @@ def generate_words(rank,maxlen,startlength=1,reversed=True):
 
 def generate_ordered(rank,maxlen,startlength=1):
     """
-    Generate words with the restirciton that first letter is 1, second letter to appear is 2, first letter after +-1,+-2 to appear is 3
+    Generate words with the restirciton that first letter is -rank, second letter to appear is -(rank-1), first letter after +-rank, +-(rank-1) to appear is -(rank-2)
     """
     gen=generate_words(rank,maxlen,startlength=startlength)
     for w in gen:
-        if w[0]!=1:
+        if w[0]!=-rank:
             continue
-        if all([x==1 for x in w]):
+        if all([x==-rank for x in w]):
             yield w
         else:
             for firstnon1 in range(len(w)):
-                if w[firstnon1]!=1:
+                if w[firstnon1]!=-rank:
                     break
-            if w[firstnon1]!=2:
+            if w[firstnon1]!=-(rank-1):
                 continue
             else:
-                if all([abs(x)<=2 for x in w]):
+                if all([abs(x)>=rank-1 for x in w]):
                     yield w
                 else:
                     for firstnon12 in range(len(w)):
-                        if abs(w[firstnon12])>2:
+                        if abs(w[firstnon12])<rank-1:
                             break
-                    if w[firstnon12]>0:
+                    if w[firstnon12]==-(rank-2):
                         yield w
                     else:
                         continue

@@ -6,10 +6,9 @@ from numpy import sqrt
 from group import *
 import networkx as nx
 import itertools
-#import pylab
 from numpy import prod
 from collections import deque
-#from fish import ProgressFish
+
 
 
 def ishomologicallytrivial(w):
@@ -31,6 +30,58 @@ def shortlexcompare(l1,l2):
             # This is probably too clever.  Also it might be better to order differently.
             return -2*int(l1<l2)+1
 
+def parseinputword(inputword):
+    """
+    Takes as input something representing a word in a finitely generated free group and returns a finitely generated free group and corresponding word.
+
+    Can handle following inputs:
+    1. An object of type word. In this case simply spit back out the group and the word.
+    2. list or tuple of nonero integers. In this case the generators of the free group are numbered from 1 to the maximum of the absolute values of the input integers, and negative numebers represent their inverses.
+    2. string containing only alphabetic characters: In this case the generators of the free group are taken to be the interval of lower case letters containing all of the input letters or their lower case versions; that is input 'xZ' would give the free group < x, y, z >.
+    """
+    if hasattr(inputword,'group'):
+        return inputword.group,inputword
+    elif (type(inputword)==list or type(inputword)==tuple) and all(type(x)==int for x in inputword) and all(x!=0 for x in inputword):
+        F=FGFreeGroup(numgens=max(abs(x) for x in inputword))
+        w=F.word(inputword)
+        return F,w
+    elif hasattr(inputword,'isalpha') and inputword.isalpha():
+        alphabet={c.lower() for c in inputword}
+        lower=min(ord(c) for c in alphabet)
+        upper=max(ord(c) for c in alphabet)
+        generators=[chr(x) for x in range(lower,upper+1)]
+        inverses=[c.upper() for c in generators]
+        F=FGFreeGroup(gens=generators, inverses=inverses)
+        w=F.word(inputword)
+        return F,w
+    else:
+        raise InputError("Don't know how to parse input as a word in a free group.")
+
+def parseinputwords(wordlist):
+    """
+    Similar to parseinputword for input a list of words. 
+    """
+    if all(hasattr(word,'group') for word in wordlist):
+        group={word.group for word in wordlist}
+        if len(group)>1:
+            raise InputError("Don't know how to parse input as words in a common free group.")
+        else:
+            thegroup=group.pop()
+            return thegroup,list(wordlist)
+    elif {type(word) for word in wordlist}=={list} or {type(word) for word in wordlist}=={tuple}:
+        thegroup=FGFreeGroup(numgens=max(max(abs(x) for x in word) for word in wordlist if word))
+        return thegroup,list(thegroup.word(word) for word in wordlist)
+    elif all(hasattr(word,'isalpha') for word in wordlist) and all(word.isalpha() for word in wordlist):
+        alphabet=set.union(*[set([c.lower() for c in word]) for word in wordlist])
+        lower=min(ord(c) for c in alphabet)
+        upper=max(ord(c) for c in alphabet)
+        generators=[chr(x) for x in range(lower,upper+1)]
+        inverses=[c.upper() for c in generators]
+        F=FGFreeGroup(gens=generators, inverses=inverses)
+        return F,list(F.word(word) for word in wordlist)
+    else:
+        raise InputError("Don't know how to parse input as words in a common free group.")
+        
 class FGFreeGroup(FPGroup):
     """
     A finitely generated free group.
@@ -236,6 +287,12 @@ class FGFreeGroup(FPGroup):
                 l=lets.pop()
                 powers[abs(l)-1]=powers[(abs(l)-1)]+sign(l)
             return powers
+        
+    def in_commutator_subgroup(F,w):
+        if all(x==0 for x in F.abelianization(w)):
+            return True
+        else:
+            return False
 
 
     def max_root(F,w,uptoconjugacy=False, withpower=True):
@@ -382,7 +439,7 @@ class FGSubgroupOfFree(FGSubgroup, FGFreeGroup):
         if inclusionlist:
             if verbose:
                 print "Received input inclusionlist"
-            FGSubgroup.__init__(self,supergroup,inclusionlist,**kwargs)
+            FGSubgroup.__init__(self,supergroup,inclusionlist,inverses=[(w**(-1))() for w in inclusionlist],**kwargs)
             marking=[]
             inversemarking=[]
             if verbose:
@@ -427,7 +484,7 @@ class FGSubgroupOfFree(FGSubgroup, FGFreeGroup):
                         raise KeyError(i)
                     thesuperlettersforthisloop=spathtov[edge[0]]+[edge[3]['superlabel']]+[-x for x in reversed(spathtov[edge[1]])]
                     inclusionlist.append(self.supergroup.word(thesuperlettersforthisloop))
-                FGSubgroup.__init__(self,supergroup,inclusionlist,**kwargs)
+                FGSubgroup.__init__(self,supergroup,inclusionlist,inverses=[(w**(-1))() for w in inclusionlist],**kwargs)
                 self.inversemarking=[self.word([i]) for i in range(1,1+self.rank)]      
         
 
@@ -647,48 +704,60 @@ class StallingsGraph(nx.MultiDiGraph):
 
     marking and inversemarking and subgroup are for tracking the relationship between the preferred basis for the subgroup and the one that comes from the complement of a max tree in the Stallings Graph. These are used by FGSubgroupOfFree.__init__().
     """
-    def __init__(self,wordlist=[], basepoint=0, marking=None, inversemarking=None, subgroup=None, verbose=False):
-        nx.MultiDiGraph.__init__(self)
-        self.basepoint=basepoint
-        self.add_node(self.basepoint)
-        counter=1
-        if verbose:
-            lengthwordlist=len(wordlist)
-            #fish=ProgressFish(total=lengthwordlist)
-        for i in range(1,1+len(wordlist)):
+    def __init__(self,wordlist=[], basepoint=0, marking=None, inversemarking=None, subgroup=None, verbose=False,graph=None):
+        if graph is None:
+            nx.MultiDiGraph.__init__(self)
+            self.basepoint=basepoint
+            self.add_node(self.basepoint)
+            counter=1
             if verbose:
-                pass
-                #fish.animate(amount=i)
-            w=wordlist[i-1]
-            try:
-                inversemarking.append(subgroup.word([i]))
-            except AttributeError:
-                pass
-            currentvert=self.basepoint
-            newletters=[x for x in w.letters]
-            try:
-                marking.append(dict([('initial',[]),('final',[])]))
-            except AttributeError:
-                pass
-            while len(newletters)>1:
-                nextletter=newletters.pop(0)
-                self.add_node(counter)
-                try:
-                    k=1+max([edge[2] for edge in self.edges(keys=True)])
-                except ValueError: # there aren't any edges yet
-                    k=1
-                self.add_edge(currentvert,counter,superlabel=nextletter, treelabel=0, key=k)
-                try:
-                    marking[i-1]['initial'].append((currentvert,counter,k))
-                except TypeError:
+                lengthwordlist=len(wordlist)
+                #fish=ProgressFish(total=lengthwordlist)
+            for i in range(1,1+len(wordlist)):
+                if verbose:
                     pass
-                currentvert=counter
-                counter+=1
-            if newletters:# word was nonempty
-                nextletter=newletters.pop(0)
-                self.add_edge(currentvert,self.basepoint,superlabel=nextletter, treelabel=i)
-            else: #word was empty
-                pass
+                    #fish.animate(amount=i)
+                w=wordlist[i-1]
+                try:
+                    inversemarking.append(subgroup.word([i]))
+                except AttributeError:
+                    pass
+                currentvert=self.basepoint
+                newletters=[x for x in w.letters]
+                try:
+                    marking.append(dict([('initial',[]),('final',[])]))
+                except AttributeError:
+                    pass
+                while len(newletters)>1:
+                    nextletter=newletters.pop(0)
+                    self.add_node(counter)
+                    try:
+                        k=1+max([edge[2] for edge in self.edges(keys=True)])
+                    except ValueError: # there aren't any edges yet
+                        k=1
+                    self.add_edge(currentvert,counter,superlabel=nextletter, treelabel=0, key=k)
+                    try:
+                        marking[i-1]['initial'].append((currentvert,counter,k))
+                    except TypeError:
+                        pass
+                    currentvert=counter
+                    counter+=1
+                if newletters:# word was nonempty
+                    nextletter=newletters.pop(0)
+                    self.add_edge(currentvert,self.basepoint,superlabel=nextletter, treelabel=i)
+                else: #word was empty
+                    pass
+        else:
+            nx.MultiDiGraph.__init__(self)
+            for e in graph.edges(keys=True,data=True):
+                if e[2]!=0:
+                    thiskey=e[2]
+                else:
+                    thiskey=len(graph.edges())
+                nx.MultiDiGraph.add_edge(self,e[0],e[1],thiskey,superlabel=e[3]['label'])
+                nx.MultiDiGraph.add_edge(self,e[1],e[0],-thiskey,superlabel=-e[3]['label'])
+            self.basepoint=basepoint
+            
     
 
     def add_edge(self, origin, terminus, **kwargs):
@@ -813,28 +882,7 @@ class StallingsGraph(nx.MultiDiGraph):
         vertsinthecore=set(simplecoregraph.nodes())
         self.remove_nodes_from([v for v in self if v not in vertsinthecore])
 
-    # take this out so we don't need pylab dependency
-    #def draw(self):
-        ## Note: Networkx draws all edges as straight lines. This doesn't work so well for multieges or loops.
-        ## To avoind this problem we subdivide edges and label the mid-edge vertex with the edgelabel.
-        #positivegraph=nx.MultiDiGraph()
-        #labels=dict()
-        #for v in self.nodes_iter():
-        #    positivegraph.add_node(v)
-        #    labels[v]=v
-        #for e in self.edges_iter(data=True):
-        #    if e[2]['superlabel']>0:
-        #        positivegraph.add_edge(e[0],(e[0],e[1],e[2]['superlabel']))
-        #        positivegraph.add_edge((e[0],e[1],e[2]['superlabel']),e[1])
-        #        labels[(e[0],e[1],e[2]['superlabel'])]=e[2]['superlabel']
-        #pylab.figure(1)
-        #pos=nx.spring_layout(positivegraph)
-        #nx.draw_networkx_nodes(positivegraph,pos,self.nodes())
-        #nx.draw_networkx_nodes(positivegraph,pos,set(positivegraph.nodes())-set(self.nodes()),node_color='w')
-        #nx.draw_networkx_labels(positivegraph,pos,labels)
-        #nx.draw_networkx_edges(positivegraph,pos)
-        ##edge_labels=dict([((u,v),d['superlabel']) for u,v,d in positivegraph.edges(data=True)])
-        ##nx.draw_networkx_edge_labels(positivegraph,pos,edge_labels=edge_labels)
+ 
         
 def unfolded(theSG):
     "Return key for vertex which is not folded "
@@ -1363,4 +1411,25 @@ def clean_cover(wordlist, verbose=False):
     cc=subgroup_intersection(*nplcs, verbose=verbose)
     return cc
 
+
+def intencode(rank,letters):
+    """
+    Given rank of free group and contianer of non-zero integers denoting a word in terms of numerbed generators and their inverses, encode the word as a single integer.
+    """
+    thedigits=[x if x>0 else 2*rank+1+x for x in letters]
+    return sum([thedigits[i]*(2*rank+1)**i for i in range(len(thedigits))])
+
+def intdecode(rank,theint):
+    """
+    Given rank of free group and integer encoding word in terms of generators and relators, decode the word. Returns a list of non-zero integers.
+    """
+    thelist=[]
+    while theint:
+        firstdigit=theint%(2*rank+1)
+        if firstdigit<rank+1:
+            thelist.append(firstdigit)
+        else:
+            thelist.append(firstdigit-(2*rank+1))
+        theint//=(2*rank+1)
+    return thelist
 

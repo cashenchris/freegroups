@@ -1,13 +1,13 @@
-import whiteheadgraph.build.wgraph as wg
+from ..build import wgraph as wg
 import copy
-import group
-import whiteheadgraph.build.orderedmultigraph as omg
-import whiteheadgraph.split.split as split
-import AutF as aut
-import whiteheadgraph.build.whiteheadreduce as wreduce
-from whiteheadgraph.test.knownexamples import *
-import freegroup
-import multiword
+import grouptheory.freegroups.group as group
+from ..build import orderedmultigraph as omg
+from ..split import split 
+import grouptheory.freegroups.AutF as aut
+from ..build import whiteheadreduce as wreduce
+from knownexamples import *
+import grouptheory.freegroups.freegroup as freegroup
+import groupthoery.freegroups.multiword as multiword
 
 
 

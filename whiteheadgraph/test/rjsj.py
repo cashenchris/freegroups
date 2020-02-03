@@ -1,14 +1,9 @@
-import whiteheadgraph.build.wgraph as wg
+import grouptheory.freegroups.freegroup as freegroup
+import grouptheory.freegroups.AutF as aut
+import grouptheory.freegroups.group as group
 import copy
-import group
-import whiteheadgraph.build.orderedmultigraph as omg
-import whiteheadgraph.split.split as split
-import AutF as aut
-import whiteheadgraph.build.whiteheadreduce as wreduce
-from whiteheadgraph.test.knownexamples import *
-import freegroup
-
-
+import whiteheadgraph as wg
+from knownexamples import *
 
 
 
@@ -41,7 +36,6 @@ def rjsjtest(maxlength,verbose,debug,randomautomorphismlength,examplename,freegr
     return nonefailed
         
 def testall(maxlength=30, randomautomorphismlength=0,verbose=False, debug=False):
-    
     if all([rjsjtest(maxlength,verbose,debug,randomautomorphismlength,k,knownexamples[k]['freegroup'],knownexamples[k]['wordlist'],knownexamples[k]['splitsfreely']) for k in knownexamples]):
         print "Found expected rJSJ's."
     else:

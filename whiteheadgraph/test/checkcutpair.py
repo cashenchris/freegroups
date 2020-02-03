@@ -1,12 +1,10 @@
-import whiteheadgraph.build.wgraph as wg
+import whiteheadgraph as wg
 import copy
-import group
-import whiteheadgraph.build.orderedmultigraph as omg
-import whiteheadgraph.split.split as split
-import AutF as aut
-import whiteheadgraph.build.whiteheadreduce as wreduce
-from whiteheadgraph.test.knownexamples import *
-import freegroup
+import grouptheory.freegroups.group as group
+from whiteheadgraph import orderedmultigraph as omg
+import grouptheory.freegroups.AutF as aut
+import grouptheory.freegroups.freegroup as freegroup
+from knownexamples import *
 
 
 
@@ -22,7 +20,7 @@ def cutpairtest(maxlength,verbose,debug,randomautomorphismlength,examplename,fre
     if verbose:
         print "Trying example ", examplename, " changed by automorphism:\n", alpha
     
-    wm=wreduce.whitehead_minimal(F,[alpha(w) for w in wordlist], verbose=verbose)
+    wm=wg.whitehead_minimal(F,[alpha(w) for w in wordlist], verbose=verbose)
     minimizingautomorphism=wm['minimizingautomorphism']
     newwordlist=wm['wordlist']
     W=wg.WGraph(newwordlist, simplified=True, verbose=verbose)
@@ -47,12 +45,12 @@ def cutpairtest(maxlength,verbose,debug,randomautomorphismlength,examplename,fre
         if verbose:
             print "Error in is_rigid_rel for ", examplename
         nonefailed=False
-    if not F.are_equivalent_wordlists(newcutpoints,split.find_cut_points(F,W)):
+    if not F.are_equivalent_wordlists(newcutpoints,wg.find_cut_points(F,W)):
         if verbose:
             print "Error in split.find_cut_points for ", examplename
         nonefailed=False
     #cuts=split.find_cut_pairs(F,W,newwordlist,maxlength)[0]
-    cuts=split.find_universal_splitting_words(F,W,newwordlist,maxlength)[0]
+    cuts=wg.find_universal_splitting_words(F,W,newwordlist,maxlength)[0]
     if not F.are_equivalent_wordlists(list(cuts['cutpoints']),newcutpoints):
         if verbose:
             print "Error finding cut points in split.findCutPairs for ", examplename
@@ -72,13 +70,13 @@ def cutpairtest(maxlength,verbose,debug,randomautomorphismlength,examplename,fre
         w=F.cyclic_reduce(w)
         if len(w)>0:
             if iscircle:
-                if not split.gives_cut(F,W,w)!=bool(F.is_conjugate_into(w,*newwordlist)):
+                if not wg.gives_cut(F,W,w)!=bool(F.is_conjugate_into(w,*newwordlist)):
                     if verbose:
                         print "Error: W is a circle, so ",w," should be a cut pair in ", examplename
                     nonefailed=False
                     break
             else:
-                if not split.gives_cut(F,W,w)==bool(F.is_conjugate_into(w,*set.union(set(newuncrossed),set(newcutpoints)))):
+                if not wg.gives_cut(F,W,w)==bool(F.is_conjugate_into(w,*set.union(set(newuncrossed),set(newcutpoints)))):
                     if verbose:
                         print "Warning",w()," gives a cut but wasn't found in ", examplename
                         print "It may be that ",w()," is a crossed cut pair and everything is ok. Check by hand."
