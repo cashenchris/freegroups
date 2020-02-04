@@ -553,7 +553,7 @@ class FGSubgroupOfFree(FGSubgroup, FGFreeGroup):
         Return index of self in supergroup.
         """
         iscover=True
-        for v in self.graph.nodes_iter():
+        for v in self.graph.nodes():
             if len(self.graph.out_edges(v))<2*self.supergroup.rank:
                 iscover=False
                 break
@@ -870,7 +870,7 @@ class StallingsGraph(nx.MultiDiGraph):
             totalverts=simplecoregraph.number_of_nodes()
             #fish=ProgressFish(total=totalverts)
             deletedverts=0
-        vertstoremove=[v for (v,d) in simplecoregraph.degree_iter() if v!=self.basepoint and d==1]
+        vertstoremove=[v for (v,d) in simplecoregraph.degree() if v!=self.basepoint and d==1]
         while vertstoremove:
             while vertstoremove:
                 nextvert=vertstoremove.pop()
@@ -878,7 +878,7 @@ class StallingsGraph(nx.MultiDiGraph):
                 if verbose:
                     deletedverts+=1
                     #fish.animate(amount=deletedverts)
-            vertstoremove=[v for (v,d) in simplecoregraph.degree_iter() if v!=self.basepoint and d==1]
+            vertstoremove=[v for (v,d) in simplecoregraph.degree() if v!=self.basepoint and d==1]
         vertsinthecore=set(simplecoregraph.nodes())
         self.remove_nodes_from([v for v in self if v not in vertsinthecore])
 
@@ -887,7 +887,7 @@ class StallingsGraph(nx.MultiDiGraph):
 def unfolded(theSG):
     "Return key for vertex which is not folded "
     for vertex in theSG.nodes():
-        edges=theSG.out_edges(vertex,keys=True,data=True)
+        edges=list(theSG.out_edges(vertex,keys=True,data=True))
         for i in range(len(edges)-1):
             for j in range(i+1,len(edges)):
                 if edges[i][3]['superlabel']==edges[j][3]['superlabel']:
@@ -1162,9 +1162,11 @@ def super_path_to_vertex(theSG):
     (If theSG represents a finite index subgroup these are the coset representatives.)
     """
     reps=dict()
-    tree=theSG.copy()
+    tree=StallingsGraph(basepoint=theSG.basepoint)
+    for e in theSG.edges(keys=True,data=True):
+        tree.add_edge(e[0],e[1],key=e[2],**e[3])
     sphere=dict()
-    for e in tree.edges_iter(keys=True,data=True):
+    for e in tree.edges(keys=True,data=True):
         if e[3]['treelabel']!=0:
             tree.remove_edge(e[0],e[1],e[2])
         elif e[3]['superlabel']<0:
@@ -1367,7 +1369,7 @@ def primitive_lift_cover(wordlist, verbose=False):
     for i in range(1,1+F.rank):
         deficiencies[i]=set(sg.nodes())
         deficiencies[-i]=set(sg.nodes())
-    for v in sg.nodes_iter():
+    for v in sg.nodes():
         for e in sg.out_edges(v,keys=True,data=True):
             deficiencies[e[3]['superlabel']].remove(v)
     thiskey=1+max([0]+[e[2] for e in sg.edges(keys=True)])

@@ -227,6 +227,7 @@ def NielsenGenerators(F):
     yield Automorphism(F,dict({i:F.word([i+1]) for i in range(1,F.rank)},**{F.rank:F.word([1])})) # cycically permute basis
     yield Automorphism(F,{1:F.word([-1])}) # invert first basis element
     yield Automorphism(F,{1:F.word([1,2])}) # transvection
+    yield Automorphism(F,{1:F.word([1,-2])}) # inverse transvection
 
 def WhiteheadAutomorphisms(F,allow_inner=False):
     """

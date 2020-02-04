@@ -3,7 +3,6 @@ import freegroup as fg
 import whiteheadgraph as wg #  need this for primitivity check
 
 
-
     
 def imprimitivityrank(theword,precomputedWsubgroups=None):
     """
@@ -14,13 +13,14 @@ def imprimitivityrank(theword,precomputedWsubgroups=None):
     inf
     >>> imprimitivityrank([1,1,1])
     1
-    >>> imprimitivityrank([1,2,-1,-2])
+    >>> imprimitivityrank('abAB')
     2
     >>> imprimitivityrank([1,1,2,2,3,3])
     3
     """
+    F,w=fg.parseinputword(theword)
     if precomputedWsubgroups is None:
-        graphs=constructgraphs(theword)
+        graphs=constructgraphs(w.letters)
     else:
         graphs=precomputedWsubgroups
     if graphs:
@@ -34,9 +34,28 @@ def Wsubgroups(theword):
     Given a list or tuple of non-zero integers interpreted as a word in a free group, returns a list of Stallings graphs representing the maximal subgroups of minimal rank contaiing theword as an imprimitive element.
     Returns an empty list if theword is primitive.
     """
-    graphs=constructgraphs(theword)
+    F,w=fg.parseinputword(theword)
+    graphs=constructgraphs(w.letters)
     maximalgraphs=maximalelements(graphs)
     return maximalgraphs
+
+def parabolic(theword):
+    """
+    Given a word in a free group, return Wsubgroup containing it and expression of theword as a subword of that subgroup.
+
+    >>> parabolic([1,2,-1,-2,3,2,1,-2,-1,-3])
+    (< c, abAB >, [2, 1, -2, -1])
+    """
+    F,w=fg.parseinputword(theword)
+    graphs=Wsubgroups(w)
+    if not graphs:
+        return None,None
+    else:
+        assert(len(graphs)==1) # Conjecturally this is always true. It would be interesting to know a counterexample.
+        P=fg.FGSubgroupOfFree(F,[],graph=fg.StallingsGraph(graph=graphs[0]))
+        Pword=P.restrict_word(w)
+        return P,Pword
+
 
 def vertexhaslabel(thegraph,thevertex,thelabel,returnopvert=False):
     """

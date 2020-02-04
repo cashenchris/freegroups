@@ -93,7 +93,7 @@ def compatible_coarsenings(P1,P2,partmap,splicemap):
     while not compatible(newP1,newP2,splicemap):
         connectiongraph=nx.Graph()
         connectiongraph.add_edges_from([((1,newP1.which_part(i)),(2,newP2.which_part(splicemap[i]))) for i in range(0,len(splicemap))])
-        components=[comp for comp in nx.connected_components(connectiongraph)]
+        components=[list(comp) for comp in nx.connected_components(connectiongraph)]
         newP2=Partition([frozenset.union(*[newP2.parts[comp[i][1]] for i in filter(lambda x: comp[x][0]==2, range(0,len(comp)))]) for comp in components])
         newP1=Partition([frozenset.union(*[newP1.parts[partmap[comp[i][1]]] for i in filter(lambda x: comp[x][0]==2, range(0,len(comp)))]) for comp in components])
     return (newP1,newP2)

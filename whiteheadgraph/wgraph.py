@@ -223,10 +223,11 @@ def wgrow_word(W,w):
     """
     Returns generalized Whitehead graph over the segment w
     """
-    Gedges=[((edge[0],), (edge[1],), (edge[2],), edge[3]) for edge in W.edges_iter(keys=True, data=True)]
-    Gedgeorders=dict(((vert,),[(edge,) for edge in W.node[vert]['edgeorder']]) for vert in W.nodes_iter())  #{(vert,):[(edge,) for edge in W.node[vert]['edgeorder']] for vert in W.nodes_iter()}
+    #Gedges=[((edge[0],), (edge[1],), (edge[2],), edge[3]) for edge in W.edges(keys=True, data=True)] #don't think we use any edge data
+    Gedges=[((edge[0],), (edge[1],), (edge[2],)) for edge in W.edges(keys=True)]
+    Gedgeorders=dict(((vert,),[(edge,) for edge in W.node[vert]['edgeorder']]) for vert in W.nodes())  #{(vert,):[(edge,) for edge in W.node[vert]['edgeorder']] for vert in W.nodes_iter()}
     G=omg.OrderedMultiGraph(Gedges,Gedgeorders)
-    for vert in W.nodes_iter(): # We have missed isolated vertices. Add them back.
+    for vert in W.nodes(): # We have missed isolated vertices. Add them back.
         if W.valence(vert)==0:
             G.add_vertex((vert,))
     # G is a deep copy of W so that vertex and edge names are all length 1 tuples

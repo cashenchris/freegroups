@@ -3,12 +3,14 @@ import grouptheory.freegroups.group as group
 import grouptheory.freegroups.freegroup as fg
 import grouptheory.freegroups.AutF as aut
 import networkx as nx
-#from fish import ProgressFish
 from itertools import product
-try:
-    from networkx.algorithms.flow import ford_fulkerson
-except ImportError:
-    raise Exception('Requires networkx<=1.9.1') # This particular problem can be resolved in networkx 1.10 by using  edmonds_karp instead of ford_fulkerson, but networkx 1.10 introduces other API changes that break other parts of the code too.
+from networkx.algorithms.flow import edmonds_karp
+
+
+# def is_minimal(F,wordlist):
+# def whitehead_complexity(F,wordlist):
+# def whitehead_minimal(F,wordlist,extrawordlist=None,simplified=False,verbose=False,blind=False,stopatdisconnected=False, minimizingsequence=False,cutvertsonly=False,stopatfirstreduction=False):
+# def whitehead_minimal_representative(inputword):
 
 def find_mincut_part(G,origin,terminus):
     """
@@ -17,13 +19,13 @@ def find_mincut_part(G,origin,terminus):
     try: # old version of networkx
         flow_rate, flow_dict=nx.ford_fulkerson(G,origin,terminus)
     except AttributeError: # new version of networkx
-        flow_value, flow_dict = nx.maximum_flow(G, origin, terminus,flow_func=ford_fulkerson)
+        flow_value, flow_dict = nx.maximum_flow(G, origin, terminus,flow_func=edmonds_karp)
     newverts=set([origin])
     verts=set([])
     while newverts:
         thisvert=newverts.pop()
         verts.add(thisvert)
-        for e in G.out_edges_iter(thisvert, data=True):
+        for e in G.out_edges(thisvert, data=True):
             if e[2]['capacity']>flow_dict[e[0]][e[1]] and e[1] not in verts:
                 newverts.add(e[1])
     return verts
@@ -122,7 +124,7 @@ def find_min_cut_reduction(F, simplifiedwordlist, startingvertex=None, verbose=F
                 edgemultiplicities[turn]=1
     
     # Change graph to a directed graph and use maxflow/mincut to find such a cut set.
-    for edge in undirectedsimplewg.edges_iter(): # write the edge multiplicities into the graph as 'capacity'
+    for edge in undirectedsimplewg.edges(): # write the edge multiplicities into the graph as 'capacity'
         if edge[0]<edge[1]:
             undirectedsimplewg.add_edge(*edge, capacity=edgemultiplicities[edge])
         else:

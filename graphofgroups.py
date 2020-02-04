@@ -59,13 +59,13 @@ class FPGraphOfGroups(nx.MultiDiGraph):
             return edge[2]
 
     def incident_edges(self, vert,**kwargs):
-        return [edge for edge in self.in_edges(vert,**kwargs)+self.out_edges(vert,**kwargs)]
+        return [edge for edge in self.in_edges(vert,**kwargs)]+[edge for edge in self.out_edges(vert,**kwargs)]
 
     def incident_edge_keys(self, vert):
         return [edge[2] for edge in self.in_edges(vert,keys=True)+self.out_edges(vert,keys=True)]
         
     def add_vertex(self, vert, vertgroup=FPGroup()):
-        self.add_node(vert,{'group':vertgroup})
+        self.add_node(vert,group=vertgroup)
 
     def gettmap(self,edge):
         return self[self.origin(edge)][self.terminus(edge)][self.ekey(edge)]['tmap']
@@ -122,7 +122,7 @@ class FPGraphOfGroups(nx.MultiDiGraph):
         for kw in kwargs:
             if kw!='key':
                 datadict[kw]=kwargs[kw]
-        nx.MultiDiGraph.add_edge(self,u,v,key,datadict)
+        nx.MultiDiGraph.add_edge(self,u,v,key=key,**datadict)
         self.edgekeys[key]=(u,v)
 
     def neighbors(self, vert):
@@ -134,7 +134,7 @@ class FPGraphOfGroups(nx.MultiDiGraph):
         return nbs
 
     def remove_vertex(self,vert):
-        for edge in self.edges_iter(vert, keys=True):
+        for edge in self.edges(vert, keys=True):
             del self.edgekeys[edge[2]]
         self.remove_node(vert)
 

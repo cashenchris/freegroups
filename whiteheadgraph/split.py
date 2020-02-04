@@ -3,7 +3,6 @@ import networkx as nx
 import grouptheory.freegroups.group as group
 import grouptheory.freegroups.freegroup as freegroup
 import grouptheory.freegroups.graphofgroups as gog
-#import grouptheory.freegroups.AutF
 import wgraph
 import orderedmultigraph as omg
 import whiteheadreduce as wreduce
@@ -11,8 +10,12 @@ import partition as part
 import enumeratewords as enumwords
 
 
-
-
+#def is_primitive(F,w,guaranteenonpower=False):
+#def splits_freely_rel(F, wordlist, simplified=False, minimized=False, verbose=False):
+#def gives_splitting(F, whiteheadgraphorwordlist,w,simplified=False, minimized=False, verbose=False):
+# def is_rigid_rel(F, whiteheadgraphorwordlist, simplified=False, minimized=False, verbose=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
+# def is_RJSJ(F,wlmap,thisgog, verbose=False):
+# def get_RJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, nameprefix='', blind=True, simplified=False, minimized=False, verbose=False,cutpairsearchrecursionlimit=None, maxnumberof2componentcutstoconsider=None):
 
 class TooBigError(Exception):
      def __init__(self, value,howbig=None):
@@ -835,7 +838,7 @@ def get_relative_cyclic_splitting_over(F, W, wordlist, splittingword, nameprefix
     if verbose:
         print "Computing quotient graph."
     quotientgraph=nx.MultiDiGraph()
-    quotientgraph.add_node(smash(nameprefix,w()), {'stabilizer':set([tuple(w.letters)])}) # one vertex with a cyclic stabilizer from the splitting word
+    quotientgraph.add_node(smash(nameprefix,w()), stabilizer=set([tuple(w.letters)])) # one vertex with a cyclic stabilizer from the splitting word
     edgestobe=set(worbits.keys()) # the set of w orbits of complementary components of w. quotient graph of group has one edge per w orbit. Has one vertex per F orbit.
     while edgestobe:
         thisedge=edgestobe.pop()

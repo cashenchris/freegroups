@@ -29,18 +29,22 @@ class OrderedMultiGraph(nx.MultiGraph):
 
     def __init__(self, data=None, edgeorders=None, **attr):
         self.edgekeys={}
-        nx.MultiGraph.__init__(self, data, **attr)
+        #nx.MultiGraph.__init__(self, data, **attr) # raises strange errors in newer networkx
+        nx.MultiGraph.__init__(self, None, **attr)
+        if data is not None:
+            for e in data:
+                self.add_edge(e[0],e[1],key=e[2])
         for edge in self.edges(keys=True):
             self.edgekeys[edge[2]]=(edge[0],edge[1])
         if edgeorders==None:
-            for vert in self.nodes_iter():
-                self.node[vert]['edgeorder']=[edge[2] for edge in self.edges_iter(vert, keys=True)]
+            for vert in self.nodes():
+                self.node[vert]['edgeorder']=[edge[2] for edge in self.edges(vert, keys=True)]
         else:
-            for vert in self.nodes_iter():
+            for vert in self.nodes():
                 if vert in edgeorders:
                     self.node[vert]['edgeorder']=edgeorders[vert]
                 else:
-                    self.node[vert]['edgeorder']=[edge[2] for edge in self.edges_iter(vert, keys=True)]
+                    self.node[vert]['edgeorder']=[edge[2] for edge in self.edges(vert, keys=True)]
             
     def __repr__(self):
         return "vertices:"+str(self.nodes(data=True))+" edges:"+str(self.edges(keys=True, data=True))+" edgekeys:"+repr(self.edgekeys)      
@@ -62,7 +66,7 @@ class OrderedMultiGraph(nx.MultiGraph):
         self.node[vert]['edgeorder']=[]
 
     def remove_vertex(self,vert):
-        for edge in self.edges_iter(vert, keys=True):
+        for edge in self.edges(vert, keys=True):
             opvert=edge[1]
             edgekey=edge[2]
             self.node[opvert]['edgeorder']=self.edge_order(opvert)[:self.edge_order(opvert).index(edgekey)]+self.edge_order(opvert)[1+self.edge_order(opvert).index(edgekey):]
@@ -70,7 +74,7 @@ class OrderedMultiGraph(nx.MultiGraph):
         self.remove_node(vert)
 
 
-    def add_edge(self, u, v, key=None, uposition=-1, vposition=-1, attr_dict=None, **attr):
+    def add_edge(self, u, v, key=None, uposition=-1, vposition=-1, **attr):
         # Adds an edge from u to v with given key. If no key given a unique one will
         # be generated. The edge is also inserted into the lists of incident edges to u and v
         # before the current entries in uposition and vposition, respectively.
@@ -95,7 +99,7 @@ class OrderedMultiGraph(nx.MultiGraph):
             key=0
             while key in self.edgekeys:
                 key+=1
-        nx.MultiGraph.add_edge(self, u, v, key, attr_dict, **attr)
+        nx.MultiGraph.add_edge(self, u, v, key, **attr)
         self.edgekeys[key]=(u,v)
         if uisnew:
             self.node[u]['edgeorder']=[key]
@@ -165,7 +169,7 @@ class OrderedMultiGraph(nx.MultiGraph):
         return nx.node_connected_component(self,vertex)
 
     def connected_components(self):
-        return [concom for concom in nx.connected_components(self)] # nx.connected_components changed to return generator
+        return [concom for concom in nx.connected_components(self)] 
     
     def connected_component_minus_a_vertex(self,vertex1, vertex2):
         """
@@ -185,9 +189,10 @@ class OrderedMultiGraph(nx.MultiGraph):
         """
         Connected components of W-{v1,v2}
         """
-        G=self.copy()
+        #G=self.copy()
+        G=nx.MultiGraph(self)
         G.remove_nodes_from([vertex1,vertex2])
-        return [concom for concom in nx.connected_components(G)]  # nx.connected_components changed to return generator
+        return [concom for concom in nx.connected_components(G)]  
       
     def is_cut_vertex(self,vertex):
         """
@@ -200,13 +205,13 @@ class OrderedMultiGraph(nx.MultiGraph):
             return self.connected_component_minus_a_vertex(aneighbor, vertex)!=(set(self.nodes())-set([vertex]))
             
     def find_cut_vertex(self):
-        for vert in self.nodes_iter():
+        for vert in self.nodes():
             if self.is_cut_vertex(vert):
                 return vert
         return None                
             
     def is_circle(self):
-        if any(self.valence(vertex)!=2 for vertex in self.nodes_iter()):
+        if any(self.valence(vertex)!=2 for vertex in self.nodes()):
             return False
         elif not self.is_connected():
             return False
@@ -221,10 +226,10 @@ def splice(G1, G2, v1, v2, splicemap,G1prefix=(),G2prefix=(),lookforisolatedvert
     assert(G1.valence(v1)==G2.valence(v2))
     def rename(prefix,base):
         return prefix+base if type(base)==tuple else prefix+(base,)
-    G1edges=[(rename(G1prefix,edge[0]), rename(G1prefix,edge[1]), rename(G1prefix,edge[2]), edge[3]) for edge in G1.edges_iter(keys=True, data=True)]
-    G2edges=[(rename(G2prefix,edge[0]), rename(G2prefix,edge[1]), rename(G2prefix,edge[2]), edge[3]) for edge in G2.edges_iter(keys=True, data=True)]
-    G1edgeorders= dict((rename(G1prefix,vert),[rename(G1prefix,edge) for edge in G1.node[vert]['edgeorder']]) for vert in G1.nodes_iter()) # {rename(G1prefix,vert):[rename(G1prefix,edge) for edge in G1.node[vert]['edgeorder']] for vert in G1.nodes_iter()}
-    G2edgeorders=dict((rename(G2prefix,vert),[rename(G2prefix,edge) for edge in G2.node[vert]['edgeorder']]) for vert in G2.nodes_iter())# {rename(G2prefix,vert):[rename(G2prefix,edge) for edge in G2.node[vert]['edgeorder']] for vert in G2.nodes_iter()}
+    G1edges=[(rename(G1prefix,edge[0]), rename(G1prefix,edge[1]), rename(G1prefix,edge[2]), edge[3]) for edge in G1.edges(keys=True, data=True)]
+    G2edges=[(rename(G2prefix,edge[0]), rename(G2prefix,edge[1]), rename(G2prefix,edge[2]), edge[3]) for edge in G2.edges(keys=True, data=True)]
+    G1edgeorders= dict((rename(G1prefix,vert),[rename(G1prefix,edge) for edge in G1.node[vert]['edgeorder']]) for vert in G1.nodes()) # {rename(G1prefix,vert):[rename(G1prefix,edge) for edge in G1.node[vert]['edgeorder']] for vert in G1.nodes()}
+    G2edgeorders=dict((rename(G2prefix,vert),[rename(G2prefix,edge) for edge in G2.node[vert]['edgeorder']]) for vert in G2.nodes())# {rename(G2prefix,vert):[rename(G2prefix,edge) for edge in G2.node[vert]['edgeorder']] for vert in G2.nodes()}
     newedgeorders={}
     newedgeorders.update(G2edgeorders)
     newedgeorders.update(G1edgeorders)
@@ -254,10 +259,10 @@ def splice(G1, G2, v1, v2, splicemap,G1prefix=(),G2prefix=(),lookforisolatedvert
 
     # We have missed any isolated vertices
     if lookforisolatedvertices:
-        for vert in G1.nodes_iter():
+        for vert in G1.nodes():
             if G1.valence(vert)==0:
                 newgraph.add_vertex(rename(G1prefix,vert))
-        for vert in G2.nodes_iter():
+        for vert in G2.nodes():
             if G2.valence(vert)==0:
                 newgraph.add_vertex(rename(G2prefix,vert))
     
