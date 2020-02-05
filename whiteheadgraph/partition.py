@@ -43,7 +43,7 @@ def partition_union(*args):
         for p in P2.parts:
             connectiongraph.add_star([(2,e) for e in p])
         connectiongraph.add_edges_from([((1,e),(2,e)) for e in P1.elements()])
-        components=[comp for comp in nx.connected_components(connectiongraph)]
+        components=[list(comp) for comp in nx.connected_components(connectiongraph)]
         return Partition([set([comp[i][1] for i in range(len(comp))]) for comp in components])
     return reduce(partition_union2,args)
     

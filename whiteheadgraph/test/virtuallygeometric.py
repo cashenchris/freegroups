@@ -1,13 +1,10 @@
-from ..build import wgraph as wg
 import copy
-import grouptheory.freegroups.group as group
-from ..build import orderedmultigraph as omg
-from ..split import split 
-import grouptheory.freegroups.AutF as aut
-from ..build import whiteheadreduce as wreduce
+import grouptheory.group as group
+import freegroups.whiteheadgraph as wg
+import freegroups.AutF as aut
 from knownexamples import *
-import grouptheory.freegroups.freegroup as freegroup
-import groupthoery.freegroups.multiword as multiword
+import freegroups.freegroup as freegroup
+import freegroups.virtuallygeometric as vg
 
 
 
@@ -25,7 +22,7 @@ def vgtest(maxlength,verbose,debug,randomautomorphismlength,examplename,freegrou
     if verbose:
         print "Trying example ", examplename, " changed by automorphism:\n", alpha
     newwordlist=[alpha(w) for w in wordlist]
-    if multiword.is_virtually_geometric(F,newwordlist)==virtuallygeometric:
+    if vg.is_virtually_geometric(F,newwordlist)==virtuallygeometric:
         if verbose:
             print "Correctly found vg for",examplename,"."
     else:

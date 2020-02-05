@@ -1,5 +1,5 @@
 import re
-import group
+import grouptheory.group
 import freegroup
 import geometric.gengraphs as gengraphs
 import geometric.heegaard as heegaard
