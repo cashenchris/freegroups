@@ -1,0 +1,1 @@
+from .generateAutForbitreps import generateautreps
