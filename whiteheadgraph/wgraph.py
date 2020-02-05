@@ -1,5 +1,5 @@
 import copy
-import grouptheory.freegroups.freegroup as freegroup
+import freegroups.freegroup as freegroup
 import grouptheory.group as group
 import networkx as nx
 import orderedmultigraph as omg
