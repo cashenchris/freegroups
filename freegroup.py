@@ -3,7 +3,7 @@ import random
 import copy
 from fractions import gcd
 from numpy import sqrt
-from group import *
+from grouptheory.group import *
 import networkx as nx
 import itertools
 from numpy import prod

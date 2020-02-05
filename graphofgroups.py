@@ -1,4 +1,4 @@
-from group import *
+from grouptheory.group import *
 import AutF as aut
 import networkx as nx
 

@@ -1,4 +1,4 @@
-from group import *
+from grouptheory.group import *
 import copy
 import random
 import itertools
