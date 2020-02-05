@@ -1,6 +1,6 @@
 import grouptheory.freegroups.freegroup as freegroup
 import grouptheory.freegroups.AutF as aut
-import grouptheory.freegroups.group as group
+import grouptheory.group as group
 import copy
 import whiteheadgraph as wg
 from knownexamples import *

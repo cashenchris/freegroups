@@ -1,13 +1,13 @@
 import copy
 import networkx as nx
-import grouptheory.freegroups.group as group
+import grouptheory.group as group
 import grouptheory.freegroups.freegroup as freegroup
 import grouptheory.freegroups.graphofgroups as gog
 import wgraph
 import orderedmultigraph as omg
 import whiteheadreduce as wreduce
 import partition as part
-import enumeratewords as enumwords
+import grouptheory.freegroups.enumeratefreegroupwords as enumwords
 
 
 #def is_primitive(F,w,guaranteenonpower=False):
@@ -1264,8 +1264,7 @@ def missing_3_letter_subwords(*wordlist):
     Return the set of 3 letter words in F that do not occur as subwords in w or w**(-1) as cyclic words.
     """
     thegroup=wordlist[0].group
-    wordgenerator=enumwords.generate_words(thegroup,3,3)
-    missingWords=set([tuple(x.letters) for x in wordgenerator])
+    missingWords=set([tuple(x) for x in enumwords.generate_words(thegroup.rank,3,3)])
     for theword in wordlist:
         reducedword=thegroup.cyclic_reduce(theword)
         for i in range(len(reducedword)):

@@ -1,6 +1,6 @@
 import whiteheadgraph as wg
 import copy
-import grouptheory.freegroups.group as group
+import grouptheory.group as group
 from whiteheadgraph import orderedmultigraph as omg
 import grouptheory.freegroups.AutF as aut
 import grouptheory.freegroups.freegroup as freegroup

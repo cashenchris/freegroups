@@ -75,15 +75,15 @@ class WhiteheadAuto(Automorphism):
             
 
     def __pow__(self,n):
+        # The point of defining this here instead of inheriting from Automorphism is that If n=0,1,-1 then result is still a Whitehead automorphism
         result=WhiteheadAuto(self.domain,0,[]) # the identity automorphism
-        # If n=0,1,-1 then result is still a Whitehead automorphism
         if n==0:
             return result
         elif n==1:
-            return self
+            return WhiteheadAuto(self.domain,self.x,self.Z)
         elif n==-1:
             return self.inverse()
-        elif(n)>1:
+        elif n>1:
             for i in range(n):
                 result=result * self
             return result
@@ -93,7 +93,43 @@ class WhiteheadAuto(Automorphism):
                 result=result * inverse
             return result
             
+class WhiteheadAutomorphismOfTheFirstKind(Automorphism):
+    """
+    Automorphism of free group defined by permuting and inverting generators.
 
+    input free group, list defining permutation of generators, list with entries +-1 whose i-1st entry determines if i-th generator is inverted
+    """
+    def __init__(self,F,permutationofgenerators,inversionlist):
+        D=dict()
+        self.powers=inversionlist
+        self.permutation=permutationofgenerators
+        for i in range(1,1+F.rank):
+            D[i]=F.word([self.powers[i-1]*self.permutation[i-1]])
+            Automorphism.__init__(self,F,D)
+
+    def inverse(self):
+        return WhiteheadAutomorphismOfTheFirstKind(self.domain,[1+self.permutation.index(i) for i in range(1,1+self.domain.rank)],[self.powers[self.permutation.index(i)] for i in range(1,1+self.domain.rank)])
+        
+    def __mul__(self,other):
+        if type(self)==type(other):
+            return WhiteheadAutomorphismOfTheFirstKind(self.domain,[self.permutation[other.permutation[i-1]-1] for i in range(1,1+self.domain.rank)],[other.powers[i-1]*self.powers[other.permutation[i-1]-1] for i in range(1,1+self.domain.rank)])
+        else:
+            return Automorphism.__mul__(self,other)
+
+    def __pow__(self,n):
+        result=WhiteheadAutomorphismOfTheFirstKind(self.domain,[i for i in range(1,1+self.domain.rank)],[1 for i in range(1,1+self.domain.rank)]) # identity automorphism as element in this class
+        if n==0:
+            return result
+        elif n>0:
+            for i in range(n):
+                result=result*self
+            return result
+        else:
+            inverse=self.inverse()
+            for i in range(-n):
+                result=result*inverse
+            return result
+    
 def random_whitehead_automorphism(F):
     """
     Generate a random Whitehead automorphism of a free group F.
@@ -108,15 +144,28 @@ def random_whitehead_automorphism(F):
             Z.append(v)
     return WhiteheadAuto(F,x,Z)
 
+def random_whitehead_automorphism_of_the_first_kind(F):
+    permutation=range(1,F.rank+1)
+    random.shuffle(permutation)
+    inversions=[]
+    for i in range(F.rank):
+        if random.random()<.5:
+            inversions.append(-1)
+        else:
+            inversions.append(1)
+    return WhiteheadAutomorphismOfTheFirstKind(F,permutation,inversions)
 
 def random_automorphism_pair(F,length):
     """
-    Generate an automorphism and its inverse by taking a product of 'length' many random Whitehead automorphisms.
+    Generate an automorphism and its inverse by taking a product of 'length'-many random Whitehead automorphisms.
     """
     randomaut=Automorphism(F)
     inverse=Automorphism(F)
     for i in range(length):
-        w=random_whitehead_automorphism(F)
+        if random.random()<.5:
+            w=random_whitehead_automorphism(F)
+        else:
+            w=random_whitehead_automorphism_of_the_first_kind(F)
         randomaut=w*randomaut
         inverse=inverse*(w.inverse())
     return randomaut, inverse
@@ -231,7 +280,7 @@ def NielsenGenerators(F):
 
 def WhiteheadAutomorphisms(F,allow_inner=False):
     """
-    Generator that yields non-trivial Whitehead automorphisms of F.
+    Generator that yields non-trivial Whitehead automorphisms (of the second kind) of F.
     """
     letters= range(1,1+F.rank)+range(-F.rank,0)
     for x in letters:

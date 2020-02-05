@@ -1,5 +1,5 @@
 import wgraph as wg
-import grouptheory.freegroups.group as group
+import grouptheory.group as group
 import grouptheory.freegroups.freegroup as fg
 import grouptheory.freegroups.AutF as aut
 import networkx as nx

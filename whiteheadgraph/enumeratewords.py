@@ -1,4 +1,5 @@
-import grouptheory.freegroups.group as group
+# not currently in use
+import grouptheory.group as group
 import grouptheory.freegroups.freegroup as freegroup
 import itertools
 import whiteheadreduce as wr

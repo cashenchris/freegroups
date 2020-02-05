@@ -1,6 +1,6 @@
 import copy
 import grouptheory.freegroups.freegroup as freegroup
-import grouptheory.freegroups.group as group
+import grouptheory.group as group
 import networkx as nx
 import orderedmultigraph as omg
 import whiteheadreduce as wreduce

@@ -1,4 +1,4 @@
-import grouptheory.freegroups.group as group
+import grouptheory.group as group
 import grouptheory.freegroups.freegroup as freegroup
 import whiteheadgraph as wg
 
