@@ -4,7 +4,11 @@ import freegroups.freegroup as fg
 import freegroups.AutF as aut
 import networkx as nx
 from itertools import product
-from networkx.algorithms.flow import edmonds_karp
+
+try:
+    from networkx.algorithms.flow import edmonds_karp
+except ImportError:
+    pass
 
 
 # def is_minimal(F,wordlist):
