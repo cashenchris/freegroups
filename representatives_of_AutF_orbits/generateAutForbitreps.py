@@ -2,12 +2,6 @@ import lazyautreps as lr
 import freegroups.AutF as aut
 import freegroups.freegroup as fg
 
-# these ones only used for verify_correct_count
-import networkx as nx
-import freegroups.whiteheadgraph as wg
-import freegroups.enumeratefreegroupwords as enum
-#--------------
-
 
 def generateautreps(rank,length,compress=False,noinversion=True,candidates=None):
     """
@@ -88,6 +82,9 @@ def verify_correct_count(rank,length,noinversion=False):
 
     This is very slow. The whole point is that generateautreps is much faster than the other way.
     """
+    import networkx as nx
+    import freegroups.whiteheadgraph as wg
+    import freegroups.enumeratefreegroupwords as enum
     F=fg.FGFreeGroup(numgens=rank)
     g=generateautreps(rank,length,noinversion=noinversion)
     Reps=[w for w in g]
