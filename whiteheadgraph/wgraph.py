@@ -95,11 +95,20 @@ freegroup.FGFreeGroup.are_equivalent_wordlists=are_equivalent_wordlists
 
 class WGraph(omg.OrderedMultiGraph):
     """ 
-    Thw Whitehead Graph is an omg.OrderedMultiGraph constructed from a list of group.word in a free group F together with a dictionary of splicing maps splicemaps={vert:splicemap for splicing vert to -vert,...}
+    A Whitehead Graph is an omg.OrderedMultiGraph together with a dictionary of splicing maps splicemaps={vert:splicemap for splicing vert to -vert,...}.  Such a graph is constructed from a list of group.word in a free group F.  Example:
+    >>> F = freegroup.FGFreeGroup(gens=['a','b','c'],inverses=['A','B','C'])
+    >>> wordlist = [F.word('aabbccbac')]
+    >>> G = WGraph(wordlist)
+    >>> G.number_of_edges()
+    9
+    >>> nx.is_isomorphic(G,nx.complete_bipartite_graph(3,3))
+    True
     """
-    # set simplified=True to skip simplification step
-    # set autominimize=True to automatically reduce to minimal complexity
     def __init__(self, originalwordlist, autominimize=False, simplified=False, verbose=False):
+        """
+        set simplified=True to skip simplification step
+        set autominimize=True to automatically reduce to minimal complexity
+        """
         omg.OrderedMultiGraph.__init__(self)
         self.group=originalwordlist[0].group
         self.rank=self.group.rank

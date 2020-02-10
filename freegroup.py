@@ -1,3 +1,22 @@
+"""
+Some tools for dealing with finitely generated free groups.  A free group can be specified only by rank, in which elements can be specified only by lists of integers.
+>>> F = FGFreeGroup(numgens=3)
+>>> w = F.word([1, 2, -3])
+>>> w**2
+[1, 2, -3, 1, 2, -3]
+
+Alternatively a free group can be specified by giving a collection of named generators (and optionally inverses), making words in the group potentially more readable.
+>>> F = FGFreeGroup(gens=['a','b','c'], inverses=['A','B','C'])
+>>> w1 = F.word('abC')
+>>> w2 = F.word('acB')
+>>> w3=w1**(-1)*w2
+>>> w3.alpha()
+'cBcB'
+>>> w3 == (F.word('cB'))**2
+True
+
+Words in a free group can be multiplied, raised to integer powers, and compared.
+"""
 from numpy import sign
 import random
 import copy
