@@ -80,7 +80,7 @@ def levelset(therank,theword,noinversion=True):
                 pass
             else:
                 newverts.add(wastuple)
-        autos=aut.WhiteheadAutomorphisms(F,allow_inner=True,bothkinds=True)
+        autos=aut.WhiteheadAutomorphisms(F,allow_inner=True,both_kinds=True)
         for alpha in autos:
             w=alpha(F.word(vastuple))
             wastuple=tuple(w.letters)
@@ -126,8 +126,7 @@ def verify_correct_count(rank,length,noinversion=False):
             for w in Min:
                 winv=tuple(((F.word(w))**(-1)).letters)
                 G.add_edge(tuple(w),winv)
-    autos=[x for x in aut.NielsenGenerators(F)]+[x for x in aut.WhiteheadAutomorphisms(F,allow_inner=True)]
-    for alpha in autos:
+    for alpha in aut.WhiteheadAutomorphisms(F,allow_inner=True,both_kinds=True):
         for v in G:
             w=tuple((alpha(F.word(v))).letters)
             if len(w)>length:
