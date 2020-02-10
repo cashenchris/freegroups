@@ -7,20 +7,20 @@ def generatelazyrep(rank,length,compress=False,noinversion=False):
     """
     Generator of elements of given length of free group of given rank that are Whitehead minimal and are minimal in lexicographic ordering among elements of the orbit of a conjugate of the word or its inverse by perutations of the generators and inversion.
     If compress=False then return object is a tuple of nonzero integers where n represents the nth generator of a free group and -n represents its inverse.
-    If compress=True then return object is an integer encoding the tuple.
+    If compress=True then return object is an integer encoding the tuple using fg.intencode(rank,___,shortlex=True)
     If noinversion=True then remove "or its inverse" from the first sentence. 
     """
     if length==0:
         if not compress:
             yield tuple()
         else:
-            yield fg.intencode(rank,[])
+            yield fg.intencode(rank,[],shortlex=True)
         return
     if length==1:
         if not compress:
             yield tuple([-rank])
         else:
-            yield fg.intencode(rank,tuple([-rank]))
+            yield fg.intencode(rank,tuple([-rank]),shortlex=True)
         return
     F=fg.FGFreeGroup(numgens=rank)
     thelazyreps=set([])
@@ -30,7 +30,7 @@ def generatelazyrep(rank,length,compress=False,noinversion=False):
         if not wg.is_minimal(F,[w]):
             continue
         if compress:
-            yield fg.intencode(rank,w.letters)
+            yield fg.intencode(rank,w.letters,shortlex=True)
         else:
             yield tuple(w.letters)
 
@@ -51,19 +51,31 @@ def shortlexleq(w,v):
         except AttributeError:
             return list(w)<=list(v)
 
-def shortlexmin(w,v):
-    """
-    Return whichever of words w or v is shortlex less than the other.
-    """
+def shortlexmin2(w,v):
     if shortlexleq(w,v):
         return w
     else:
         return v
+        
+def shortlexmin(listofelements):
+    """
+    Return shortlex minimal element from a list.
+    """
+    if len(listofelements)==0:
+        raise ValueError("shortlexmin arg is empty sequence")
+    elif len(listofelements)==1:
+        return listofelements[0]
+    else:
+        return shortlexmin2(shortlexmin(listofelements[:len(listofelements)//2]),shortlexmin(listofelements[len(listofelements)//2:]))
+    
+
+
+
 
 
 def lexleq(w,v):
     """
-    Compare words w and v in shortlex ordering.
+    Compare words w and v in lex ordering.
     """
     try:
         return w.letters<=v.letters
@@ -72,7 +84,7 @@ def lexleq(w,v):
 
 def lexmin(w,v):
     """
-    Return whichever of words w or v is shortlex less than the other.
+    Return whichever of words w or v is lex less than the other.
     """
     if lexleq(w,v):
         return w
@@ -83,6 +95,8 @@ def shortlexpermutationrep(w):
     """
     Return the shortlex minimal word that can be obtained from w by permuting or inverting generators.
     """
+    # first letter of w is assigned to -rank. This determines image of all other copies of that letter and its inverse.
+    # next unassigned letter that occurs is sent to -rank+1, etc...
     try:
         theletters=[x for x in w.letters]
     except AttributeError:
@@ -100,18 +114,20 @@ def shortlexpermutationrep(w):
 def SLPCIrep(w,isw=False,noinversion=False):
     """
     Return the shortlex minimal word that can be obtained from a conjugate of w or its inverse by permuting or inverting generators. 
+
+    If noinversion=True then only apply permutation of, inversion of, and conjugation by generators to w, not to inverse of w.
+
     If isw=True return bool(the SLPCIrep of w is w)
-    If noinversion=True then only apply permutation and inversion of gernators to w, not to inverse of w.
     """
     F=w.group
     theletters=deque([x for x in (F.cyclic_reduce(w)).letters])
     inverseletters=deque([x for x in ((F.cyclic_reduce(w))**(-1)).letters])
     themin=w
     for i in range(len(themin)):
-        themin=shortlexmin(themin,shortlexpermutationrep(F.word(theletters)))
+        themin=shortlexmin2(themin,shortlexpermutationrep(F.word(theletters)))
         if not noinversion:
-            themin=shortlexmin(themin,shortlexpermutationrep(F.word(inverseletters)))
-        theletters.rotate()
+            themin=shortlexmin2(themin,shortlexpermutationrep(F.word(inverseletters)))
+        theletters.rotate() # this is cyclic permutation = conjugation by a generator
         inverseletters.rotate()
         if isw and themin!=w:
             return False
