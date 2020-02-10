@@ -319,8 +319,8 @@ class FGFreeGroup(FPGroup):
         Find an indivisible root of w in a free group F.
         >>> F = FGFreeGroup(gens=['a','b'],inverses=['A','B'])
         >>> w = F.word('abbababaBA')
-        >>> result = F.conjugate_root(testw)
-        >>> result[0].alpha,result[1]
+        >>> r,p = F.max_root(w)
+        >>> r.alpha(),p
         ('abbaBA', 3)
         """
         w1=F.cyclic_reduce(w)
@@ -356,7 +356,7 @@ class FGFreeGroup(FPGroup):
         Find the conjugate of an indivisible root of w in F that is lex minimal.  This may be a conjugate of max_root, or of its inverse.
         >>> F = FGFreeGroup(gens=['a','b'],inverses=['A','B'])
         >>> w = F.word('abbababaBA')
-        >>> F.conjugate_root(testw).alpha()
+        >>> F.conjugate_root(w).alpha()
         'BA'
         """
         root, power=F.max_root(w,True, True)
