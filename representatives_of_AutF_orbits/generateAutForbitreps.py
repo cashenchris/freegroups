@@ -42,7 +42,6 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None)
             for alpha in WA:
                 # w=alpha(v)
                 wastuple=tuple(lr.SLPCIrep(alpha(F.word(vastuple)),noinversion=noinversion).letters)
-                assert(len(wastuple)>=length)
                 if len(wastuple)>length:
                     continue
                 if compress:
