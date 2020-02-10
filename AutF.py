@@ -6,7 +6,7 @@ import itertools
 
 class WhiteheadAuto(Automorphism):
     """
-    Whitehead automorphism defined by generator or inverse generator x and set or list Z of generators and inverses including x and not including X defined by:
+    Whitehead automorphism (of the second kind) defined by generator or inverse generator x and set or list Z of generators and inverses including x and not including X defined by:
     x -> x
     y -> xy if y in Z and Y not in Z
     y -> xyX if y and Y both in Z
@@ -97,7 +97,9 @@ class WhiteheadAutomorphismOfTheFirstKind(Automorphism):
     """
     Automorphism of free group defined by permuting and inverting generators.
 
-    input free group, list defining permutation of generators, list with entries +-1 whose i-1st entry determines if i-th generator is inverted
+    input free group F, permutationofgenerators a list defining permutation of generators by i-th generator goes to permutationofgenerators[i-1]-th generator, list with entries +-1 whose i-1st entry determines if i-th generator is inverted
+    
+    WhiteheadAutomorphismOfTheFirstKind(<a,b>,[2,1],[1,-1]) is automorphism a->b, b->A
     """
     def __init__(self,F,permutationofgenerators,inversionlist):
         D=dict()
@@ -267,6 +269,18 @@ def is_inner_auto(alpha):
     else:
         return True
 
+def powerset(iterable,allow_empty=True,cap=None):
+    """
+    generator that yields subsets of iterable of size at most cap.
+    """
+    if cap is None:
+        thecap=len(iterable)
+    else:
+        thecap=cap
+    if allow_empty:
+        return itertools.chain.from_iterable(itertools.combinations(list(iterable), r) for r in range(thecap+1))
+    else:
+        return itertools.chain.from_iterable(itertools.combinations(list(iterable), r) for r in range(1,thecap+1))
 
 def NielsenGenerators(F):
     """
@@ -278,15 +292,30 @@ def NielsenGenerators(F):
     yield Automorphism(F,{1:F.word([1,2])}) # transvection
     yield Automorphism(F,{1:F.word([1,-2])}) # inverse transvection
 
-def WhiteheadAutomorphisms(F,allow_inner=False):
+def WhiteheadAutomorphisms(F,allow_inner=False,both_kinds=False):
     """
     Generator that yields non-trivial Whitehead automorphisms (of the second kind) of F.
     """
     letters= range(1,1+F.rank)+range(-F.rank,0)
+    if both_kinds:
+        inversionlist=[1 for i in range(F.rank)] # no generator inversions, so permutation must be nontrivial
+        permutationsofgenerators=itertools.permutations([x for x in range(1,1+F.rank)])
+        for permutationofgenerators in permutationsofgenerators:
+            if list(permutationofgenerators)==letters[:F.rank]: # trivial permutation
+                pass
+            else:
+                yield WhiteheadAutomorphismOfTheFirstKind(F,permutationofgenerators,inversionlist)
+        invertedgenlists=powerset([x for x in range(F.rank)],allow_empty=False) # some generator is inverted, so permutation may be trivial
+        for invertedgenlist in invertedgenlists:
+            inversionlist=[-1 if i in invertedgenlist else 1 for i in range(F.rank)]
+            permutationsofgenerators=itertools.permutations([x for x in range(1,1+F.rank)])
+            for permutationofgenerators in permutationsofgenerators:
+                yield WhiteheadAutomorphismOfTheFirstKind(F,permutationofgenerators,inversionlist)
+    # now Whitehead automorphisms of the second kind
     for x in letters:
         if allow_inner:
-            Zs=itertools.chain.from_iterable((itertools.combinations([y for y in letters if abs(y)!=abs(x)],r) for r in range(1,2*F.rank-1)))
+            Zs=powerset([y for y in letters if abs(y)!=abs(x)],allow_empty=False) # this is a generator for subsets Z' such that Z=Z'\cup {x} is used to define Whitehead automorphism
         else:
-            Zs=itertools.chain.from_iterable((itertools.combinations([y for y in letters if abs(y)!=abs(x)],r) for r in range(1,2*F.rank-2)))
+            Zs=powerset([y for y in letters if abs(y)!=abs(x)],allow_empty=False,cap=len(letters)-3)
         for Z in Zs:
             yield WhiteheadAuto(F,x,[x]+[y for y in Z])

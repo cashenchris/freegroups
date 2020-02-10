@@ -1444,24 +1444,31 @@ def clean_cover(wordlist, verbose=False):
 #--------------------------------------
 # Storage of long words in low rank free group is inefficient because integers used fixed memory size. These functions encode and decode a string of integers representing a word in free group of given rank as a single integer.
 
-def intencode(rank,sequenceofnonzerointegers):
+def intencode(rank,sequenceofnonzerointegers,shortlex=False):
     """
     Given rank of free group and contianer of non-zero integers denoting a word in terms of numerbed generators and their inverses, encode the word as a single integer.
+
+    if shortlex=True the encoding is chosen so that the shortlex ordering of the input is the same as the ordering of the out integers.
     """
-    thedigits=[x if x>0 else 2*rank+1+x for x in sequenceofnonzerointegers]
+    if shortlex:
+        thedigits=[x+rank if x>0 else x+rank+1 for x in sequenceofnonzerointegers]
+        thedigits.reverse()        
+    else:
+        thedigits=[x if x>0 else 2*rank+1+x for x in sequenceofnonzerointegers]
     return sum([thedigits[i]*(2*rank+1)**i for i in range(len(thedigits))])
 
-def intdecode(rank,theint):
+def intdecode(rank,theint,shortlex=False):
     """
     Given rank of free group and integer encoding word in terms of generators and relators, decode the word. Returns a list of non-zero integers.
     """
     thelist=[]
     while theint:
-        firstdigit=theint%(2*rank+1)
-        if firstdigit<rank+1:
-            thelist.append(firstdigit)
-        else:
-            thelist.append(firstdigit-(2*rank+1))
+        thelist.append(theint%(2*rank+1))
         theint//=(2*rank+1)
+    if shortlex:
+        thelist=[x-(rank+1) if x<=rank else x-rank for x in thelist]
+        thelist.reverse()
+    else:
+        thelist=[x if x<rank+1 else x-(2*rank+1) for x in thelist]
     return thelist
 

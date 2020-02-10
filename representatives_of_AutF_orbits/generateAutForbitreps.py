@@ -7,43 +7,64 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None)
     """
     Generator of representatives of Aut(F) equivalence classes of words in free group F of given rank whose Whitehead complexity is given length.
 
-    If compress=True then return values are encoded as integers
+    If compress=True then return values are encoded as integers with fg.intencode(rank,___,shortlex=True)
     If noinversion=False then also mod out by inversion, so we're really generating equivalence classes of cyclic subgroups rather than elements.
     """
+    # slow algortihm:
+    # 1. Enumerate all Whitehead minimal elements of given length, make them vertices of a graph
+    # 2. Add edges between vertices that differ by a Whitehead automorphism of 1st kind, conjugation/cyclic permutation, and non-inner Whitehead automorphism of 2nd kind (and inversion, if noinversion=False).
+    # 3. Whitehead says  connected components of this graph = Aut(F) orbits
+    # improved algorithm:
+    # 1. Enumerate Whitehead minimal elemtents of given length that are shortlex minimal among elements that differ by Whitehead automorphisms of 1st kind and conjugation (and inversion if noinversion=False). This is what lr.generatelazyrep does.
+    # 2. Connected vertices by edges if they differ by non-inner Whitehead automorphism of second kind.
+    # 3. Claim equivalence relation of belonging to same connected component is the same for both graphs. This follows from the fact that the set of Whitehead automorphisms of the first kind forms a finite group that acts on the set of Whitehead automorphisms of the second kind by the action on the defining x,Z.
+    #
+    # If we just want reps, can yield any element of a connected component, but since we have to compute the entire component anyway we should select the shortlex minimal element in the connected component. 
+    #
+    # Within a connected component there can be elements that are local minima in the shortlex ordering but are not the global minimum. Don't know any way to determine if two elements are in the same component other than constructing the entire component.
     F=fg.FGFreeGroup(numgens=rank)
     if candidates is None:
         candidates=lr.generatelazyrep(rank,length,compress,noinversion)
     remaining=set(candidates)
-    currentcomponent=set()
     newverts=set()
     while remaining:
+        currentcomponent=set()
         nextvert=remaining.pop()
-        yield nextvert
         newverts.add(nextvert)
         while newverts:
             v=newverts.pop()
+            currentcomponent.add(v)
             if compress:
-                vastuple=fg.intdecode(rank,v)
+                vastuple=fg.intdecode(rank,v,shortlex=True)
             else:
                 vastuple=v
-            WA=aut.WhiteheadAutomorphisms(F)
+            WA=aut.WhiteheadAutomorphisms(F,allow_inner=False) # generator of all Whitehead automorphisms of the second kind that are not inner
             for alpha in WA:
+                # w=alpha(v)
                 wastuple=tuple(lr.SLPCIrep(alpha(F.word(vastuple)),noinversion=noinversion).letters)
                 assert(len(wastuple)>=length)
                 if len(wastuple)>length:
                     continue
                 if compress:
-                    w=fg.intencode(rank,wastuple)
+                    w=fg.intencode(rank,wastuple,shortlex=True)
                 else:
                     w=wastuple
-                if w==v or w in currentcomponent or w in newverts:
-                    continue
-                else:
+                if w==v or w in currentcomponent or w in newverts: # we've already seen this w
+                    continue 
+                else: # this w is new
                     remaining.remove(w)
                     newverts.add(w)
-            currentcomponent.add(v)
+        # we have constructed a complete component, yield one representative from this component and then loop
+        if compress:
+            yield min(currentcomponent)
+        else:
+            yield lr.shortlexmin(list(currentcomponent))
+            
 
-def levelset(therank,theword):
+def levelset(therank,theword,noinversion=True):
+    """
+    Given a rank of free group and element theword that is Whitehead minimal, return the set of words of the same length that are in the same Aut(F) orbit.
+    """
     F=fg.FGFreeGroup(numgens=therank)
     thelen=len(theword)
     newverts=set()
@@ -53,12 +74,19 @@ def levelset(therank,theword):
     while newverts:
         vastuple=newverts.pop()
         currentcomponent.add(vastuple)
-        autos=[x for x in aut.NielsenGenerators(F)]+[x for x in aut.WhiteheadAutomorphisms(F,allow_inner=True)]
+        if not noinversion:
+            w=(F.word(vastuple))**(-1)
+            wastuple=tuple(w.letters)
+            if wastuple in currentcomponent or wastuple in newverts:
+                pass
+            else:
+                newverts.add(wastuple)
+        autos=aut.WhiteheadAutomorphisms(F,allow_inner=True,both_kinds=True)
         for alpha in autos:
             w=alpha(F.word(vastuple))
             wastuple=tuple(w.letters)
             if len(wastuple)>thelen or wastuple in currentcomponent or wastuple in newverts:
-                continue
+                pass
             else:
                 newverts.add(wastuple)
     return currentcomponent
@@ -99,8 +127,7 @@ def verify_correct_count(rank,length,noinversion=False):
             for w in Min:
                 winv=tuple(((F.word(w))**(-1)).letters)
                 G.add_edge(tuple(w),winv)
-    autos=[x for x in aut.NielsenGenerators(F)]+[x for x in aut.WhiteheadAutomorphisms(F,allow_inner=True)]
-    for alpha in autos:
+    for alpha in aut.WhiteheadAutomorphisms(F,allow_inner=True,both_kinds=True):
         for v in G:
             w=tuple((alpha(F.word(v))).letters)
             if len(w)>length:
