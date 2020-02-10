@@ -1,3 +1,22 @@
+"""
+Some tools for dealing with finitely generated free groups.  A free group can be specified only by rank, in which elements can be specified only by lists of integers.
+>>> F = FGFreeGroup(numgens=3)
+>>> w = F.word([1, 2, -3])
+>>> w**2
+[1, 2, -3, 1, 2, -3]
+
+Alternatively a free group can be specified by giving a collection of named generators (and optionally inverses), making words in the group potentially more readable.
+>>> F = FGFreeGroup(gens=['a','b','c'], inverses=['A','B','C'])
+>>> w1 = F.word('abC')
+>>> w2 = F.word('acB')
+>>> w3=w1**(-1)*w2
+>>> w3.alpha()
+'cBcB'
+>>> w3 == (F.word('cB'))**2
+True
+
+Words in a free group can be multiplied, raised to integer powers, and compared.
+"""
 from numpy import sign
 import random
 import copy
@@ -298,6 +317,11 @@ class FGFreeGroup(FPGroup):
     def max_root(F,w,uptoconjugacy=False, withpower=True):
         """
         Find an indivisible root of w in a free group F.
+        >>> F = FGFreeGroup(gens=['a','b'],inverses=['A','B'])
+        >>> w = F.word('abbababaBA')
+        >>> r,p = F.max_root(w)
+        >>> r.alpha(),p
+        ('abbaBA', 3)
         """
         w1=F.cyclic_reduce(w)
         conjugator=F.word(w.letters[0:(len(w)-len(w1))//2])
@@ -329,7 +353,11 @@ class FGFreeGroup(FPGroup):
                 
     def conjugate_root(F,w, withpower=False):
         """
-        Find the conjugate of the indivisible root of w in F that is lex minimal.
+        Find the conjugate of an indivisible root of w in F that is lex minimal.  This may be a conjugate of max_root, or of its inverse.
+        >>> F = FGFreeGroup(gens=['a','b'],inverses=['A','B'])
+        >>> w = F.word('abbababaBA')
+        >>> F.conjugate_root(w).alpha()
+        'BA'
         """
         root, power=F.max_root(w,True, True)
         invroot=root**(-1)
