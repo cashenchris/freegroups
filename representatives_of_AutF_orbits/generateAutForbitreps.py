@@ -17,10 +17,11 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None)
     # improved algorithm:
     # 1. Enumerate Whitehead minimal elemtents of given length that are shortlex minimal among elements that differ by Whitehead automorphisms of 1st kind and conjugation (and inversion if noinversion=False). This is what lr.generatelazyrep does.
     # 2. Connected vertices by edges if they differ by non-inner Whitehead automorphism of second kind.
-    # 3. Claim equivalence relation of belonging to same connected component is the same for both graphs. This follows from the fact that the set of Whitehead automorphisms of the first kind forms a finite group that acts on the set of Whitehead automorphisms of the second kind.
+    # 3. Claim equivalence relation of belonging to same connected component is the same for both graphs. This follows from the fact that the set of Whitehead automorphisms of the first kind forms a finite group that acts on the set of Whitehead automorphisms of the second kind by the action on the defining x,Z.
     #
     # If we just want reps, can yield any element of a connected component, but since we have to compute the entire component anyway we should select the shortlex minimal element in the connected component. 
-    
+    #
+    # Within a connected component there can be elements that are local minima in the shortlex ordering but are not the global minimum. Don't know any way to determine if two elements are in the same component other than constructing the entire component.
     F=fg.FGFreeGroup(numgens=rank)
     if candidates is None:
         candidates=lr.generatelazyrep(rank,length,compress,noinversion)
