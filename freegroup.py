@@ -317,6 +317,11 @@ class FGFreeGroup(FPGroup):
     def max_root(F,w,uptoconjugacy=False, withpower=True):
         """
         Find an indivisible root of w in a free group F.
+        >>> F = FGFreeGroup(gens=['a','b'],inverses=['A','B'])
+        >>> w = F.word('abbababaBA')
+        >>> result = F.conjugate_root(testw)
+        >>> result[0].alpha,result[1]
+        ('abbaBA', 3)
         """
         w1=F.cyclic_reduce(w)
         conjugator=F.word(w.letters[0:(len(w)-len(w1))//2])
@@ -348,7 +353,11 @@ class FGFreeGroup(FPGroup):
                 
     def conjugate_root(F,w, withpower=False):
         """
-        Find the conjugate of the indivisible root of w in F that is lex minimal.
+        Find the conjugate of an indivisible root of w in F that is lex minimal.  This may be a conjugate of max_root, or of its inverse.
+        >>> F = FGFreeGroup(gens=['a','b'],inverses=['A','B'])
+        >>> w = F.word('abbababaBA')
+        >>> F.conjugate_root(testw).alpha()
+        'BA'
         """
         root, power=F.max_root(w,True, True)
         invroot=root**(-1)
