@@ -99,7 +99,8 @@ class WhiteheadAutomorphismOfTheFirstKind(Automorphism):
 
     input free group F, permutationofgenerators a list defining permutation of generators by i-th generator goes to permutationofgenerators[i-1]-th generator, list with entries +-1 whose i-1st entry determines if i-th generator is inverted
     
-    WhiteheadAutomorphismOfTheFirstKind(<a,b>,[2,1],[1,-1]) is automorphism a->b, b->A
+    If F=<a,b,c> then
+    WhiteheadAutomorphismOfTheFirstKind(F,[3,1,2],[1,-1,1]) is automorphism a->c, b->A, c->b
     """
     def __init__(self,F,permutationofgenerators,inversionlist):
         D=dict()
@@ -134,7 +135,7 @@ class WhiteheadAutomorphismOfTheFirstKind(Automorphism):
     
 def random_whitehead_automorphism(F):
     """
-    Generate a random Whitehead automorphism of a free group F.
+    A random Whitehead automorphism (of the second kind) of a free group F.
     """
     vertices=range(-F.rank,0)+range(1,F.rank+1)
     x=random.choice(vertices)
@@ -147,6 +148,9 @@ def random_whitehead_automorphism(F):
     return WhiteheadAuto(F,x,Z)
 
 def random_whitehead_automorphism_of_the_first_kind(F):
+    """
+    A random Whitehead automorphism of the first kind of a free group F.
+    """
     permutation=range(1,F.rank+1)
     random.shuffle(permutation)
     inversions=[]
@@ -294,7 +298,9 @@ def NielsenGenerators(F):
 
 def WhiteheadAutomorphisms(F,allow_inner=False,both_kinds=False):
     """
-    Generator that yields non-trivial Whitehead automorphisms (of the second kind) of F.
+    Generator that yields non-trivial Whitehead automorphisms of F.
+
+    By default only yields non-inner Whitehead automorphisms of the second kind.
     """
     letters= range(1,1+F.rank)+range(-F.rank,0)
     if both_kinds:
