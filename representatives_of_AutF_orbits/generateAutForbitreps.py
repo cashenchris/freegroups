@@ -5,7 +5,7 @@ from collections import deque
 import freegroups.whiteheadgraph as wg
 
 
-def generateautreps(rank,length,compress=False,noinversion=True,candidates=None):
+def generateautreps(rank,length,compress=False,noinversion=True,candidates=None,verbose=False):
     """
     Generator of representatives of Aut(F) equivalence classes of words in free group F of given rank whose Whitehead complexity is given length.
 
@@ -30,10 +30,16 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None)
     # Don't know any way to determine if two elements are in the same component other than constructing the entire component.
     F=fg.FGFreeGroup(numgens=rank)
     if candidates is None:
+        if verbose:
+            print "Generating candidates."
         candidates=generate_candidates(rank,length,compress,noinversion)
+    if verbose:
+        print str(len(candidates))+" candidates. Constucting equivalence classes."
     remaining=set(candidates)
     newverts=set()
     while remaining:
+        if verbose:
+            print str(len(remaining))+'remaining.'+'\r',
         nextvert=remaining.pop()
         # construct reduced levelset of nextvert. Same logic as function reducedlevelset, except here as we find each new neighbor we also remove it from remaining.
         reducedlevelset=set()

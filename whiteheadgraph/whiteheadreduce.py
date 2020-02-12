@@ -161,7 +161,7 @@ def find_min_cut_reduction(F, simplifiedwordlist, startingvertex=None, verbose=F
 def is_minimal(F,wordlist): # this doesn't check if the wordlist is already simplified.
     if any([w.letters[0]==-w.letters[-1] for w in wordlist]): # if any element in the wordlist is not cyclically reduced, return False
         return False
-    # otherwise, chech if there exists a Whitehead automorphism that reduces complexity.
+    # otherwise, check if there exists a Whitehead automorphism that reduces complexity.
     return not whitehead_minimal(F,wordlist,simplified=True,blind=True,stopatfirstreduction=True)
  
 
