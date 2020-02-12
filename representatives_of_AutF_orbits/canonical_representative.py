@@ -4,7 +4,7 @@ import freegroups.whiteheadgraph as wg
 import freegroups.representatives_of_AutF_orbits.generateAutForbitreps as genreps
 
 
-def canonical_representative_in_AutF_orbit(inputword,noinversion=True):
+def canonical_representative_in_AutF_orbit(inputword,compress=False,noinversion=True):
     """
     Give the shortlex minimal element (with respect to fixed basis) in the same AutF orbit as the inputword. 
 
@@ -26,6 +26,8 @@ def canonical_representative_in_AutF_orbit(inputword,noinversion=True):
     wmin=wg.whitehead_minimal_representative(theword)
     thereducedlevelset=reduced_levelset(wmin,noinversion)
     canonicalrep=genreps.shortlexmin(thereducedlevelset)
+    if compress:
+        return fg.intencode(F.rank,canonicalrep,shortlex=True)
     if hasattr(inputword,'group'):
         return F.word(canonicalrep)
     elif type(inputword)==str:
