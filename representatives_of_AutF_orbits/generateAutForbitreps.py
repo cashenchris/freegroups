@@ -37,6 +37,7 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None,
     remaining=set(candidates)
     newverts=set()
     if verbose:
+        print ""
         print "Constucting equivalence classes."
     while remaining:
         if verbose:
