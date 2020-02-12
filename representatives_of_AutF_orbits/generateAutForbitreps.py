@@ -41,7 +41,7 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None,
         print "Constucting equivalence classes."
     while remaining:
         if verbose:
-            print "Remaining words: "+str(len(remaining))+"\r",
+            print "Remaining words: "+str(len(remaining))+"         \r",
         nextvert=remaining.pop()
         # construct reduced levelset of nextvert. Same logic as function reducedlevelset, except here as we find each new neighbor we also remove it from remaining.
         reducedlevelset=set()
@@ -163,7 +163,7 @@ def generate_candidates(rank,length,compress=False,noinversion=False,verbose=Fal
             continue
         if verbose:
             count+=1
-            print "Candidates: "+str(count)+"\r",
+            print "Candidates: "+str(count)+"              \r",
         if compress:
             yield fg.intencode(rank,w.letters,shortlex=True)
         else:
