@@ -67,6 +67,8 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None,
                     remaining.remove(u)
                     newverts.add(u)
         # we have constructed a complete component, yield one representative from this component and then loop
+        if verbose:
+            print ''
         if compress:
             yield min(reducedlevelset)
         else:
