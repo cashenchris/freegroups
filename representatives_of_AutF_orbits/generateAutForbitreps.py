@@ -31,15 +31,16 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None,
     F=fg.FGFreeGroup(numgens=rank)
     if candidates is None:
         if verbose:
+            print ""
             print "Generating candidates."
-        candidates=generate_candidates(rank,length,compress,noinversion)
-    if verbose:
-        print "Constucting equivalence classes."
+        candidates=generate_candidates(rank,length,compress,noinversion,verbose)
     remaining=set(candidates)
     newverts=set()
+    if verbose:
+        print "Constucting equivalence classes."
     while remaining:
         if verbose:
-            print str(len(remaining))+'remaining.'+'\r',
+            print "Remaining words: "+str(len(remaining))+"\r",
         nextvert=remaining.pop()
         # construct reduced levelset of nextvert. Same logic as function reducedlevelset, except here as we find each new neighbor we also remove it from remaining.
         reducedlevelset=set()
@@ -67,8 +68,6 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None,
                     remaining.remove(u)
                     newverts.add(u)
         # we have constructed a complete component, yield one representative from this component and then loop
-        if verbose:
-            print ''
         if compress:
             yield min(reducedlevelset)
         else:
@@ -132,7 +131,7 @@ def reduced_levelset(Whiteheadminimalinputword,noinversion=True):
 
 
 
-def generate_candidates(rank,length,compress=False,noinversion=False):
+def generate_candidates(rank,length,compress=False,noinversion=False,verbose=False):
     """
     Generator of elements of given length of free group of given rank that are Whitehead minimal and are minimal in lexicographic ordering among elements of the orbit of a conjugate of the word or its inverse by perutations of the generators and inversion.
     If compress=False then return object is a tuple of nonzero integers where n represents the nth generator of a free group and -n represents its inverse.
@@ -140,6 +139,9 @@ def generate_candidates(rank,length,compress=False,noinversion=False):
     If noinversion=True then remove "or its inverse" from the first sentence. 
     """
     # take the generator generate_precandidates and screen for whitehead minimality.
+    if verbose:
+        print ""
+        count=0
     if length==0:
         if not compress:
             yield tuple()
@@ -158,6 +160,9 @@ def generate_candidates(rank,length,compress=False,noinversion=False):
         w=F.word(v)
         if not wg.is_minimal(F,[w]):
             continue
+        if verbose:
+            count+=1
+            print "Candidates: "+str(count)+"\r",
         if compress:
             yield fg.intencode(rank,w.letters,shortlex=True)
         else:
