@@ -73,6 +73,7 @@ def reduced_levelset(Whiteheadminimalinputword,noinversion=True):
 
     Note that the output only contains the input if the input is SLPCI minimal.
     """
+    # output is set of tuples
     F,theword=fg.parseinputword(Whiteheadminimalinputword)
     newverts=set([tuple(genreps.SLPCIrep(theword,noinversion=noinversion).letters)])
     reducedlevelset=set()

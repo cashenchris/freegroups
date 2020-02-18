@@ -1444,7 +1444,7 @@ def clean_cover(wordlist, verbose=False):
 #--------------------------------------
 # Storage of long words in low rank free group is inefficient because integers used fixed memory size. These functions encode and decode a string of integers representing a word in free group of given rank as a single integer.
 
-def intencode(rank,sequenceofnonzerointegers,shortlex=False):
+def intencode(rank,sequenceofnonzerointegers,shortlex=True):
     """
     Given rank of free group and contianer of non-zero integers denoting a word in terms of numerbed generators and their inverses, encode the word as a single integer.
 
@@ -1457,7 +1457,7 @@ def intencode(rank,sequenceofnonzerointegers,shortlex=False):
         thedigits=[x if x>0 else 2*rank+1+x for x in sequenceofnonzerointegers]
     return sum([thedigits[i]*(2*rank+1)**i for i in range(len(thedigits))])
 
-def intdecode(rank,theint,shortlex=False):
+def intdecode(rank,theint,shortlex=True):
     """
     Given rank of free group and integer encoding word in terms of generators and relators, decode the word. Returns a list of non-zero integers.
     """
