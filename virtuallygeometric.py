@@ -2,7 +2,7 @@ import re
 import grouptheory.group
 import freegroup
 import geometric.gengraphs as gengraphs
-import geometric.heegaard as heegaard
+import heegaard
 import geometric.subgroup as subgroup
 import whiteheadgraph as wg
 
