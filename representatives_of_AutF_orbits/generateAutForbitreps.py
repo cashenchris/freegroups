@@ -80,7 +80,7 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None,
 
 
 
-def generate_candidates(rank,length,compress=False,noinversion=False,verbose=False):
+def generate_candidates(rank,length,compress=False,noinversion=False,verbose=False,start=None,end=None):
     """
     Generator of elements of given length of free group of given rank that are Whitehead minimal and are minimal in lexicographic ordering among elements of the orbit of a conjugate of the word or its inverse by perutations of the generators and inversion.
     If compress=False then return object is a tuple of nonzero integers where n represents the nth generator of a free group and -n represents its inverse.
@@ -97,14 +97,8 @@ def generate_candidates(rank,length,compress=False,noinversion=False,verbose=Fal
         else:
             yield fg.intencode(rank,[],shortlex=True)
         return
-    if length==1:
-        if not compress:
-            yield tuple([-rank])
-        else:
-            yield fg.intencode(rank,tuple([-rank]),shortlex=True)
-        return
     F=fg.FGFreeGroup(numgens=rank)
-    thewords=generate_precandidates(rank,length,noinversion) # generator for precandidates
+    thewords=generate_precandidates(rank,length,noinversion,start=start,end=end) # generator for precandidates
     for v in thewords: # for each candidate, check if it is Whitehead minimal. If not, discard.
         w=F.word(v)
         if not wg.is_minimal(F,[w]):
@@ -117,24 +111,37 @@ def generate_candidates(rank,length,compress=False,noinversion=False,verbose=Fal
         else:
             yield tuple(w.letters)
 
-def generate_precandidates(rank,length,noinversion):
+def generate_precandidates(rank,length,noinversion,start=None,end=None):
     """
-    Generate words in free group of given rank with given length while avoinding words that will obviously not be shortlex minimal in their orbit.
+    Generate words in free group of given rank with given length while avoiding words that will obviously not be shortlex minimal in their orbit.
     """
     # This is an odometer. However, we notice that if there is a subword of the current word such that, after permuting and inverting generators, the image of the subword comes shortlex before the current word, then all further words in which the subword survives will not be SLPCI minimal. Therefore, we increment the odometer to disrupt the problem subword instead of at the last position. This allows us to skip over potential large ranges of values.
     if length==0:
         yield []
         return
-    if length==1:
-        yield [-rank]
-        return
     F=fg.FGFreeGroup(numgens=rank)
-    currentword=[-rank for i in range(length)]
+    if start is None:
+        currentword=[-rank for i in range(length)]
+        yield currentword
+    else:
+        assert(len(start)==length)
+        assert(all(abs(n)>0 for n in start) and all(abs(n)<=rank for n in start))
+        currentword=start
+        if SLPCIrep(currentword,is_self=True):
+            yield currentword
+    if end is not None:
+        assert(len(end)==length)
+        assert(all(abs(n)>0 for n in end) and all(abs(n)<=rank for n in end))
+        stop=end
+    else:
+        stop=[rank for i in range(length)]
+
     # currentword is a counter with entries nonzero integers between -rank and rank and having the given length. We will increment on the right. However, we will try to be clever by incrementing in larger steps to avoid ranges where all elements will fail to be SLPCI minimal.
-    yield currentword
     currentindex=length-1
-    while currentindex: # we never need to increment index 0, because then the word would never be lex minimal in its class
+    while currentindex and currentword<stop: # we never need to increment index 0, because then the word would never be lex minimal in its class
         currentword=increment(rank,currentindex,currentword)
+        if stop<=currentword:
+            return
         assert(len(currentword)==length)
         if currentword[0]!=-rank:# If this happens we have exhausted all possibilities, since SLPCI minimal words always have first entry equal to -rank.
             return
