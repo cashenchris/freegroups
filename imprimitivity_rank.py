@@ -82,11 +82,28 @@ def vertexhaslabel(thegraph,thevertex,thelabel,returnopvert=False):
             else:
                 return False
 
+def higher_irank(theword):
+    F,w=fg.parseinputword(theword)
+    r,p=F.max_root(w,uptoconjugacy=True,withpower=True)
+    if p>1: # theword is a proper power, so irank=1
+        return False
+    if wg.is_primitive(F,w,guaranteenonpower=True): # theword is primitve, so irank=float('inf')
+        return True
+    # otherwise check if it has irank=2
+    graphs=constructgraphs(w.letters,upper_rank_bound=2,guarantee_nonprimitive=True)
+    if graphs: # irank <=2
+        return False
+    else: # 2< irank < float('inf')
+        return True
 
-def constructgraphs(theword,notetrouble=False):
+
+
+def constructgraphs(theword,upper_rank_bound=None,guarantee_nonprimitive=False,notetrouble=False):
     """
     Given a list or tuple of non-zero integers interpreted as a word in a free group, returns a list of Stallings graphs representing the subgroups of minimal rank contaiing theword as an imprimitive element.
-    Returns an empty list if theword is primitive.
+    Do not continue search branch if current candidate graph has rank exceeding upper_rank_bound.
+    Returns an empty list if suitable graph are found. This means imprimitivity rank is greater than given upper_rank_bound, or, if upper_rank_bound=None, that the word is primitive and the imprimitivity rank is float('inf').
+    Set guarantee_nonprimtive=True is theword is known to be nonprimitive, to avoid repeating check.
     """
     if notetrouble:
         Trouble=False
@@ -94,7 +111,10 @@ def constructgraphs(theword,notetrouble=False):
     G.add_node(0) # base vertex is named 0
     if theword:
         rank=max([abs(x) for x in theword]) # rank of the ambient free group containing the word
-        bestrank=rank # upper bound for the rank of subgroup we are looking for, unless the theword is primitive
+        if upper_rank_bound is None:
+            bestrank=rank # upper bound for the rank of subgroup we are looking for, unless the theword is primitive
+        else:
+            bestrank=min(rank,upper_rank_bound)
         maxedges=dict([(i,[abs(x) for x in theword].count(i)/2) for i in range(1,1+rank)]) # a non-primitive word must use every edge in the Stallings graph G at least twice, so the max number of distinct edges in G labeled i is at most half the number of appearances of +-i in theword
     else: # if theword is empty return trivial graph
         if notetrouble:
@@ -109,10 +129,11 @@ def constructgraphs(theword,notetrouble=False):
             return [G],Trouble
         return [G]
     else:
-        if wg.is_primitive(F,F.word(theword),guaranteenonpower=True): # if theword is already primitive then it will be primitive in every subgroup
-            if notetrouble:
-                return [],Trouble
-            return []
+        if not guarantee_nonprimitive:
+            if wg.is_primitive(F,F.word(theword),guaranteenonpower=True): # if theword is already primitive then it will be primitive in every subgroup
+                if notetrouble:
+                    return [],Trouble
+                return []
     # if we haven't returned yet then theword is nontrivial, nonprimitive, and not a proper power
     workinggraphs=[]
     finishedgraphs=[]
