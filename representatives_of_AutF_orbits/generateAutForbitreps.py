@@ -3,6 +3,7 @@ import freegroups.freegroup as fg
 import freegroups.enumeratefreegroupwords as enum
 from collections import deque
 import freegroups.whiteheadgraph as wg
+import freegroups.representatives_of_AutF_orbits.canonical_representative as can
 
 
 def generateautreps(rank,length,compress=False,noinversion=True,candidates=None,verbose=False):
@@ -18,7 +19,7 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None,
     # 3. Whitehead says  connected components of this graph = Aut(F) orbits
     # However, this graph is highly redundant.
     # improved algorithm:
-    # 1. Enumerate elements of given length that are shortlex minimal among elements that differ by permutation of, conjugation by, and inversion of generators, and by inversion of element if noinversion=False. This is what generate_precandidates does. The point is we can enumerate such words without haveing to first enumerate all words and then screen for SLPCI minimality.
+    # 1. Enumerate elements of given length that are shortlex minimal among elements that differ by permutation of, conjugation by, and inversion of generators, and by inversion of element if noinversion=False. This is what generate_precandidates does. The point is we can enumerate such words without having to first enumerate all words and then screen for SLPCI minimality.
     # 2. Filter for Whitehead minimality. This is what generate_candidates does.
     # 3. Think of remaining elements as vertices in graph. Connect vertices by edge if they differ by non-inner Whitehead automorphism of second kind followed by SLPCI reduction. 
     # 4. Claim equivalence relation of belonging to same connected component is the same for this graph as it is in slow algorithm. This follows from the fact that the set of Whitehead automorphisms of the first kind forms a finite group that acts on the set of Whitehead automorphisms of the second kind by the action on the defining x,Z.
@@ -75,7 +76,25 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None,
             yield shortlexmin(list(reducedlevelset))
             
 
+def generateautreps2(rank,length,compress=False,noinversion=True,candidates=None,verbose=False,start=None,end=None):
+    """
+    Generator of representatives of Aut(F) equivalence classes of words in free group F of given rank whose Whitehead complexity is given length.
 
+    If compress=True then return values are encoded as integers with fg.intencode(rank,___,shortlex=True)
+    If noinversion=False then also mod out by inversion, so we're really generating equivalence classes of cyclic subgroups rather than elements.
+    """
+    F=fg.FGFreeGroup(numgens=rank)
+    if candidates is None:
+        if verbose:
+            print ""
+            print "Generating candidates."
+        candidates=generate_candidates(rank,length,False,noinversion,verbose,start,end)
+    for candidate in candidates:
+        if can.is_canonical_representative_in_AutF_orbit(candidate,noinversion,skipchecks=True):
+            if compress:
+                yield fg.intencode(rank,candidate,shortlex=True)
+            else:
+                yield candidate
             
 
 
@@ -192,8 +211,44 @@ def increment(rank,index,word):
         return increment(rank,index+1,word[:index]+[word[index]+1]+[-rank for i in range(len(word)-index-1)])
     return word[:index]+[word[index]+1]+[-rank for i in range(len(word)-index-1)] # no problems, just increment the current index
 
-    
 
+    
+def verify_correct_count(rank,length,noinversion=False):
+    """
+    Computes a set of representatives using generateautreps and another by enumerating all elements of given length in free groups and counting number of Aut(F) orbits represented by minimal length elements. Returns True if they have same length.
+
+    This is very slow. Only used to validate generateautreps. The whole point is that generateautreps is much faster than the other way.
+    """
+    import networkx as nx
+    import freegroups.whiteheadgraph as wg
+    import freegroups.enumeratefreegroupwords as enum
+    F=fg.FGFreeGroup(numgens=rank)
+    g=generateautreps(rank,length,noinversion=noinversion)
+    Reps=[w for w in g]
+    g=enum.generate_words(rank,length,length)
+    All=[w for w in g]
+    assert(len(All)==2*rank*(2*rank-1)**(length-1))
+    Min=[w for w in All if wg.is_minimal(F,[F.word(w)])]
+    G=nx.Graph()
+    for w in Min:
+        G.add_node(tuple(w))
+    if not noinversion:
+            for w in Min:
+                winv=tuple(((F.word(w))**(-1)).letters)
+                G.add_edge(tuple(w),winv)
+    for alpha in aut.WhiteheadAutomorphisms(F,allow_inner=True,both_kinds=True):
+        for v in G:
+            w=tuple((alpha(F.word(v))).letters)
+            if len(w)>length:
+                continue
+            else:
+                assert(w in G)
+                G.add_edge(v,w)
+    Comps=[c for c in nx.connected_components(G)]
+    return len(Reps)==len(Comps)
+
+
+# everything below this point copied to canonical_represenative.py
 def shortlexleq(w,v):
     """
     Compare words w and v in shortlex ordering.
@@ -310,39 +365,6 @@ def converttostring(thelist):
     return thestring
 
 
-def verify_correct_count(rank,length,noinversion=False):
-    """
-    Computes a set of representatives using generateautreps and another by enumerating all elements of given length in free groups and counting number of Aut(F) orbits represented by minimal length elements. Returns True if they have same length.
-
-    This is very slow. Only used to validate generateautreps. The whole point is that generateautreps is much faster than the other way.
-    """
-    import networkx as nx
-    import freegroups.whiteheadgraph as wg
-    import freegroups.enumeratefreegroupwords as enum
-    F=fg.FGFreeGroup(numgens=rank)
-    g=generateautreps(rank,length,noinversion=noinversion)
-    Reps=[w for w in g]
-    g=enum.generate_words(rank,length,length)
-    All=[w for w in g]
-    assert(len(All)==2*rank*(2*rank-1)**(length-1))
-    Min=[w for w in All if wg.is_minimal(F,[F.word(w)])]
-    G=nx.Graph()
-    for w in Min:
-        G.add_node(tuple(w))
-    if not noinversion:
-            for w in Min:
-                winv=tuple(((F.word(w))**(-1)).letters)
-                G.add_edge(tuple(w),winv)
-    for alpha in aut.WhiteheadAutomorphisms(F,allow_inner=True,both_kinds=True):
-        for v in G:
-            w=tuple((alpha(F.word(v))).letters)
-            if len(w)>length:
-                continue
-            else:
-                assert(w in G)
-                G.add_edge(v,w)
-    Comps=[c for c in nx.connected_components(G)]
-    return len(Reps)==len(Comps)
 
 
             
