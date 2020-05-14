@@ -1,10 +1,151 @@
+import freegroups.enumeratefreegroupwords as enum
 import freegroups.AutF as aut
 import freegroups.freegroup as fg
-import freegroups.enumeratefreegroupwords as enum
-from collections import deque
 import freegroups.whiteheadgraph as wg
-import freegroups.representatives_of_AutF_orbits.canonical_representative as can
+from collections import deque
+import networkx as nx
 
+
+
+def canonical_representative_in_AutF_orbit(inputword,compress=False,noinversion=True):
+    """
+    Give the shortlex minimal element (with respect to fixed basis) in the same AutF orbit as the inputword. 
+
+    Lex ordering is integer ordering, or the corresponding ordering on string generators: -2<-1<1<2 and 'B'<'A'<'a'<'b'
+
+    If noinversion=False then return the shortlex minimal element in the union of the AutF orbit of the inputword and its inverse.
+
+    >>> canonical_representative_in_AutF_orbit('abc')
+    'C'
+    >>> canonical_representative_in_AutF_orbit([3,1,2,1,2,1,2,-3])
+    [-3, -3, -3]
+    >>> canonical_representative_in_AutF_orbit('zxyXZY')
+    'ZYzy'
+    """
+    # Does Whitehead peak reduction and then enumerates the reduced levelset and finds minimal element.
+    if not inputword:
+        return inputword
+    F,theword=fg.parseinputword(inputword)
+    wmin=wg.whitehead_minimal_representative(theword)
+    thereducedlevelset=reduced_levelset(wmin,noinversion)
+    canonicalrep=shortlexmin(thereducedlevelset)
+    if compress:
+        return fg.intencode(F.rank,canonicalrep,shortlex=True)
+    if hasattr(inputword,'group'):
+        return F.word(canonicalrep)
+    elif type(inputword)==str:
+        return (F.word(canonicalrep))()
+    elif type(inputword)==list and type(inputword[0])==int:
+        return list(canonicalrep)
+    else:
+        return canonicalrep
+
+def is_canonical_representative_in_AutF_orbit(inputword,noinversion=True,skipchecks=False):
+    """
+    Decides if the inputword is the canonical representative of its AutF orbit.
+
+    if noinversion=False then decide if inputword is shortlex minimal element in the union of the AutF orbits of inputword and its inverse.
+
+    Use skipchecks=True if input word is already known to be Whitehead minimal and SLPCI minimal.
+
+    >>> is_canonical_representative_in_AutF_orbit('abc') # not Whitehead minimal
+    False
+    >>> is_canonical_representative_in_AutF_orbit('abAB') # not SLPCI minimal
+    False
+    >>> is_canonical_representative_in_AutF_orbit((-2, -2, -1, -2, -2, -1, -1, 2, -1),noinversion=False) # whitehead and slpci minimal, but not shortlex min in its component
+    False
+    >>> is_canonical_representative_in_AutF_orbit((-2, -2, -2, -1, -2, -2, -1, -1, -1),noinversion=False)
+    True
+    """
+    F,theword=fg.parseinputword(inputword)
+    inputwordastuple=tuple(theword.letters)        
+    if not skipchecks:
+        if not wg.is_minimal(F,[theword]):
+            return False
+        if not inputwordastuple==tuple(SLPCIrep(theword,noinversion=noinversion).letters):
+            return False
+    newverts=set([inputwordastuple])
+    reducedlevelset=set()
+    while newverts:
+        v=newverts.pop()
+        reducedlevelset.add(v)
+        WA=aut.WhiteheadAutomorphisms(F,both_kinds=False,allow_inner=False) # generator of all Whitehead automorphisms of the second kind that are not inner. We don't need first kind or inner because they don't change the SLPCIrep.
+        for alpha in WA:
+            w=F.cyclic_reduce(alpha(F.word(v)))
+            if len(w)>len(v): # w not in the levelset
+                continue
+            u=tuple(SLPCIrep(w,noinversion=noinversion).letters)
+            if u<inputwordastuple: # u has same length as input but is a lex predecessor
+                return False
+            if u==v or u in reducedlevelset or u in newverts: # we've already seen this u
+                continue 
+            else: # this u is in the level set, is not lex smaller, and is new
+                newverts.add(u)
+    return True
+
+def levelset(Whiteheadminimalinputword,noinversion=True):
+    """
+    Given Whiteheadminimalinputword that is a Whitehead minimal word in a free group, returns the set of words of the same length that are in the same Aut(F) orbit.
+    """
+    # output is set of tuples
+    F,theword=fg.parseinputword(Whiteheadminimalinputword)
+    newverts=set()
+    currentcomponent=set()
+    vastuple=tuple(theword.letters)
+    newverts.add(vastuple)
+    if not noinversion:
+        newverts.add(tuple((theword**(-1)).letters))
+    while newverts:
+        vastuple=newverts.pop()
+        currentcomponent.add(vastuple)
+        autos=aut.WhiteheadAutomorphisms(F,allow_inner=True,both_kinds=True)
+        for alpha in autos:
+            w=F.cyclic_reduce(alpha(F.word(vastuple)))
+            wastuple=tuple(w.letters)
+            if len(wastuple)>len(vastuple) or vastuple==wastuple or wastuple in currentcomponent or wastuple in newverts:
+                pass
+            else:
+                newverts.add(wastuple)
+    return currentcomponent
+
+def reduced_levelset(Whiteheadminimalinputword,noinversion=True,asgraph=False):
+    """
+    Given Whiteheadminimalinputword that is a Whitehead minimal word in a free group, returns the set of words of the same length that are in the same Aut(F) orbit and SLPCI minimal.
+
+    Note that the output only contains the input if the input is SLPCI minimal.
+    """
+    # output is set of tuples
+    F,theword=fg.parseinputword(Whiteheadminimalinputword)
+    if asgraph:
+        G=nx.Graph()
+    newverts=set([tuple(SLPCIrep(theword,noinversion=noinversion).letters)])
+    reducedlevelset=set()
+    while newverts:
+        v=newverts.pop()
+        reducedlevelset.add(v)
+        if asgraph:
+            G.add_node(v)
+        WA=aut.WhiteheadAutomorphisms(F,both_kinds=False,allow_inner=False) # generator of all Whitehead automorphisms of the second kind that are not inner
+        for alpha in WA:
+            w=F.cyclic_reduce(alpha(F.word(v)))
+            if len(w)>len(v): # w not in the levelset
+                continue
+            u=tuple(SLPCIrep(w,noinversion=noinversion).letters)
+            if asgraph and u!=v:
+                G.add_edge(v,u)
+            if u==v or u in reducedlevelset or u in newverts: # we've already seen this u
+                continue 
+            else: # this u is new
+                newverts.add(u)
+    if asgraph:
+        return G
+    else:
+        return reducedlevelset
+
+
+
+
+#--------------------------------- generators
 
 def generateautreps(rank,length,compress=False,noinversion=True,candidates=None,verbose=False):
     """
@@ -83,6 +224,11 @@ def generateautreps2(rank,length,compress=False,noinversion=True,candidates=None
     If compress=True then return values are encoded as integers with fg.intencode(rank,___,shortlex=True)
     If noinversion=False then also mod out by inversion, so we're really generating equivalence classes of cyclic subgroups rather than elements.
     """
+    # generateautreps generates all whitehead+slpci minimal elements as vertices in a graph connected by an edge if they differ by whitehead automorphism. Returns shortlex min element in each component.
+    # generateautreps2 generates same vertex set, but doesn't construct whole graph. For each vertex builds out component and stops if it encounters element shortlex less than starting vertex.
+    # generateautreps avoids redundant computations, but has to hold the whole graph in memory, while generateautreps2 only has to hold at most a single component.
+    # Total number of vertices grows exponentially in length, while size of largest component appears to grow polynomially.
+    # So generateautreps should be faster if length is small enough that the whole graph fits in RAM, while generateautreps2 should keep working pretty well for much longer words.
     F=fg.FGFreeGroup(numgens=rank)
     if candidates is None:
         if verbose:
@@ -238,7 +384,7 @@ def verify_correct_count(rank,length,noinversion=False):
                 G.add_edge(tuple(w),winv)
     for alpha in aut.WhiteheadAutomorphisms(F,allow_inner=True,both_kinds=True):
         for v in G:
-            w=tuple((alpha(F.word(v))).letters)
+            w=tuple((F.cyclic_reduce(alpha(F.word(v)))).letters)
             if len(w)>length:
                 continue
             else:
@@ -248,7 +394,12 @@ def verify_correct_count(rank,length,noinversion=False):
     return len(Reps)==len(Comps)
 
 
-# everything below this point copied to canonical_represenative.py
+
+
+
+
+
+#---------------------------------
 def shortlexleq(w,v):
     """
     Compare words w and v in shortlex ordering.
@@ -368,3 +519,9 @@ def converttostring(thelist):
 
 
             
+
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
