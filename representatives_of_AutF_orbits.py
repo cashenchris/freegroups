@@ -236,7 +236,7 @@ def generateautreps2(rank,length,compress=False,noinversion=True,candidates=None
             print "Generating candidates."
         candidates=generate_candidates(rank,length,False,noinversion,verbose,start,end)
     for candidate in candidates:
-        if can.is_canonical_representative_in_AutF_orbit(candidate,noinversion,skipchecks=True):
+        if is_canonical_representative_in_AutF_orbit(candidate,noinversion,skipchecks=True):
             if compress:
                 yield fg.intencode(rank,candidate,shortlex=True)
             else:
@@ -279,6 +279,9 @@ def generate_candidates(rank,length,compress=False,noinversion=False,verbose=Fal
 def generate_precandidates(rank,length,noinversion,start=None,end=None):
     """
     Generate words in free group of given rank with given length while avoiding words that will obviously not be shortlex minimal in their orbit.
+
+    If start and/or end are not None then only yield words shortlex >= start and < end.
+    start/end should be either None or list of integers of specified length.
     """
     # This is an odometer. However, we notice that if there is a subword of the current word such that, after permuting and inverting generators, the image of the subword comes shortlex before the current word, then all further words in which the subword survives will not be SLPCI minimal. Therefore, we increment the odometer to disrupt the problem subword instead of at the last position. This allows us to skip over potential large ranges of values.
     if length==0:
@@ -291,12 +294,14 @@ def generate_precandidates(rank,length,noinversion,start=None,end=None):
     else:
         assert(len(start)==length)
         assert(all(abs(n)>0 for n in start) and all(abs(n)<=rank for n in start))
+        assert(type(start)==list)
         currentword=start
         if SLPCIrep(currentword,is_self=True):
             yield currentword
     if end is not None:
         assert(len(end)==length)
         assert(all(abs(n)>0 for n in end) and all(abs(n)<=rank for n in end))
+        assert(type(end)==list)
         stop=end
     else:
         stop=[rank for i in range(length)]
@@ -473,7 +478,12 @@ def shortlexpermutationrep(w):
         else:
             theperm[x]=nextvalue.pop(0)
             theperm[-x]=-theperm[x]
-    return (w.group).word([theperm[x] for x in theletters])
+    if hasattr(w,'group'):
+        return (w.group).word([theperm[x] for x in theletters])
+    elif type(w)==tuple:
+        return tuple([theperm[x] for x in theletters])
+    else:
+        return [theperm[x] for x in theletters]
 
 def SLPCIrep(inputword,is_self=False,noinversion=False):
     """
