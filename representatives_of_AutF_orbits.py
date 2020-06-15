@@ -5,7 +5,10 @@ import freegroups.whiteheadgraph as wg
 from collections import deque
 import networkx as nx
 
-
+# Goal is to define and enumerate representative elements for Aut(F) orbits in free group F.
+# Chosen representative is the shortlext minimal one with respect to the integer ordering. That is, if free group elements are represented by strings of nonzero integers with 1 being first basis element, -1 being its inverse, etc, then -2<-1<1<2...
+# Can also work with orbits of cyclic subgroups, which we think of a generator and its inverse paired. Use noinversion=True if interested in actual elements, and noinversion=False if interested in cyclic subgroups.
+# Long strings of small integers are memory inefficitent. Use compress=True to encode lists of integers as single integer using fg.intencode.
 
 def canonical_representative_in_AutF_orbit(inputword,compress=False,noinversion=True):
     """
@@ -22,7 +25,7 @@ def canonical_representative_in_AutF_orbit(inputword,compress=False,noinversion=
     >>> canonical_representative_in_AutF_orbit('zxyXZY')
     'ZYzy'
     """
-    # Does Whitehead peak reduction and then enumerates the reduced levelset and finds minimal element.
+    # Does Whitehead peak reduction and then enumerates the reduced levelset and finds shortlex minimal element.
     if not inputword:
         return inputword
     F,theword=fg.parseinputword(inputword)
@@ -52,7 +55,7 @@ def is_canonical_representative_in_AutF_orbit(inputword,noinversion=True,skipche
     False
     >>> is_canonical_representative_in_AutF_orbit('abAB') # not SLPCI minimal
     False
-    >>> is_canonical_representative_in_AutF_orbit((-2, -2, -1, -2, -2, -1, -1, 2, -1),noinversion=False) # whitehead and slpci minimal, but not shortlex min in its component
+    >>> is_canonical_representative_in_AutF_orbit((-2, -2, -1, -2, -2, -1, -1, 2, -1),noinversion=False) # whitehead and slpci minimal, but not shortlex minimal in its component
     False
     >>> is_canonical_representative_in_AutF_orbit((-2, -2, -2, -1, -2, -2, -1, -1, -1),noinversion=False)
     True
@@ -86,6 +89,8 @@ def is_canonical_representative_in_AutF_orbit(inputword,noinversion=True,skipche
 def levelset(Whiteheadminimalinputword,noinversion=True):
     """
     Given Whiteheadminimalinputword that is a Whitehead minimal word in a free group, returns the set of words of the same length that are in the same Aut(F) orbit.
+
+    if noinversion=False then returns the set of words of the same length that are in the same Aut(F) orbit as input or its inverse.
     """
     # output is set of tuples
     F,theword=fg.parseinputword(Whiteheadminimalinputword)
@@ -404,7 +409,7 @@ def verify_correct_count(rank,length,noinversion=False):
 
 
 
-#---------------------------------
+#--------------------------------- auxiliary functions
 def shortlexleq(w,v):
     """
     Compare words w and v in shortlex ordering.
@@ -437,10 +442,6 @@ def shortlexmin(iterable):
     else:
         return shortlexmin2(shortlexmin(listofelements[:len(listofelements)//2]),shortlexmin(listofelements[len(listofelements)//2:]))
     
-
-
-
-
 
 def lexleq(w,v):
     """

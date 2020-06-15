@@ -43,6 +43,8 @@ def parabolic(theword):
     """
     Given a word in a free group, return Wsubgroup containing it and expression of theword as a subword of that subgroup.
 
+    Raises an assertion error if there is not a unique Wsubgroup. Conjecturally this should not happen.
+
     >>> parabolic([1,2,-1,-2,3,2,1,-2,-1,-3])
     (< c, abAB >, [2, 1, -2, -1])
     """
@@ -56,33 +58,11 @@ def parabolic(theword):
         Pword=P.restrict_word(w)
         return P,Pword
 
-
-def vertexhaslabel(thegraph,thevertex,thelabel,returnopvert=False):
-    """
-    Check if thevertex already has an outgoing edge labelled with thelabel.
-    returnopvert=False then return bool.
-    returnopvert=True then return the oppositve vertex on the edge labelled with thelabel, if such an edge exists, or None if no such edge.
-    """
-    for e in thegraph.out_edges(thevertex,data=True,keys=True):
-        if e[3]['label']==thelabel:
-            if returnopvert:
-                return e[1]
-            else:
-                return True
-    else:
-        for e in thegraph.in_edges(thevertex,data=True,keys=True):
-            if e[3]['label']==-thelabel:
-                if returnopvert:
-                    return e[0]
-                else:
-                    return True
-        else:
-            if returnopvert:
-                return None
-            else:
-                return False
-
 def higher_irank(theword):
+    """
+    Return True if the imprimitivity rank of theword is greater than 2.
+    """
+    # Start constructing graphs, but stop once it becomes clear that no rank 2 graph will suffice.
     F,w=fg.parseinputword(theword)
     r,p=F.max_root(w,uptoconjugacy=True,withpower=True)
     if p>1: # theword is a proper power, so irank=1
@@ -101,10 +81,13 @@ def higher_irank(theword):
 def constructgraphs(theword,upper_rank_bound=None,guarantee_nonprimitive=False,notetrouble=False):
     """
     Given a list or tuple of non-zero integers interpreted as a word in a free group, returns a list of Stallings graphs representing the subgroups of minimal rank contaiing theword as an imprimitive element.
+
     Do not continue search branch if current candidate graph has rank exceeding upper_rank_bound.
-    Returns an empty list if suitable graph are found. This means imprimitivity rank is greater than given upper_rank_bound, or, if upper_rank_bound=None, that the word is primitive and the imprimitivity rank is float('inf').
-    Set guarantee_nonprimtive=True is theword is known to be nonprimitive, to avoid repeating check.
+    Returns an empty list if no suitable graph are found. This means imprimitivity rank is greater than given upper_rank_bound, or, if upper_rank_bound=None, that the word is primitive and the imprimitivity rank is float('inf').
+
+    Set guarantee_nonprimtive=True if theword is known to be nonprimitive, to avoid repeating check.
     """
+    # notetrouble is for identifying words where the construction gets "more difficult". This is for separate experments.
     if notetrouble:
         Trouble=False
     G=nx.MultiDiGraph() 
@@ -206,7 +189,34 @@ def constructgraphs(theword,upper_rank_bound=None,guarantee_nonprimitive=False,n
     if notetrouble:
             return [G for G in finishedgraphs if graphrank(G)<=bestrank],Trouble
     return [G for G in finishedgraphs if graphrank(G)<=bestrank]
-                            
+
+
+##########---------auxiliary functions
+
+def vertexhaslabel(thegraph,thevertex,thelabel,returnopvert=False):
+    """
+    Check if thevertex already has an outgoing edge labelled with thelabel.
+    returnopvert=False then return bool.
+    returnopvert=True then return the oppositve vertex on the edge labelled with thelabel, if such an edge exists, or None if no such edge.
+    """
+    for e in thegraph.out_edges(thevertex,data=True,keys=True):
+        if e[3]['label']==thelabel:
+            if returnopvert:
+                return e[1]
+            else:
+                return True
+    else:
+        for e in thegraph.in_edges(thevertex,data=True,keys=True):
+            if e[3]['label']==-thelabel:
+                if returnopvert:
+                    return e[0]
+                else:
+                    return True
+        else:
+            if returnopvert:
+                return None
+            else:
+                return False
 
 def graphrank(thegraph):
     """
