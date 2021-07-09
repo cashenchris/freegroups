@@ -20,13 +20,14 @@ Words in a free group can be multiplied, raised to integer powers, and compared.
 from numpy import sign
 import random
 import copy
-from fractions import gcd
+from math import gcd
 from numpy import sqrt
 from grouptheory.group import *
 import networkx as nx
 import itertools
 from numpy import prod
 from collections import deque
+from functools import reduce
 
 
 
@@ -1472,3 +1473,6 @@ def intdecode(rank,theint,shortlex=True):
         thelist=[x if x<rank+1 else x-(2*rank+1) for x in thelist]
     return thelist
 
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
