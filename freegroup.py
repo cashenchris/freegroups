@@ -466,12 +466,12 @@ class FGSubgroupOfFree(FGSubgroup, FGFreeGroup):
         self.supergroup=supergroup
         if inclusionlist:
             if verbose:
-                print "Received input inclusionlist"
+                print("Received input inclusionlist")
             FGSubgroup.__init__(self,supergroup,inclusionlist,inverses=[(w**(-1))() for w in inclusionlist],**kwargs)
             marking=[]
             inversemarking=[]
             if verbose:
-                print "Constructing Stallings Graph"
+                print("Constructing Stallings Graph")
             cover= StallingsGraph(inclusionlist, 0, marking,inversemarking, self, verbose)
             cover.fold(marking, inversemarking, verbose=verbose)
             self.graph = cover
@@ -489,7 +489,7 @@ class FGSubgroupOfFree(FGSubgroup, FGFreeGroup):
                 FGSubgroup.__init__(self,supergroup,inclusionlist,**kwargs)
             else:
                 if verbose:
-                    print "Received input Stallings Graph"
+                    print("Received input Stallings Graph")
                 self.rank=1+len(self.graph.edges())//2 - len(self.graph.nodes())
                 try: # see if the graph has a maximal subtree and generators labeled
                     for e in self.graph.out_edges(self.graph.basepoint,data=True):
@@ -497,12 +497,12 @@ class FGSubgroupOfFree(FGSubgroup, FGFreeGroup):
                         break
                 except KeyError: # treelabels not set, set them
                     if verbose:
-                        print "Marking max tree in Stallings Graph"
+                        print("Marking max tree in Stallings Graph")
                     mark_max_tree(self.graph, verbose=verbose)
                 self.graph.fold(verbose=verbose)
                 # now want to write marked loops in the graph as words in the supergroup.
                 if verbose:
-                    print "Construcing inclusionlist"
+                    print("Construcing inclusionlist")
                 spathtov=super_path_to_vertex(self.graph) # dict spathtov[v]=superletters along edge path from basepoint to v through marked maxtree
                 for i in range(1,1+self.rank): 
                     for edge in self.graph.edges(keys=True,data=True):# find the edge that's the i-th basis element of the subgroup
@@ -598,7 +598,7 @@ class FGSubgroupOfFree(FGSubgroup, FGFreeGroup):
         preimage of the curve represented by w in the initial group.
         """
         if verbose:
-            print "Finding lifts of word "+w()
+            print("Finding lifts of word "+w())
         theletters=[i for i in w.letters]
         theSG=self.graph
         verts=set(theSG.nodes())
@@ -873,11 +873,11 @@ class StallingsGraph(nx.MultiDiGraph):
                 break
         except KeyError: # treelabels not set, set them
             if verbose:
-                print "Marking max tree"
+                print("Marking max tree")
             mark_max_tree(self, verbose=verbose)
         if verbose:
             #fish=ProgressFish() # progress counter
-            print "Folding. Number of vertices remaining:"
+            print("Folding. Number of vertices remaining:")
         while foldonce(self, marking, inversemarking)!=None:
             if verbose:
                 pass
@@ -891,10 +891,10 @@ class StallingsGraph(nx.MultiDiGraph):
         # Need this, for instance, in finding Stallings Graph of intersection of two subgroups.
         simplegraph=nx.Graph(self) # An undirected copy of self without any multiedges.
         if verbose:
-            print "Finding connected component of the basepoint"
+            print("Finding connected component of the basepoint")
         simplecoregraph=simplegraph.subgraph(nx.node_connected_component(simplegraph,self.basepoint)) # list vertices in the same component as basepoint.
         if verbose:
-            print "Removing valence 1 vertices"
+            print("Removing valence 1 vertices")
             totalverts=simplecoregraph.number_of_nodes()
             #fish=ProgressFish(total=totalverts)
             deletedverts=0
@@ -1344,7 +1344,7 @@ def subgroup_intersection(*subgroups, **kwargs):
         labellededges[i]=[[edge for edge in subgroup.graph.edges(data=True) if edge[2]['superlabel']==i] for subgroup in subgroups]
     if verbose:
         totalnumberedges=sum([prod([len(j) for j in labellededges[i]]) for i in labellededges])
-        print str(totalnumberedges)+" edges in the product graph"
+        print(str(totalnumberedges)+" edges in the product graph")
         #fish=ProgressFish(total=totalnumberedges)
         numberedges=0
     for i in range(1,1+F.rank):
@@ -1356,7 +1356,7 @@ def subgroup_intersection(*subgroups, **kwargs):
                 numberedges+=1
                 #fish.animate(amount=numberedges)
     if verbose:
-        print "Coring the product graph"
+        print("Coring the product graph")
     sg.core(verbose=verbose)
     return FGSubgroupOfFree(F,inclusionlist=[],graph=sg)
 
@@ -1374,13 +1374,13 @@ def normal_core(G, verbose=False):
     reps=[F.word(ll) for ll in coset_reps(G.graph)] # Coset representatives for F/G.
     conjugates=[]
     if verbose:
-        print "Constructing conjugates"
+        print("Constructing conjugates")
     for rep in reps:
         conjugategenerators=[rep**(-1)*gen*rep for gen in gens]
         conjugate=FGSubgroupOfFree(F,conjugategenerators)
         conjugates.append(conjugate)
     if verbose:
-        print "Intersecting conjugates:"
+        print("Intersecting conjugates:")
     core=subgroup_intersection(*conjugates, verbose=verbose)
     return core
 
@@ -1428,16 +1428,16 @@ def clean_cover(wordlist, verbose=False):
     wl=[w for w in wordlist]
     nplcs=[]
     if verbose:
-        print "Constructing normal primitive lift covers for each word"
+        print("Constructing normal primitive lift covers for each word")
     while wl:
         w=wl.pop()
         if w.letters:
             if verbose:
-                print "Constructing nplc for word "+w()
+                print("Constructing nplc for word "+w())
             nplc=normal_primitive_lift_cover([w], verbose=verbose)
             nplcs.append(nplc)
     if verbose:
-        print "Intersecting the covers"
+        print("Intersecting the covers")
     cc=subgroup_intersection(*nplcs, verbose=verbose)
     return cc
 
