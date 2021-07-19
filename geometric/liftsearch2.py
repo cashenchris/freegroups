@@ -19,13 +19,13 @@ def look_for_good_cover(wordlist,rank,degree,Heegaardwaittime=10,verbose=True):
         if yesno:
             if re.search("Unable to determine",fulltext)==None:
                 if verbose:
-                    print H.graph.edges()
-                    print '\n Found a subgroup which seems to work.'
+                    print(H.graph.edges())
+                    print('\n Found a subgroup which seems to work.')
                 tempH = copy.copy(H.graph)
                 working.append(tempH)
             else:
                 if verbose:
-                    print 'Unable to determine...'
+                    print('Unable to determine...')
     return working
 
 def alldegrees(wordlist,rank):
@@ -35,6 +35,6 @@ def alldegrees(wordlist,rank):
     """
     ans = [];d=2
     while ans==[]:
-        print "Searching degree",d,"covers."
+        print("Searching degree",d,"covers.")
         ans = look_for_good_cover(wordlist,rank,d)
         d=d+1

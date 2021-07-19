@@ -178,17 +178,17 @@ def generateautreps(rank,length,compress=False,noinversion=True,candidates=None,
     F=fg.FGFreeGroup(numgens=rank)
     if candidates is None:
         if verbose:
-            print ""
-            print "Generating candidates."
+            print("")
+            print("Generating candidates.")
         candidates=generate_candidates(rank,length,compress,noinversion,verbose)
     remaining=set(candidates)
     newverts=set()
     if verbose:
-        print ""
-        print "Constucting equivalence classes."
+        print("")
+        print("Constucting equivalence classes.")
     while remaining:
         if verbose:
-            print "Remaining words: "+str(len(remaining))+"         \r",
+            print("Remaining words: "+str(len(remaining))+"         \r"),
         nextvert=remaining.pop()
         # construct reduced levelset of nextvert. Same logic as function reducedlevelset, except here as we find each new neighbor we also remove it from remaining.
         reducedlevelset=set()
@@ -237,8 +237,8 @@ def generateautreps2(rank,length,compress=False,noinversion=True,candidates=None
     F=fg.FGFreeGroup(numgens=rank)
     if candidates is None:
         if verbose:
-            print ""
-            print "Generating candidates."
+            print("")
+            print("Generating candidates.")
         candidates=generate_candidates(rank,length,False,noinversion,verbose,start,end)
     for candidate in candidates:
         if is_canonical_representative_in_AutF_orbit(candidate,noinversion,skipchecks=True):
@@ -259,7 +259,7 @@ def generate_candidates(rank,length,compress=False,noinversion=False,verbose=Fal
     """
     # take the generator generate_precandidates and screen for whitehead minimality.
     if verbose:
-        print ""
+        print("")
         count=0
     if length==0:
         if not compress:
@@ -275,7 +275,7 @@ def generate_candidates(rank,length,compress=False,noinversion=False,verbose=Fal
             continue
         if verbose:
             count+=1
-            print "Candidates: "+str(count)+"              \r",
+            print("Candidates: "+str(count)+"              \r"),
         if compress:
             yield fg.intencode(rank,w.letters,shortlex=True)
         else:

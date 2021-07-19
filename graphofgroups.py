@@ -148,7 +148,7 @@ class FPGraphOfGroups(nx.MultiDiGraph):
         Change all the incident edgemaps by composing with aut.
         """
         for edge in self.incident_edges(vert, keys=True):
-	    ekey=edge[2]
+            ekey=edge[2]
             origin=self.origin(ekey)
             terminus=self.terminus(ekey)
             if vert==terminus:
@@ -183,18 +183,18 @@ class FPGraphOfGroups(nx.MultiDiGraph):
             edgedata['key']=e[2]
             self.add_edge(newgog.origin(e),newgog.terminus(e),newgog.localgroup(e),newgog.getomap(e),newgog.gettmap(e), **edgedata)
         # for each edge incident to vert add an edge connecting to the new subgraph
-	edgestobeadded=[]
+        edgestobeadded=[]
         for e in edgeupdate:
             if e[0]==vert:
                 if e[1]==vert:  # e is a loop at vert
-		    edgestobeadded.append(dict({"u":edgeupdate[e][0][0],"v":edgeupdate[e][0][1],"group":self.localgroup(e),"omap": edgeupdate[e][1][0],"tmap": edgeupdate[e][1][1], "key": self.ekey(e)}))
+                    edgestobeadded.append(dict({"u":edgeupdate[e][0][0],"v":edgeupdate[e][0][1],"group":self.localgroup(e),"omap": edgeupdate[e][1][0],"tmap": edgeupdate[e][1][1], "key": self.ekey(e)}))
                 else:  # e has only origin==vert
-		    edgestobeadded.append(dict({"u": edgeupdate[e][0],"v": self.terminus(e),"group": self.localgroup(e),"omap": edgeupdate[e][1],"tmap": self.gettmap(e), "key": self.ekey(e)}))
+                    edgestobeadded.append(dict({"u": edgeupdate[e][0],"v": self.terminus(e),"group": self.localgroup(e),"omap": edgeupdate[e][1],"tmap": self.gettmap(e), "key": self.ekey(e)}))
             else:  # e has only terminus==vert
                 assert(e[1]==vert)
                 edgestobeadded.append(dict({"u": self.origin(e),"v": edgeupdate[e][0],"group":self.localgroup(e),"omap": self.getomap(e),"tmap": edgeupdate[e][1], "key": self.ekey(e)}))
         # remove vert and all incident edges
         self.remove_vertex(vert)
 	# add the new edges
-	for newedge in edgestobeadded:
-	    self.add_edge(**newedge)
+        for newedge in edgestobeadded:
+	        self.add_edge(**newedge)

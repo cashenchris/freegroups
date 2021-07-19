@@ -117,11 +117,11 @@ class WGraph(omg.OrderedMultiGraph):
             simplifiedwordlist=originalwordlist
         else:
             if verbose:
-                print "Simplifying wordlist"
+                print("Simplifying wordlist")
             simplifiedwordlist=simplify_wordlist(self.group,originalwordlist)
         if autominimize:
             if verbose:
-                print "Performing peak reduction"
+                print("Performing peak reduction")
             self.wordlist=wreduce.whitehead_minimal(self.group,simplifiedwordlist,simplified=True,verbose=verbose,blind=True)['wordlist']
         else:
             self.wordlist=simplifiedwordlist
@@ -132,7 +132,7 @@ class WGraph(omg.OrderedMultiGraph):
             
         edgecounter=0
         if verbose:
-            print "Constructing Whitehead Graph"
+            print("Constructing Whitehead Graph")
             manywords=bool(len(self.wordlist)>999)
             if manywords:
                 pass

@@ -1,5 +1,5 @@
 # imports Whitehead graph stuff and sets up some basic examples.
-import group
+import grouptheory.group
 import freegroup 
 import networkx as nx
 import AutF as aut

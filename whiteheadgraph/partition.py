@@ -26,7 +26,7 @@ class Partition(object):
         return set.union(*[set(x) for x in self.parts])
 
     def which_part(self, element):
-        return filter(lambda x: element in self.parts[x], range(0,len(self.parts)))[0]
+        return list(filter(lambda x: element in self.parts[x], range(0,len(self.parts))))[0]
 
 
 def partition_union(*args):

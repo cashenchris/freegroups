@@ -90,7 +90,7 @@ def find_cut_vert_reduction(F, simplifiedwordlist, stopatdisconnected=False, ver
     # Second source of a reduction would be a cut vertex.
     cutvertices=nx.articulation_points(undirectedsimplewg)
     try:
-        cutvert=cutvertices.next()
+        cutvert=cutvertices.__next__()
     except StopIteration: # There were no cut vertices. Connected with no cut vertices implies all future reductions will still be connected.
         cutvert=None
     if cutvert is not None:
@@ -204,7 +204,7 @@ def whitehead_minimal(F,wordlist,extrawordlist=None,simplified=False,verbose=Fal
     if verbose:
         complexity=sum([len(w) for w in results['wordlist']])
         #fish1=ProgressFish(total=complexity)
-        print "Looking for cut vertex reductions. Current complexity:"+str(complexity)
+        print("Looking for cut vertex reductions. Current complexity:"+str(complexity))
 
     # Look for cut vertex reductions.
     graphisconnected,  nextred=find_cut_vert_reduction(F, results['wordlist'], stopatdisconnected=stopatdisconnected, verbose=verbose)
@@ -239,7 +239,7 @@ def whitehead_minimal(F,wordlist,extrawordlist=None,simplified=False,verbose=Fal
         return results
     if verbose:
         complexity=sum([len(w) for w in results['wordlist']])
-        print "Looking for mincut reductions. Current complexity:"+str(complexity)
+        print("Looking for mincut reductions. Current complexity:"+str(complexity))
     nextred=find_min_cut_reduction(F, results['wordlist'], verbose=verbose)
     if stopatfirstreduction:
         if nextred is None:

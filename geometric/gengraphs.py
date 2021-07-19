@@ -73,14 +73,14 @@ def deccparts(elements,max_size=None):
     """
     n = len(elements)
     if n == 0:
-	return
+        return
     max_size = n if max_size==None else min(n,max_size)
     for part1 in range(1,max_size+1):
-	if part1==n:
-	    yield [elements]
-	else:
-	    for smallerpart in deccparts(elements[part1:],part1):
-		yield [elements[:part1]] + smallerpart
+        if part1==n:
+            yield [elements]
+        else:
+            for smallerpart in deccparts(elements[part1:],part1):
+                yield [elements[:part1]] + smallerpart
 
 def perm_cc(elements):
     """
@@ -89,10 +89,10 @@ def perm_cc(elements):
     pool = list(elements)
     n = len(pool)
     for partlist in deccparts(elements):
-	nextperm = ()
-	for subs in partlist:
-	    nextperm += negcyc(subs)
-	yield nextperm
+        nextperm = ()
+    for subs in partlist:
+        nextperm += negcyc(subs)
+        yield nextperm
     
 
 def graphs_old(r,k):
@@ -129,19 +129,19 @@ def graphs(r,k):
     # graphs if we just choose one per conjugacy class on the first
     # permutation.
     for perm1 in perm_cc(vertices):
-	for otherperms in product(permutations(vertices),repeat=r-1):
-	    perms = (perm1,)+otherperms
-	   # for match in permutations(perms):
+        for otherperms in product(permutations(vertices),repeat=r-1):
+            perms = (perm1,)+otherperms
+	    # for match in permutations(perms):
 		# match[0][i][j] tells us the target of the edge labeled
 		# (i+1) coming from the vertex marked j
-	    gr = xgraph()
-	    for v in vertices:
-		gr.add_node(v)
-	    for i in range(r):
-		for j in vertices:
-		    gr.add_edge(j,perms[i][j],i+1)
-	    if gr.is_connected():
-		yield gr
+            gr = xgraph()
+            for v in vertices:
+                gr.add_node(v)
+            for i in range(r):
+                for j in vertices:
+                    gr.add_edge(j,perms[i][j],i+1)
+                    if gr.is_connected():
+                        yield gr
 
 
 

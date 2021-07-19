@@ -106,7 +106,7 @@ def get_free_splitting_rel(F, originalwordlist, simplified=False, minimized=Fals
         obused=[set([F.word([i]) for i in p]) for p in usedpartition.parts]
         obunused=set([F.word([i]) for i in unused])
     if verbose:
-        print "Constructing graph of groups."
+        print("Constructing graph of groups.")
     Gamma=gog.FPGraphOfGroups()
     if len(usedpartition.parts)>1:
         Gamma.add_vertex('v0', freegroup.FGSubgroupOfFree(F,[]))
@@ -125,11 +125,11 @@ def get_free_splitting_rel(F, originalwordlist, simplified=False, minimized=Fals
             Gamma.add_edge('v0','v0',freegroup.FGSubgroupOfFree(F,[]),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v0']['group']),group.Homomorphism(freegroup.FGSubgroupOfFree(F,[]), Gamma.node['v0']['group']), label=w() )
     if not withwordmap:
         if printresult:
-            print Gamma
+            print(Gamma)
         return Gamma
     else:
         if verbose:
-            print "Finding conjugates of words in the vertex groups."
+            print("Finding conjugates of words in the vertex groups.")
             #fishy=ProgressFish(total=len(wordmap))
         for i in range(len(wordmap)):
             if verbose:
@@ -143,11 +143,11 @@ def get_free_splitting_rel(F, originalwordlist, simplified=False, minimized=Fals
                 whichword=whichgroup.find_conjugate_in_subgroup(wordlist[wordmap[i][0]])
             wordmap[i]=(whichvert, whichword, wordmap[i][1])
         if printresult:
-            print Gamma
+            print(Gamma)
             if blind:
-                print "\n".join(["Image of '"+str(originalwordlist[i]())+"' is conjugate to ('"+str(wordmap[i][1]())+"')**('"+str(wordmap[i][2])+"') in vertex "+wordmap[i][0] for i in range(len(originalwordlist))])
+                print("\n".join(["Image of '"+str(originalwordlist[i]())+"' is conjugate to ('"+str(wordmap[i][1]())+"')**('"+str(wordmap[i][2])+"') in vertex "+wordmap[i][0] for i in range(len(originalwordlist))]))
             else:
-                print "\n".join(["'"+str(originalwordlist[i]())+"' is conjugate to ('"+str(wordmap[i][1]())+"')**('"+str(wordmap[i][2])+"') in vertex "+wordmap[i][0] for i in range(len(originalwordlist))])
+                print("\n".join(["'"+str(originalwordlist[i]())+"' is conjugate to ('"+str(wordmap[i][1]())+"')**('"+str(wordmap[i][2])+"') in vertex "+wordmap[i][0] for i in range(len(originalwordlist))]))
         return Gamma, wordmap
 freegroup.FGFreeGroup.get_free_splitting_rel=get_free_splitting_rel
 
@@ -213,7 +213,7 @@ def find_cut_points(F, whiteheadgraphorwordlist, simplified=False, minimized=Fal
     manywords=bool(len(wordlist)>9)
     if verbose and manywords:
         #fish=ProgressFish(total=len(wordlist))
-        print "Checking if generating words give cut points."
+        print("Checking if generating words give cut points.")
     for j in range(len(wordlist)):
         if verbose and manywords:
             pass
@@ -223,7 +223,7 @@ def find_cut_points(F, whiteheadgraphorwordlist, simplified=False, minimized=Fal
             for i in range(len(wgp['originalwordlist'])):
                 if wordmap[i][0]==j:
                     if verbose:
-                        print "The word at index "+str(i)+" gives a cut point."
+                        print("The word at index "+str(i)+" gives a cut point.")
                     break
             else:
                 raise KeyError
@@ -332,7 +332,7 @@ def find_universal_splitting_words(F, W, wordlist, DoNotVerifyTwoComponentWords=
     if len(simplegraph.edges())==rank*(2*rank-1):
         whiteheadgraphiscomplete=True
     del simplegraph
-    directions=range(-rank,rank+1)
+    directions=list(range(-rank,rank+1))
     directions.remove(0)
     buds=set({})
     SM=nx.DiGraph()
@@ -429,7 +429,7 @@ def find_universal_splitting_words(F, W, wordlist, DoNotVerifyTwoComponentWords=
                         
     potentiallyuncrossed=list(othercuts-uncrossed)
     if verbose:
-        print "Found "+str(len(cutpoints))+" cut points, "+str(len(uncrossed))+" uncrossed cut pairs, and "+str(len(othercuts))+" other potential cuts."
+        print("Found "+str(len(cutpoints))+" cut points, "+str(len(uncrossed))+" uncrossed cut pairs, and "+str(len(othercuts))+" other potential cuts.")
     if maxnumberof2componentcutstoconsider:
         if len(othercuts)>maxnumberof2componentcutstoconsider:
             raise TooBigError(str(len(othercuts))+" potential cut pairs is beyond limit set by 'maxnumberof2componentcutstoconsider'",len(othercuts))
@@ -443,7 +443,7 @@ def find_universal_splitting_words(F, W, wordlist, DoNotVerifyTwoComponentWords=
         reduceduncrossed=set([F.word(t) for t in uncrossed])
         reducedothercuts=set([F.word(t) for t in othercuts-uncrossed])
     if verbose:
-        print "Found "+str(len(reducedcutpoints)+len(reduceduncrossed))+" splitting elements."
+        print("Found "+str(len(reducedcutpoints)+len(reduceduncrossed))+" splitting elements.")
     return ({'cutpoints':reducedcutpoints,'uncrossed':reduceduncrossed,'othercuts':reducedothercuts},surethatsall)
 
 def verify_uncrossed_splitting_words(F,wordlist,potentiallyuncrossed, verbose=False):
@@ -561,7 +561,7 @@ def get_relative_cyclic_splitting_over(F, W, wordlist, splittingword, nameprefix
         while verts:
             vert=verts.pop()
             if v2 in G.neighbors(vert):
-                e=G[v2][vert].keys()[0]
+                e=list(G[v2][vert].keys())[0]
                 componentstopartition[i]=newP2.which_part(G.edge_order(v2).index(e))
                 break
         else:
@@ -803,19 +803,19 @@ def get_relative_cyclic_splitting_over(F, W, wordlist, splittingword, nameprefix
         if numberofaxes>maxnumberof2componentcutstoconsider:
             raise TooBigError(str(numberofaxes)+" potential cut pairs is beyond limit set by 'maxnumberof2componentcutstoconsider'",numberofaxes)
     if verbose:
-        print "Splitting has "+str(len(nearbyaxesincomplementsofw))+" components and "+str(numberofaxes)+" axes. Finding minimal axes in each component."
+        print("Splitting has "+str(len(nearbyaxesincomplementsofw))+" components and "+str(numberofaxes)+" axes. Finding minimal axes in each component.")
     minimalaxesincomplementsofw=dict()
     for i in complementsofw:
         minimalaxesincomplementsofw[i]=[nearbyaxesincomplementsofw[i][0],[]]
         indexgiveswminmialelement[i]=dict([(k,True) for k in range(len(nearbyaxesincomplementsofw[i][1]))])
         if verbose:
-            print "Component "+str(1+i)+" has "+str(len(nearbyaxesincomplementsofw[i][1]))+" axes in "+str(len(elementsincomplementiwhoseaxisprojectstowj[i]))+" groups."
+            print("Component "+str(1+i)+" has "+str(len(nearbyaxesincomplementsofw[i][1]))+" axes in "+str(len(elementsincomplementiwhoseaxisprojectstowj[i]))+" groups.")
         for j in elementsincomplementiwhoseaxisprojectstowj[i]:
             challengers=list(elementsincomplementiwhoseaxisprojectstowj[i][j])
             champions=tournament_of_champions(nearbyaxesincomplementsofw[i][1], challengers) # this is a list of indices in the list nearbyaxesincomplementsofw[i][1] such that the axis of the corresponding element projects to the point at distance j along the w axis, and such that the element is w minmal among all such elements
                                                          # the point here is that elements whose axes have disjoint projections to the w axis are not w comparable, so we should not waste time trying to compare them
             if verbose:
-                print "Of "+str(len(elementsincomplementiwhoseaxisprojectstowj[i][j]))+" axes considered in group "+str(1+j)+" of component "+str(1+i)+", "+str(len(champions))+" are minimal."
+                print("Of "+str(len(elementsincomplementiwhoseaxisprojectstowj[i][j]))+" axes considered in group "+str(1+j)+" of component "+str(1+i)+", "+str(len(champions))+" are minimal.")
             losers=set(elementsincomplementiwhoseaxisprojectstowj[i][j])-set(champions)
             for loser in losers:
                 indexgiveswminmialelement[i][loser]=False
@@ -836,7 +836,7 @@ def get_relative_cyclic_splitting_over(F, W, wordlist, splittingword, nameprefix
     # -----
 
     if verbose:
-        print "Computing quotient graph."
+        print("Computing quotient graph.")
     quotientgraph=nx.MultiDiGraph()
     quotientgraph.add_node(smash(nameprefix,w()), stabilizer=set([tuple(w.letters)])) # one vertex with a cyclic stabilizer from the splitting word
     edgestobe=set(worbits.keys()) # the set of w orbits of complementary components of w. quotient graph of group has one edge per w orbit. Has one vertex per F orbit.
@@ -998,7 +998,7 @@ def is_RJSJ(F,wlmap,thisgog, verbose=False):
                 rigidverts.append(vert)
             else:
                 if verbose:
-                    print "vertex "+str(vert)+" is neither rigid nor circle."
+                    print("vertex "+str(vert)+" is neither rigid nor circle.")
                 return False
         elif thisgog.localgroup(vert).rank==1:
             totaldegree=0
@@ -1017,7 +1017,7 @@ def is_RJSJ(F,wlmap,thisgog, verbose=False):
         if not F.is_conjugate_into(thisgog.localgroup(vert).word([1]), *[w for (v,w,p) in wlmap]):
             if all([v in circleverts for v in thisgog.neighbors(vert)]):
                 if verbose:
-                    print "vertex "+str(vert)+" should be inside a larger circle"
+                    print("vertex "+str(vert)+" should be inside a larger circle")
                 toosplit=True
                 break
     return not toosplit
@@ -1081,10 +1081,10 @@ def get_RJSJ(F,whiteheadgraphorwordlist,withmap=False, printresult=False, namepr
         if rjsj.localgroup(thisvert).rank>1:
             universal_split_vertex(rjsj,thisvert,wheredidmywordsgo,MinNumComponents=2,verbose=verbose, cutpairsearchrecursionlimit=cutpairsearchrecursionlimit, maxnumberof2componentcutstoconsider=maxnumberof2componentcutstoconsider)
     if printresult:
-        print rjsj
+        print(rjsj)
         if withmap and type(whiteheadgraphorwordlist)==list:
             for i in range(len(wheredidmywordsgo)):
-                print "The word "+(whiteheadgraphorwordlist[i])()+" corresponds to the word "+(wheredidmywordsgo[i][1])()+" in vertex "+str(wheredidmywordsgo[i][0])
+                print("The word "+(whiteheadgraphorwordlist[i])()+" corresponds to the word "+(wheredidmywordsgo[i][1])()+" in vertex "+str(wheredidmywordsgo[i][0]))
     if withmap:
         return rjsj, wheredidmywordsgo
     else:
@@ -1105,7 +1105,7 @@ def universal_split_vertex(thisgog,thisvert,wheredidmywordsgo, MinNumComponents=
         pass
     else:
         if verbose:
-             print "Searching for cut pairs."
+             print("Searching for cut pairs.")
         if MinNumComponents>2:
             DoNotVerifyTwoComponentWords=True
         else:
@@ -1119,8 +1119,8 @@ def universal_split_vertex(thisgog,thisvert,wheredidmywordsgo, MinNumComponents=
             splittingelementsbyvertex[thisvert]=splittingelements
         while splittingelementsbyvertex: 
             if verbose:
-                print "Performing next splitting."
-            newvert=splittingelementsbyvertex.keys()[0]
+                print("Performing next splitting.")
+            newvert=list(splittingelementsbyvertex.keys())[0]
             thiscut=splittingelementsbyvertex[newvert].pop()
             if not splittingelementsbyvertex[newvert]:
                 del splittingelementsbyvertex[newvert]
@@ -1195,7 +1195,7 @@ def split_and_refine(thisgog, thisvert, thiscut, wheredidmywordsgo, splittingele
         edgeupdate[e]=((thevertex,thevertex),(group.Homomorphism(thisgog.localgroup(e),refinedvert.localgroup(thevertex),dict([(1,(theword0)**(thepower0))])), group.Homomorphism(thisgog.localgroup(e),refinedvert.localgroup(thevertex),dict([(1,(theword1)**(thepower1))]))))
             
     if verbose:
-        print "Refining the splitting."
+        print("Refining the splitting.")
     # replace thisvert by a graph of groups compatible with previous splitting
     thisgog.refine_vertex(thisvert, refinedvert, edgeupdate)
     # the function modifies thisgog, wheredidmywordsgo, and splittingelementsbyvertex
@@ -1209,15 +1209,15 @@ def get_max_free_and_cyclic_splitting_rel(F, whiteheadgraphorwordlist, withmap=F
     wordlist=wgp['wordlist']
     wordmap=wgp['wordmap']
     if verbose:
-        print "Looking for free splittings."
+        print("Looking for free splittings.")
     freesplitting,wmap=F.get_free_splitting_rel(wordlist, withwordmap=True, minimized=True, simplified=True, blind=blind)
     wheredidmywordsgo=[(wmap[wordmap[i][0]][0], wmap[wordmap[i][0]][1],wmap[wordmap[i][0]][2]*wordmap[i][1]) for i in range(len(wordmap))]
     higherrankvertices=[v for v in freesplitting.nodes() if freesplitting.localgroup(v).rank>1]
     if verbose:
-        print "Found a free splitting with "+str(len(higherrankvertices))+" higher rank vertices."
+        print("Found a free splitting with "+str(len(higherrankvertices))+" higher rank vertices.")
     for thisvert in higherrankvertices: # find cyclic splittings of the vertex groups
         if verbose:
-            print "Finding cyclic splittings of vertex "+str(1+higherrankvertices.index(thisvert))+"."
+            print("Finding cyclic splittings of vertex "+str(1+higherrankvertices.index(thisvert))+".")
         thisgroup=freesplitting.localgroup(thisvert)
         indexofthiswordlistintomainwordlist=[]
         thiswordlist=[]
@@ -1244,12 +1244,12 @@ def get_max_free_and_cyclic_splitting_rel(F, whiteheadgraphorwordlist, withmap=F
             edgeupdate[e]=((somevertex,somevertex), (group.Homomorphism(freesplitting.localgroup(e), thisrjsj.localgroup(somevertex)),group.Homomorphism(freesplitting.localgroup(e), thisrjsj.localgroup(somevertex))))
         freesplitting.refineVertex(thisvert, thisrjsj, edgeupdate)
     if verbose:
-        print ""
+        print("")
     if printresult:
-        print freesplitting
+        print(freesplitting)
         if withmap:
             for i in range(len(wheredidmywordsgo)):
-                    print "The word "+(wordlist[i])()+" corresponds to a power of "+(wheredidmywordsgo[i][1])()+" in vertex "+str(wheredidmywordsgo[i][0])
+                    print("The word "+(wordlist[i])()+" corresponds to a power of "+(wheredidmywordsgo[i][1])()+" in vertex "+str(wheredidmywordsgo[i][0]))
     if withmap:
         return freesplitting, wheredidmywordsgo
     else:

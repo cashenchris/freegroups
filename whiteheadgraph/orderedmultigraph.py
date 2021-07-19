@@ -154,7 +154,7 @@ class OrderedMultiGraph(nx.MultiGraph):
             try:
                 raise OMGError(self.__repr__()+'.opposite_end('+str(edge)+','+str(vert)+')',str(vert)+' is not a vertex of '+str(edge))
             except OMGError as e:
-                print 'Error in', e.expr,': ',e.msg
+                print('Error in', e.expr,': ',e.msg)
 
     def valence(self, vertex):
         return self.degree(vertex)

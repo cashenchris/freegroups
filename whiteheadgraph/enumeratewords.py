@@ -49,13 +49,13 @@ def generate_words_in_commutator_subgroup(F,maxcommutatorlength,maxsinglewordlen
     """
     wordgen=generate_words(F,maxsinglewordlength)
     while True:
-        w=wordgen.next()
+        w=wordgen.__next__()
         if freegroup.ishomologicallytrivial(w):
             yield w
     #wordgen=generatewords(F,maxsinglewordlength)
     #multiwordgen=itertools.product(wordgen,repeat=2*maxcommutatorlength)
     #while True:
-    #    multiword=multiwordgen.next()
+    #    multiword=multiwordgen.__next__()
     #    pairlist=[(multiword[2*i],multiword[2*i+1]) for i in range(maxcommutatorlength)]
     #    commutatorlist=[p[0]*p[1]*p[0]**(-1)*p[1]**(-1) for p in pairlist]
     #    commutator=group.product(*commutatorlist)       

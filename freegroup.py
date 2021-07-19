@@ -1213,10 +1213,10 @@ def super_path_to_vertex(theSG):
             newneighbors=tree.distinct_neighbors(thisvert)
             for neighbor in list(newneighbors):
                 try:
-                    edgekey=tree[thisvert][neighbor].keys()[0]
+                    edgekey=list(tree[thisvert][neighbor].keys())[0]
                     predecessor[neighbor]=(thisvert,tree[thisvert][neighbor][edgekey]['superlabel'])
                 except KeyError:
-                    edgekey=tree[neighbor][thisvert].keys()[0]
+                    edgekey=list(tree[neighbor][thisvert].keys())[0]
                     predecessor[neighbor]=(thisvert,-tree[neighbor][thisvert][edgekey]['superlabel'])
                 sphere[nextradius].append(neighbor)
             nextlevel|=newneighbors

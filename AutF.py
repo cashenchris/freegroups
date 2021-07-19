@@ -137,7 +137,7 @@ def random_whitehead_automorphism(F):
     """
     A random Whitehead automorphism (of the second kind) of a free group F.
     """
-    vertices=range(-F.rank,0)+range(1,F.rank+1)
+    vertices=list(range(-F.rank,0))+list(range(1,F.rank+1))
     x=random.choice(vertices)
     Z=[x]
     vertices.remove(x)
@@ -151,7 +151,7 @@ def random_whitehead_automorphism_of_the_first_kind(F):
     """
     A random Whitehead automorphism of the first kind of a free group F.
     """
-    permutation=range(1,F.rank+1)
+    permutation=list(range(1,F.rank+1))
     random.shuffle(permutation)
     inversions=[]
     for i in range(F.rank):

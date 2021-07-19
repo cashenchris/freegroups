@@ -13,7 +13,7 @@ class xgraph(object):
             wordlist=wordlist_or_edgelist
             for word in wordlist:
                 # Attach a loop to the base vertex:
-                offset = len(self.dict.keys())-1
+                offset = len(list(self.dict.keys()))-1
                 vertexpath = [0]+range(1+offset,len(word)+offset)+[0]
                 for i in range(len(vertexpath)-1):
                     letter = word.letters[i]
@@ -57,7 +57,7 @@ class xgraph(object):
         
     def clone_node(self,v,new_node = None):
         if new_node==None:
-            new_node = max(self.dict.keys())+1
+            new_node = max(list(self.dict.keys()))+1
         self.add_node(new_node)
         for edge in self.dict[v]:
             if edge[0]==v:
@@ -96,7 +96,7 @@ class xgraph(object):
         return nset
 
     def nodes(self):
-        return self.dict.keys()
+        return list(self.dict.keys())
 
     def posedges(self):
         elist = []
@@ -117,9 +117,9 @@ class xgraph(object):
         previsited = set([0])
         visited = set([])
         while previsited!=set([]):
-            next = previsited.pop()
-            previsited = (previsited | self.distinct_neighbors(next))-visited
-            visited.add(next)
+            nextnode = previsited.pop()
+            previsited = (previsited | self.distinct_neighbors(nextnode))-visited
+            visited.add(nextnode)
         return visited==set(self.nodes())
 
 

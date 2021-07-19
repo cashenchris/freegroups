@@ -95,7 +95,7 @@ class word(object):
 # can be provided.
         if len(self.letters)==0:
             if type(one)==type(''):
-                print 'Warning, returning string.'
+                print("Warning, returning string.")
             return one
         else:
             answer = arg[abs(self.letters[0])-1]**(sign(self.letters[0]))
