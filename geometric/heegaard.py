@@ -31,7 +31,7 @@ import pexpect, re
 # If the 'heegaard' binary is not in your path, edit the below to
 # reflect it's full location, e.g. "/Users/dunfield/work/heegaard/heegaard"
 
-heegaard_program = "/Users/chris/Research/Software/HeegaardStuff/heegaard/heegaard"
+heegaard_program = "/Users/connorcashen/summercoding/3-manifolds-heegaard-82db9af/heegaard"
 
 def start_heegaard(relations):
     H = pexpect.spawn(heegaard_program)
@@ -70,7 +70,7 @@ def is_realizable(relations, maxtime = 10, full_answer=False, ambiguous_reply=No
     for command in ["c", "y", "n", "\n", "\n", "y", "q", "\n", "y", "q", "\n", "y", "q", "\n", "y", "q"]:
         H.send(command)
     try:
-        raw_data = H.read()
+        raw_data = str(H.read())
         H.close()
         if re.search("The initial presentation is realizable", raw_data)!=None:
             ans=True

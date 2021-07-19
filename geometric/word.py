@@ -13,7 +13,7 @@ def sign(n):
     return (-1)**(n<0)
 
 def freereduce(letters,n=0):
-    positions = range(n,len(letters)-1)+range(0,n)
+    positions = list(range(n,len(letters)-1))+list(range(0,n))
     for pos in positions:
         # If there is a reduction, recurse.
         if letters[pos]+letters[pos+1] == 0:

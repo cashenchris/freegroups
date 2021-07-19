@@ -63,7 +63,7 @@ else:
 def negcyc(elts):
     pool = tuple(elts)
     r = len(pool)
-    ind = [r-1]+range(r-1)
+    ind = [r-1]+list(range(r-1))
     return tuple(pool[i] for i in ind)
 
     

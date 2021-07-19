@@ -18,7 +18,7 @@ class xgraph(object):
                 for i in range(len(vertexpath)-1):
                     letter = word.letters[i]
                     self.dict[vertexpath[i]].append( (vertexpath[i+1],letter) )
-                    if vertexpath[i+1] not in self.dict.keys():
+                    if vertexpath[i+1] not in list(self.dict.keys()):
                         self.dict[vertexpath[i+1]]=[]
                     self.dict[vertexpath[i+1]].append( (vertexpath[i],-letter))
         else: #construct from ***positive*** edgelist

@@ -1,4 +1,5 @@
 import networkx as nx
+from functools import reduce
 
 class Partition(object):
     """ 
