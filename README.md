@@ -1,6 +1,6 @@
 # freegroups
 Some scripts for working with finitely generated free groups and their automorphisms.
-Requires:
+This is now a subtree of:
 https://github.com/cashenchris/grouptheory.git
 
 The geometricity and virtual geometricity code requires the program 'heegaard', available at:
