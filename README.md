@@ -7,11 +7,13 @@ https://github.com/cashenchris/grouptheory.git
 Includes two command line scripts vg.py, for determining virtual geometricity, and irank.py for computing imprimitivity rank.
 
 $ ./freegroups/vg.py a aabAAAB
+
 True
 
 This says the multiword {a, aabAAAB} in the free group <a,b> is virtually geomtric.
 
 $ ./freegroups/irank.py aabbcc
+
 3
 
 This says the word aabbcc in the free group <a,b,c> has imprimitivity rank 3.
