@@ -1,5 +1,8 @@
 # freegroups
 Some scripts for working with finitely generated free groups and their automorphisms.
+Includes functions for determining geometricity/virtual geometricity of (multi)words in a free group, Stallings graphs, Whitehead graphs, and computing imprimitivity rank of words. 
+
+
 The master branch is the original python2.7 version, which also requires:
 https://github.com/cashenchris/grouptheory.git
 
